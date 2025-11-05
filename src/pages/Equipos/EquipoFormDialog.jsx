@@ -39,7 +39,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
         setError: setFieldError,
     } = useForm({
         defaultValues: {
-            equipo: 'Laptop',
+            equipo: 'LAPTOP',
             marca: '',
             modelo: '',
             serie: '',
@@ -86,7 +86,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
             });
         } else {
             reset({
-                equipo: 'Laptop',
+                equipo: 'LAPTOP',
                 marca: '',
                 modelo: '',
                 serie: '',
@@ -117,7 +117,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
             setLoading(true);
             setError(null);
             setValidationErrors([]);
-
+            console.log('data: ', data)
             if (editMode) {
                 await equiposService.update(equipoData._id, data);
             } else {
@@ -289,8 +289,8 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                         error={!!errors.equipo}
                                         helperText={errors.equipo?.message}
                                     >
-                                        <MenuItem value="Laptop">Laptop</MenuItem>
-                                        <MenuItem value="Desktop">Desktop</MenuItem>
+                                        <MenuItem value="LAPTOP">LAPTOP</MenuItem>
+                                        <MenuItem value="DESKTOP">DESKTOP</MenuItem>
                                     </TextField>
                                 )}
                             />
