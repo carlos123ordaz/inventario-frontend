@@ -1,3 +1,4 @@
+// src/pages/Usuarios/UsuariosPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import {
     Box,
@@ -33,12 +34,14 @@ import {
     Visibility as VisibilityIcon,
     MoreVert as MoreVertIcon,
     Clear as ClearIcon,
+    Description as DescriptionIcon,
 } from '@mui/icons-material';
 import { usuariosService } from '../../api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import UsuarioFormDialog from './UsuarioFormDialog';
 import UsuarioDetailDialog from './UsuarioDetailDialog';
+import GenerarActaDialog from './GenerarActaDialog';
 import { AREAS } from '../../constants';
 
 const UsuariosPage = () => {
@@ -56,6 +59,7 @@ const UsuariosPage = () => {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [formDialogOpen, setFormDialogOpen] = useState(false);
     const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+    const [generarActaDialogOpen, setGenerarActaDialogOpen] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' });
     const [showFilters, setShowFilters] = useState(false);
@@ -148,6 +152,13 @@ const UsuariosPage = () => {
         handleMenuClose();
     };
 
+    // Abrir diálogo para generar acta
+    const handleGenerarActa = (usuario) => {
+        setSelectedUsuario(usuario);
+        setGenerarActaDialogOpen(true);
+        handleMenuClose();
+    };
+
     // Eliminar usuario
     const handleDeleteClick = (usuario) => {
         setSelectedUsuario(usuario);
@@ -210,6 +221,7 @@ const UsuariosPage = () => {
             'Activo': 'success',
             'Inactivo': 'default',
             'Suspendido': 'error',
+            'Baja': 'error',
         };
         return colors[estado] || 'default';
     };
@@ -372,6 +384,7 @@ const UsuariosPage = () => {
                             <MenuItem value="Activo">Activo</MenuItem>
                             <MenuItem value="Inactivo">Inactivo</MenuItem>
                             <MenuItem value="Suspendido">Suspendido</MenuItem>
+                            <MenuItem value="Baja">Baja</MenuItem>
                         </TextField>
 
                         <TextField
@@ -578,6 +591,10 @@ const UsuariosPage = () => {
                     <VisibilityIcon sx={{ mr: 1.5, fontSize: 18, color: '#6a6d70' }} />
                     Ver Detalle
                 </MenuItem>
+                <MenuItem onClick={() => handleGenerarActa(selectedUsuario)}>
+                    <DescriptionIcon sx={{ mr: 1.5, fontSize: 18, color: '#6a6d70' }} />
+                    Generar Acta
+                </MenuItem>
                 <MenuItem onClick={() => handleEdit(selectedUsuario)}>
                     <EditIcon sx={{ mr: 1.5, fontSize: 18, color: '#6a6d70' }} />
                     Editar
@@ -612,6 +629,18 @@ const UsuariosPage = () => {
                 }}
             />
 
+            {/* Diálogo de Generar Acta */}
+            <GenerarActaDialog
+                open={generarActaDialogOpen}
+                onClose={(success) => {
+                    setGenerarActaDialogOpen(false);
+                    if (success) {
+                        showNotification('Acta generada correctamente', 'success');
+                    }
+                }}
+                usuario={selectedUsuario}
+            />
+
             {/* Diálogo de Confirmación de Eliminación */}
             <ConfirmDialog
                 open={deleteDialogOpen}
@@ -620,6 +649,8 @@ const UsuariosPage = () => {
                 onConfirm={handleDeleteConfirm}
                 onCancel={() => setDeleteDialogOpen(false)}
             />
+
+            {/* Notificaciones */}
             <Snackbar
                 open={notification.open}
                 autoHideDuration={4000}

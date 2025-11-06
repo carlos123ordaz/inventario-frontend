@@ -5,6 +5,7 @@ import EquiposPage from '../pages/Equipos/EquiposPage';
 import EquipoDetailPage from '../pages/Equipos/EquipoDetailPage';
 import HistorialPage from '../pages/Historial/HistorialPage';
 import Dashboard from '../pages/Dashboard';
+import ActasPage from '../pages/actas/ActasPage';
 const AppRoutes = () => {
     return (
         <Routes>
@@ -14,6 +15,7 @@ const AppRoutes = () => {
                 <Route path="/usuarios" element={<UsuariosPage />} />
                 <Route path="/equipos/:id" element={<EquipoDetailPage />} />
                 <Route path="/equipos" element={<EquiposPage />} />
+                <Route path="/actas" element={<ActasPage />} />
                 <Route path="/historial">
                     <Route index element={<HistorialPage />} />
                 </Route>

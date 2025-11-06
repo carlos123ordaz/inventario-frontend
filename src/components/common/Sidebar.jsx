@@ -23,6 +23,7 @@ import {
     ExpandMore,
     SwapHoriz,
     AssignmentReturn,
+    NoteAltSharp,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
@@ -63,6 +64,11 @@ const Sidebar = ({ open, onClose, variant = 'permanent' }) => {
             title: 'Historial',
             icon: <HistoryIcon />,
             path: '/historial',
+        },
+        {
+            title: 'Actas',
+            icon: <NoteAltSharp />,
+            path: '/actas',
         },
     ];
 
