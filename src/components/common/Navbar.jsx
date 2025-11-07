@@ -118,9 +118,6 @@ const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode, showMenuIcon = true }
                             {darkMode ? <Brightness7 /> : <Brightness4 />}
                         </IconButton>
                     </Tooltip>
-
-
-                    {/* Avatar del usuario */}
                     <Tooltip title="Mi cuenta">
                         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0, ml: 2 }}>
                             <Avatar
@@ -135,8 +132,6 @@ const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode, showMenuIcon = true }
                         </IconButton>
                     </Tooltip>
                 </Box>
-
-                {/* Menú del usuario */}
                 <Menu
                     sx={{ mt: '45px' }}
                     id="menu-appbar"
