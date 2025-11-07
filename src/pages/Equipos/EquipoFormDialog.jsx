@@ -117,7 +117,6 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
             setLoading(true);
             setError(null);
             setValidationErrors([]);
-            console.log('data: ', data)
             if (editMode) {
                 await equiposService.update(equipoData._id, data);
             } else {

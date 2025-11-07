@@ -17,7 +17,6 @@ import {
     AccountCircle,
     Brightness4,
     Brightness7,
-    Notifications,
     Settings,
     Logout,
     Person,
@@ -39,13 +38,6 @@ const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode, showMenuIcon = true }
         setAnchorElUser(null);
     };
 
-    const handleOpenNotifications = (event) => {
-        setAnchorElNotif(event.currentTarget);
-    };
-
-    const handleCloseNotifications = () => {
-        setAnchorElNotif(null);
-    };
 
     const handleLogout = () => {
         setUser(null);
@@ -64,8 +56,6 @@ const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode, showMenuIcon = true }
         handleCloseUserMenu();
     };
 
-    // Simulación de notificaciones no leídas
-    const unreadNotifications = 3;
 
     return (
         <AppBar
@@ -133,22 +123,6 @@ const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode, showMenuIcon = true }
                         </IconButton>
                     </Tooltip>
 
-                    {/* Notificaciones */}
-                    <Tooltip title="Notificaciones">
-                        <IconButton
-                            onClick={handleOpenNotifications}
-                            sx={{
-                                color: darkMode ? '#fff' : 'text.primary',
-                                '&:hover': {
-                                    backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.04)',
-                                }
-                            }}
-                        >
-                            <Badge badgeContent={unreadNotifications} color="error">
-                                <Notifications />
-                            </Badge>
-                        </IconButton>
-                    </Tooltip>
 
                     {/* Avatar del usuario */}
                     <Tooltip title="Mi cuenta">
@@ -200,96 +174,18 @@ const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode, showMenuIcon = true }
                         </Typography>
                     </Box>
                     <Divider />
-                    <MenuItem onClick={handleProfile}>
+                    {/* <MenuItem onClick={handleProfile}>
                         <Person sx={{ mr: 2, fontSize: 20 }} />
                         Mi Perfil
                     </MenuItem>
                     <MenuItem onClick={handleSettings}>
                         <Settings sx={{ mr: 2, fontSize: 20 }} />
                         Configuración
-                    </MenuItem>
+                    </MenuItem> */}
                     <Divider />
                     <MenuItem onClick={handleLogout}>
                         <Logout sx={{ mr: 2, fontSize: 20 }} />
                         Cerrar Sesión
-                    </MenuItem>
-                </Menu>
-
-                {/* Menú de notificaciones */}
-                <Menu
-                    sx={{ mt: '45px' }}
-                    id="menu-notifications"
-                    anchorEl={anchorElNotif}
-                    anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                    }}
-                    keepMounted
-                    transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                    }}
-                    open={Boolean(anchorElNotif)}
-                    onClose={handleCloseNotifications}
-                    PaperProps={{
-                        sx: {
-                            minWidth: 320,
-                            maxHeight: 400,
-                            mt: 1,
-                            boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                        }
-                    }}
-                >
-                    <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                            Notificaciones
-                        </Typography>
-                    </Box>
-
-                    <MenuItem onClick={handleCloseNotifications}>
-                        <Box>
-                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                Nuevo equipo asignado
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                                Laptop Dell asignada a Juan Pérez - hace 2 horas
-                            </Typography>
-                        </Box>
-                    </MenuItem>
-
-                    <MenuItem onClick={handleCloseNotifications}>
-                        <Box>
-                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                Equipo devuelto
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                                Monitor LG devuelto por María García - hace 5 horas
-                            </Typography>
-                        </Box>
-                    </MenuItem>
-
-                    <MenuItem onClick={handleCloseNotifications}>
-                        <Box>
-                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                Mantenimiento programado
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                                3 equipos requieren mantenimiento - hace 1 día
-                            </Typography>
-                        </Box>
-                    </MenuItem>
-
-                    <Divider />
-                    <MenuItem
-                        onClick={() => {
-                            navigate('/notificaciones');
-                            handleCloseNotifications();
-                        }}
-                        sx={{ justifyContent: 'center' }}
-                    >
-                        <Typography variant="body2" color="primary" sx={{ fontWeight: 500 }}>
-                            Ver todas las notificaciones
-                        </Typography>
                     </MenuItem>
                 </Menu>
             </Toolbar>
