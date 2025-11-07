@@ -82,7 +82,7 @@ const ActaDetailDialog = ({ open, onClose, acta, onEdit, onDelete }) => {
                         </Typography>
 
                         <Grid container spacing={2}>
-                            <Grid item xs={12}>
+                            <Grid size={{ xs: 12 }}>
                                 <Typography variant="caption" color="textSecondary">
                                     Título
                                 </Typography>
@@ -91,7 +91,7 @@ const ActaDetailDialog = ({ open, onClose, acta, onEdit, onDelete }) => {
                                 </Typography>
                             </Grid>
 
-                            <Grid item xs={12}>
+                            <Grid size={{ xs: 12 }}>
                                 <Typography variant="caption" color="textSecondary">
                                     Descripción
                                 </Typography>
@@ -100,7 +100,7 @@ const ActaDetailDialog = ({ open, onClose, acta, onEdit, onDelete }) => {
                                 </Typography>
                             </Grid>
 
-                            <Grid item xs={12} sm={6}>
+                            <Grid size={{ xs: 12, sm: 6 }}>
                                 <Typography variant="caption" color="textSecondary">
                                     Estado
                                 </Typography>
@@ -113,7 +113,7 @@ const ActaDetailDialog = ({ open, onClose, acta, onEdit, onDelete }) => {
                                 </Box>
                             </Grid>
 
-                            <Grid item xs={12} sm={6}>
+                            <Grid size={{ xs: 12, sm: 6 }}>
                                 <Typography variant="caption" color="textSecondary">
                                     Archivo
                                 </Typography>
@@ -132,7 +132,7 @@ const ActaDetailDialog = ({ open, onClose, acta, onEdit, onDelete }) => {
                         </Typography>
 
                         <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
+                            <Grid size={{ xs: 12, sm: 6 }}>
                                 <Box sx={{ textAlign: 'center', p: 2, backgroundColor: '#f5f9fc', borderRadius: 1 }}>
                                     <Typography variant="h3" sx={{ color: '#0854a0', fontWeight: 500 }}>
                                         {acta.vecesUtilizada || 0}
@@ -143,7 +143,7 @@ const ActaDetailDialog = ({ open, onClose, acta, onEdit, onDelete }) => {
                                 </Box>
                             </Grid>
 
-                            <Grid item xs={12} sm={6}>
+                            <Grid size={{ xs: 12, sm: 6 }}>
                                 <Box sx={{ p: 2 }}>
                                     <Typography variant="caption" color="textSecondary">
                                         <CalendarIcon sx={{ fontSize: 14, mr: 0.5, verticalAlign: 'middle' }} />

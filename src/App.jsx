@@ -7,6 +7,7 @@ import '@fontsource/roboto/700.css'
 import { ThemeProvider } from '@emotion/react'
 import { createTheme, CssBaseline } from '@mui/material'
 import AppRoutes from './routes/AppRoutes'
+import { MainContextProvider } from './context/MainContextProvider'
 const theme = createTheme({
   palette: {
     mode: "light",
@@ -17,11 +18,13 @@ const theme = createTheme({
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline>
-        <AppRoutes />
-      </CssBaseline>
-    </ThemeProvider>
+    <MainContextProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline>
+          <AppRoutes />
+        </CssBaseline>
+      </ThemeProvider>
+    </MainContextProvider>
   )
 }
 

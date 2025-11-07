@@ -6,9 +6,13 @@ import EquipoDetailPage from '../pages/Equipos/EquipoDetailPage';
 import HistorialPage from '../pages/Historial/HistorialPage';
 import Dashboard from '../pages/Dashboard';
 import ActasPage from '../pages/actas/ActasPage';
+import { LoginPage } from '../pages/auth/LoginPage';
+import { RegisterPage } from '../pages/auth/RegisterPage';
 const AppRoutes = () => {
     return (
         <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
             <Route element={<MainLayout />}>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/dashboard" element={<Dashboard />} />

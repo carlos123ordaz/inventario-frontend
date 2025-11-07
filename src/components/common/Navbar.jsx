@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
     AppBar,
     Toolbar,
@@ -9,17 +9,27 @@ import {
     Menu,
     MenuItem,
     Tooltip,
+    Badge,
+    Divider,
 } from '@mui/material';
 import {
     Menu as MenuIcon,
     AccountCircle,
     Brightness4,
     Brightness7,
+    Notifications,
+    Settings,
+    Logout,
+    Person,
 } from '@mui/icons-material';
+import { MainContext } from '../../context/MainContextProvider';
+import { useNavigate } from 'react-router-dom';
 
-const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode }) => {
+const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode, showMenuIcon = true }) => {
     const [anchorElUser, setAnchorElUser] = useState(null);
     const [anchorElNotif, setAnchorElNotif] = useState(null);
+    const { user, setUser } = useContext(MainContext);
+    const navigate = useNavigate();
 
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
@@ -29,41 +39,67 @@ const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode }) => {
         setAnchorElUser(null);
     };
 
+    const handleOpenNotifications = (event) => {
+        setAnchorElNotif(event.currentTarget);
+    };
+
     const handleCloseNotifications = () => {
         setAnchorElNotif(null);
     };
+
+    const handleLogout = () => {
+        setUser(null);
+        localStorage.removeItem('user');
+        navigate('/login');
+        handleCloseUserMenu();
+    };
+
+    const handleProfile = () => {
+        navigate('/perfil');
+        handleCloseUserMenu();
+    };
+
+    const handleSettings = () => {
+        navigate('/configuracion');
+        handleCloseUserMenu();
+    };
+
+    // Simulación de notificaciones no leídas
+    const unreadNotifications = 3;
 
     return (
         <AppBar
             position="fixed"
             sx={{
                 zIndex: (theme) => theme.zIndex.drawer + 1,
-                backgroundColor: '#354A5F',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                backgroundColor: darkMode ? '#1a1a1a' : '#fff',
+                color: darkMode ? '#fff' : 'text.primary',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+                backdropFilter: 'blur(10px)',
+                background: darkMode
+                    ? 'linear-gradient(90deg, #1a1a1a 0%, #2d2d2d 100%)'
+                    : 'linear-gradient(90deg, #ffffff 0%, #f5f5f5 100%)',
             }}
         >
             <Toolbar>
-                <IconButton
-                    color="inherit"
-                    aria-label="open drawer"
-                    edge="start"
-                    onClick={onMenuClick}
-                    sx={{ mr: 2 }}
-                >
-                    <MenuIcon />
-                </IconButton>
-                <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 0 }}>
-                    <Box
-                        component="img"
-                        src="/logo.svg"
-                        alt="Logo"
+                {showMenuIcon && (
+                    <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        edge="start"
+                        onClick={onMenuClick}
                         sx={{
-                            height: 32,
                             mr: 2,
-                            display: { xs: 'none', sm: 'block' }
+                            '&:hover': {
+                                backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.04)',
+                            }
                         }}
-                        onError={(e) => { e.target.style.display = 'none'; }}
-                    />
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                )}
+
+                <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
                     <Typography
                         variant="h6"
                         noWrap
@@ -71,32 +107,67 @@ const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode }) => {
                         sx={{
                             fontWeight: 600,
                             letterSpacing: 0.5,
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            backgroundClip: 'text',
+                            WebkitBackgroundClip: 'text',
+                            color: 'transparent',
                         }}
                     >
-                        Inventario de Equipos
+                        Sistema de Inventario
                     </Typography>
                 </Box>
-                <Box sx={{ flexGrow: 1 }} />
-                <Box sx={{ display: 'flex', gap: 1 }}>
+
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                    {/* Botón de modo oscuro/claro */}
                     <Tooltip title={darkMode ? "Modo claro" : "Modo oscuro"}>
-                        <IconButton color="inherit" onClick={onToggleDarkMode}>
+                        <IconButton
+                            onClick={onToggleDarkMode}
+                            sx={{
+                                color: darkMode ? '#fff' : 'text.primary',
+                                '&:hover': {
+                                    backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.04)',
+                                }
+                            }}
+                        >
                             {darkMode ? <Brightness7 /> : <Brightness4 />}
                         </IconButton>
                     </Tooltip>
+
+                    {/* Notificaciones */}
+                    <Tooltip title="Notificaciones">
+                        <IconButton
+                            onClick={handleOpenNotifications}
+                            sx={{
+                                color: darkMode ? '#fff' : 'text.primary',
+                                '&:hover': {
+                                    backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.04)',
+                                }
+                            }}
+                        >
+                            <Badge badgeContent={unreadNotifications} color="error">
+                                <Notifications />
+                            </Badge>
+                        </IconButton>
+                    </Tooltip>
+
+                    {/* Avatar del usuario */}
                     <Tooltip title="Mi cuenta">
                         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0, ml: 2 }}>
                             <Avatar
                                 sx={{
-                                    bgcolor: '#0070F2',
-                                    width: 36,
-                                    height: 36,
+                                    width: 40,
+                                    height: 40,
+                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                    boxShadow: '0 2px 8px rgba(102, 126, 234, 0.4)',
                                 }}
                             >
-                                <AccountCircle />
+                                {user?.correo ? user.correo[0].toUpperCase() : <AccountCircle />}
                             </Avatar>
                         </IconButton>
                     </Tooltip>
                 </Box>
+
+                {/* Menú del usuario */}
                 <Menu
                     sx={{ mt: '45px' }}
                     id="menu-appbar"
@@ -112,11 +183,39 @@ const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode }) => {
                     }}
                     open={Boolean(anchorElUser)}
                     onClose={handleCloseUserMenu}
+                    PaperProps={{
+                        sx: {
+                            minWidth: 200,
+                            mt: 1,
+                            boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                        }
+                    }}
                 >
-                    <MenuItem onClick={handleCloseUserMenu}>
-                        <Typography textAlign="center">Cerrar Sesión</Typography>
+                    <Box sx={{ px: 2, py: 1.5 }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                            {user?.correo || 'Usuario'}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                            Administrador
+                        </Typography>
+                    </Box>
+                    <Divider />
+                    <MenuItem onClick={handleProfile}>
+                        <Person sx={{ mr: 2, fontSize: 20 }} />
+                        Mi Perfil
+                    </MenuItem>
+                    <MenuItem onClick={handleSettings}>
+                        <Settings sx={{ mr: 2, fontSize: 20 }} />
+                        Configuración
+                    </MenuItem>
+                    <Divider />
+                    <MenuItem onClick={handleLogout}>
+                        <Logout sx={{ mr: 2, fontSize: 20 }} />
+                        Cerrar Sesión
                     </MenuItem>
                 </Menu>
+
+                {/* Menú de notificaciones */}
                 <Menu
                     sx={{ mt: '45px' }}
                     id="menu-notifications"
@@ -132,20 +231,64 @@ const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode }) => {
                     }}
                     open={Boolean(anchorElNotif)}
                     onClose={handleCloseNotifications}
+                    PaperProps={{
+                        sx: {
+                            minWidth: 320,
+                            maxHeight: 400,
+                            mt: 1,
+                            boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                        }
+                    }}
                 >
-                    <MenuItem onClick={handleCloseNotifications}>
-                        <Typography variant="body2">
-                            Nuevo equipo asignado a Juan Pérez
+                    <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                            Notificaciones
                         </Typography>
-                    </MenuItem>
+                    </Box>
+
                     <MenuItem onClick={handleCloseNotifications}>
-                        <Typography variant="body2">
-                            Equipo Dell Latitude devuelto
-                        </Typography>
+                        <Box>
+                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                Nuevo equipo asignado
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                                Laptop Dell asignada a Juan Pérez - hace 2 horas
+                            </Typography>
+                        </Box>
                     </MenuItem>
+
                     <MenuItem onClick={handleCloseNotifications}>
-                        <Typography variant="body2">
-                            3 equipos próximos a mantenimiento
+                        <Box>
+                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                Equipo devuelto
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                                Monitor LG devuelto por María García - hace 5 horas
+                            </Typography>
+                        </Box>
+                    </MenuItem>
+
+                    <MenuItem onClick={handleCloseNotifications}>
+                        <Box>
+                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                Mantenimiento programado
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                                3 equipos requieren mantenimiento - hace 1 día
+                            </Typography>
+                        </Box>
+                    </MenuItem>
+
+                    <Divider />
+                    <MenuItem
+                        onClick={() => {
+                            navigate('/notificaciones');
+                            handleCloseNotifications();
+                        }}
+                        sx={{ justifyContent: 'center' }}
+                    >
+                        <Typography variant="body2" color="primary" sx={{ fontWeight: 500 }}>
+                            Ver todas las notificaciones
                         </Typography>
                     </MenuItem>
                 </Menu>
@@ -153,4 +296,5 @@ const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode }) => {
         </AppBar>
     );
 };
+
 export default Navbar;

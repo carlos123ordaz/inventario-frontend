@@ -222,7 +222,7 @@ const GenerarActaDialog = ({ open, onClose, usuario }) => {
                                 ) : (
                                     <Grid container spacing={2}>
                                         {actas.map((acta) => (
-                                            <Grid item xs={12} sm={6} key={acta._id}>
+                                            <Grid size={{ xs: 12, sm: 6 }} key={acta._id}>
                                                 <Card
                                                     variant="outlined"
                                                     sx={{
@@ -306,7 +306,7 @@ const GenerarActaDialog = ({ open, onClose, usuario }) => {
                                     <Card variant="outlined">
                                         <CardContent>
                                             <Grid container spacing={1.5}>
-                                                <Grid item xs={6}>
+                                                <Grid size={{ xs: 6 }}>
                                                     <Typography variant="caption" color="textSecondary">
                                                         Nombre
                                                     </Typography>
@@ -314,7 +314,7 @@ const GenerarActaDialog = ({ open, onClose, usuario }) => {
                                                         {usuario.nombreCompleto || `${usuario.nombre} ${usuario.apellido}`}
                                                     </Typography>
                                                 </Grid>
-                                                <Grid item xs={6}>
+                                                <Grid size={{ xs: 6 }}>
                                                     <Typography variant="caption" color="textSecondary">
                                                         DNI
                                                     </Typography>
@@ -322,7 +322,7 @@ const GenerarActaDialog = ({ open, onClose, usuario }) => {
                                                         {usuario.dni}
                                                     </Typography>
                                                 </Grid>
-                                                <Grid item xs={6}>
+                                                <Grid size={{ xs: 6 }}>
                                                     <Typography variant="caption" color="textSecondary">
                                                         Cargo
                                                     </Typography>
@@ -330,7 +330,7 @@ const GenerarActaDialog = ({ open, onClose, usuario }) => {
                                                         {usuario.cargo}
                                                     </Typography>
                                                 </Grid>
-                                                <Grid item xs={6}>
+                                                <Grid size={{ xs: 6 }}>
                                                     <Typography variant="caption" color="textSecondary">
                                                         Área
                                                     </Typography>

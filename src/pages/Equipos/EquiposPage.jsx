@@ -448,9 +448,8 @@ const EquiposPage = () => {
                             sx={{ minWidth: 150 }}
                         >
                             <MenuItem value="">Todos</MenuItem>
-                            <MenuItem value="Laptop">Laptop</MenuItem>
-                            <MenuItem value="Desktop">Desktop</MenuItem>
-                            <MenuItem value="PC">PC</MenuItem>
+                            <MenuItem value="LAPTOP">Laptop</MenuItem>
+                            <MenuItem value="DESKTOP">Desktop</MenuItem>
                         </TextField>
 
                         {(filterEstado || filterTipo) && (
