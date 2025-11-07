@@ -97,10 +97,6 @@ const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode, showMenuIcon = true }
                         sx={{
                             fontWeight: 600,
                             letterSpacing: 0.5,
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            backgroundClip: 'text',
-                            WebkitBackgroundClip: 'text',
-                            color: 'transparent',
                         }}
                     >
                         Sistema de Inventario
@@ -131,8 +127,7 @@ const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode, showMenuIcon = true }
                                 sx={{
                                     width: 40,
                                     height: 40,
-                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                    boxShadow: '0 2px 8px rgba(102, 126, 234, 0.4)',
+                                    background: '#667eea'
                                 }}
                             >
                                 {user?.correo ? user.correo[0].toUpperCase() : <AccountCircle />}
