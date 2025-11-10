@@ -62,20 +62,17 @@ const Dashboard = () => {
     const loadDashboardData = async () => {
         try {
             setLoading(true);
-            const [equiposRes, usuariosRes, historialRes, actividadRes] = await Promise.all([
+            const [equiposRes, historialRes, actividadRes] = await Promise.all([
                 equiposService.getEstadisticas(),
-                usuariosService.getAll(),
                 historialService.getEstadisticas(),
                 historialService.filter({ limit: 5, page: 1 }),
             ]);
-
-            // Estadísticas generales
             setStats({
                 totalEquipos: equiposRes.data.resumen.totalEquipos,
                 disponibles: equiposRes.data.resumen.disponibles,
                 enUso: equiposRes.data.resumen.enUso,
                 mantenimiento: equiposRes.data.resumen.enMantenimiento,
-                totalUsuarios: usuariosRes.data.length,
+                totalUsuarios: equiposRes.data.resumen.totalUsuarios,
                 asignacionesActivas: historialRes.data.resumen.asignacionesActivas,
             });
 
@@ -195,7 +192,6 @@ const Dashboard = () => {
             </Grid>
 
             <Grid container spacing={3}>
-                {/* Distribución por tipo de equipo */}
                 <Grid size={{ xs: 12, md: 4 }}>
                     <Paper
                         elevation={0}
