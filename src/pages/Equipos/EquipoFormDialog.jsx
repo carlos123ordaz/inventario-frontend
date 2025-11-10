@@ -25,21 +25,24 @@ import {
 } from '@mui/icons-material';
 import { equiposService } from '../../api';
 import moment from 'moment';
+import { TIPOS_EQUIPOS } from '../../constants';
 
 const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoData = null }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [validationErrors, setValidationErrors] = useState([]);
-
+    const [tipoSeleccionado, setTipoSeleccionado] = useState('LAPTOP');
+    const esAccesorio = ['MOUSE', 'MONITOR', 'TECLADO', 'COOLER', 'CELULAR'].includes(tipoSeleccionado);
     const {
         control,
         handleSubmit,
         formState: { errors },
         reset,
         setError: setFieldError,
+        watch,
     } = useForm({
         defaultValues: {
-            equipo: 'LAPTOP',
+            tipo: 'LAPTOP',
             marca: '',
             modelo: '',
             serie: '',
@@ -61,32 +64,40 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
         },
     });
 
+    // Observar cambios en el tipo de equipo
+    const tipoWatched = watch('tipo');
+
+    useEffect(() => {
+        setTipoSeleccionado(tipoWatched);
+    }, [tipoWatched]);
+
     useEffect(() => {
         if (editMode && equipoData) {
             reset({
-                equipo: equipoData.equipo,
+                tipo: equipoData.tipo,
                 marca: equipoData.marca,
                 modelo: equipoData.modelo,
                 serie: equipoData.serie,
-                host: equipoData.host,
+                host: equipoData.host || '',
                 estado: equipoData.estado,
                 fechaCompra: moment(equipoData.fechaCompra).format('YYYY-MM-DD'),
                 primerUso: moment(equipoData.primerUso).format('YYYY-MM-DD'),
-                procesador: equipoData.procesador,
-                almacenamiento: equipoData.almacenamiento,
-                memoria: equipoData.memoria,
+                procesador: equipoData.procesador || '',
+                almacenamiento: equipoData.almacenamiento || '',
+                memoria: equipoData.memoria || '',
                 pantalla: equipoData.pantalla || '',
                 tarjetaGrafica: equipoData.tarjetaGrafica || '',
-                puertoRed: equipoData.puertoRed,
-                puertosUSB: equipoData.puertosUSB,
-                puertoSerial: equipoData.puertoSerial,
-                puertoHDMI: equipoData.puertoHDMI,
-                puertoC: equipoData.puertoC,
+                puertoRed: equipoData.puertoRed || false,
+                puertosUSB: equipoData.puertosUSB || false,
+                puertoSerial: equipoData.puertoSerial || false,
+                puertoHDMI: equipoData.puertoHDMI || false,
+                puertoC: equipoData.puertoC || false,
                 observaciones: equipoData.observaciones || '',
             });
+            setTipoSeleccionado(equipoData.tipo);
         } else {
             reset({
-                equipo: 'LAPTOP',
+                tipo: 'LAPTOP',
                 marca: '',
                 modelo: '',
                 serie: '',
@@ -106,6 +117,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                 puertoC: false,
                 observaciones: '',
             });
+            setTipoSeleccionado('LAPTOP');
         }
         // Limpiar errores al abrir/cerrar
         setError(null);
@@ -272,9 +284,9 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                             </Typography>
                         </Grid>
 
-                        <Grid size={{ xs: 12 }} sm={4}>
+                        <Grid size={{ xs: 12 }} sm={esAccesorio ? 6 : 4}>
                             <Controller
-                                name="equipo"
+                                name="tipo"
                                 control={control}
                                 rules={{ required: 'El tipo de equipo es requerido' }}
                                 render={({ field }) => (
@@ -285,17 +297,22 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                         fullWidth
                                         size="small"
                                         required
-                                        error={!!errors.equipo}
-                                        helperText={errors.equipo?.message}
+                                        error={!!errors.tipo}
+                                        helperText={errors.tipo?.message}
                                     >
-                                        <MenuItem value="LAPTOP">LAPTOP</MenuItem>
-                                        <MenuItem value="DESKTOP">DESKTOP</MenuItem>
+                                        {
+                                            TIPOS_EQUIPOS.map((tipo) => (
+                                                <MenuItem key={tipo} value={tipo}>
+                                                    {tipo}
+                                                </MenuItem>
+                                            ))
+                                        }
                                     </TextField>
                                 )}
                             />
                         </Grid>
 
-                        <Grid size={{ xs: 12 }} sm={4}>
+                        <Grid size={{ xs: 12 }} sm={esAccesorio ? 6 : 4}>
                             <Controller
                                 name="marca"
                                 control={control}
@@ -314,24 +331,47 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                             />
                         </Grid>
 
-                        <Grid size={{ xs: 12 }} sm={4}>
-                            <Controller
-                                name="modelo"
-                                control={control}
-                                rules={{ required: 'El modelo es requerido' }}
-                                render={({ field }) => (
-                                    <TextField
-                                        {...field}
-                                        label="Modelo"
-                                        fullWidth
-                                        size="small"
-                                        required
-                                        error={!!errors.modelo}
-                                        helperText={errors.modelo?.message}
-                                    />
-                                )}
-                            />
-                        </Grid>
+                        {!esAccesorio && (
+                            <Grid size={{ xs: 12 }} sm={4}>
+                                <Controller
+                                    name="modelo"
+                                    control={control}
+                                    rules={{ required: 'El modelo es requerido' }}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Modelo"
+                                            fullWidth
+                                            size="small"
+                                            required
+                                            error={!!errors.modelo}
+                                            helperText={errors.modelo?.message}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                        )}
+
+                        {esAccesorio && (
+                            <Grid size={{ xs: 12 }} sm={6}>
+                                <Controller
+                                    name="modelo"
+                                    control={control}
+                                    rules={{ required: 'El modelo es requerido' }}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Modelo"
+                                            fullWidth
+                                            size="small"
+                                            required
+                                            error={!!errors.modelo}
+                                            helperText={errors.modelo?.message}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                        )}
 
                         <Grid size={{ xs: 12 }} sm={6}>
                             <Controller
@@ -358,24 +398,26 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                             />
                         </Grid>
 
-                        <Grid size={{ xs: 12 }} sm={6}>
-                            <Controller
-                                name="host"
-                                control={control}
-                                rules={{ required: 'El nombre del host es requerido' }}
-                                render={({ field }) => (
-                                    <TextField
-                                        {...field}
-                                        label="Nombre del Host"
-                                        fullWidth
-                                        size="small"
-                                        required
-                                        error={!!errors.host}
-                                        helperText={errors.host?.message}
-                                    />
-                                )}
-                            />
-                        </Grid>
+                        {!esAccesorio && (
+                            <Grid size={{ xs: 12 }} sm={6}>
+                                <Controller
+                                    name="host"
+                                    control={control}
+                                    rules={{ required: 'El nombre del host es requerido' }}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Nombre del Host"
+                                            fullWidth
+                                            size="small"
+                                            required
+                                            error={!!errors.host}
+                                            helperText={errors.host?.message}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                        )}
 
                         <Grid size={{ xs: 12 }} sm={6}>
                             <Controller
@@ -432,181 +474,186 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                             />
                         </Grid>
 
-                        {/* Especificaciones Técnicas */}
-                        <Grid size={{ xs: 12 }}>
-                            <Divider sx={{ my: 1 }} />
-                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#32363a', mt: 2, mb: 1.5 }}>
-                                Especificaciones Técnicas
-                            </Typography>
-                        </Grid>
+                        {/* Especificaciones Técnicas - Solo para LAPTOP y DESKTOP */}
+                        {!esAccesorio && (
+                            <>
+                                <Grid size={{ xs: 12 }}>
+                                    <Divider sx={{ my: 1 }} />
+                                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#32363a', mt: 2, mb: 1.5 }}>
+                                        Especificaciones Técnicas
+                                    </Typography>
+                                </Grid>
 
-                        <Grid size={{ xs: 12 }}>
-                            <Controller
-                                name="procesador"
-                                control={control}
-                                rules={{ required: 'El procesador es requerido' }}
-                                render={({ field }) => (
-                                    <TextField
-                                        {...field}
-                                        label="Procesador"
-                                        fullWidth
-                                        size="small"
-                                        required
-                                        placeholder="Ej: Intel Core i7-1165G7"
-                                        error={!!errors.procesador}
-                                        helperText={errors.procesador?.message}
+                                <Grid size={{ xs: 12 }}>
+                                    <Controller
+                                        name="procesador"
+                                        control={control}
+                                        rules={{ required: 'El procesador es requerido' }}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label="Procesador"
+                                                fullWidth
+                                                size="small"
+                                                required
+                                                placeholder="Ej: Intel Core i7-1165G7"
+                                                error={!!errors.procesador}
+                                                helperText={errors.procesador?.message}
+                                            />
+                                        )}
                                     />
-                                )}
-                            />
-                        </Grid>
+                                </Grid>
 
-                        <Grid size={{ xs: 12 }} sm={6}>
-                            <Controller
-                                name="memoria"
-                                control={control}
-                                rules={{ required: 'La memoria RAM es requerida' }}
-                                render={({ field }) => (
-                                    <TextField
-                                        {...field}
-                                        label="Memoria RAM"
-                                        fullWidth
-                                        size="small"
-                                        required
-                                        placeholder="Ej: 16GB DDR4"
-                                        error={!!errors.memoria}
-                                        helperText={errors.memoria?.message}
+                                <Grid size={{ xs: 12 }} sm={6}>
+                                    <Controller
+                                        name="memoria"
+                                        control={control}
+                                        rules={{ required: 'La memoria RAM es requerida' }}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label="Memoria RAM"
+                                                fullWidth
+                                                size="small"
+                                                required
+                                                placeholder="Ej: 16GB DDR4"
+                                                error={!!errors.memoria}
+                                                helperText={errors.memoria?.message}
+                                            />
+                                        )}
                                     />
-                                )}
-                            />
-                        </Grid>
+                                </Grid>
 
-                        <Grid size={{ xs: 12 }} sm={6}>
-                            <Controller
-                                name="almacenamiento"
-                                control={control}
-                                rules={{ required: 'El almacenamiento es requerido' }}
-                                render={({ field }) => (
-                                    <TextField
-                                        {...field}
-                                        label="Almacenamiento"
-                                        fullWidth
-                                        size="small"
-                                        required
-                                        placeholder="Ej: 512GB SSD NVMe"
-                                        error={!!errors.almacenamiento}
-                                        helperText={errors.almacenamiento?.message}
+                                <Grid size={{ xs: 12 }} sm={6}>
+                                    <Controller
+                                        name="almacenamiento"
+                                        control={control}
+                                        rules={{ required: 'El almacenamiento es requerido' }}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label="Almacenamiento"
+                                                fullWidth
+                                                size="small"
+                                                required
+                                                placeholder="Ej: 512GB SSD NVMe"
+                                                error={!!errors.almacenamiento}
+                                                helperText={errors.almacenamiento?.message}
+                                            />
+                                        )}
                                     />
-                                )}
-                            />
-                        </Grid>
+                                </Grid>
 
-                        <Grid size={{ xs: 12 }} sm={6}>
-                            <Controller
-                                name="pantalla"
-                                control={control}
-                                render={({ field }) => (
-                                    <TextField
-                                        {...field}
-                                        label="Pantalla"
-                                        fullWidth
-                                        size="small"
-                                        placeholder="Ej: 14 pulgadas FHD"
-                                        error={!!errors.pantalla}
-                                        helperText={errors.pantalla?.message}
+                                <Grid size={{ xs: 12 }} sm={6}>
+                                    <Controller
+                                        name="pantalla"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label="Pantalla"
+                                                fullWidth
+                                                size="small"
+                                                placeholder="Ej: 14 pulgadas FHD"
+                                                error={!!errors.pantalla}
+                                                helperText={errors.pantalla?.message}
+                                            />
+                                        )}
                                     />
-                                )}
-                            />
-                        </Grid>
+                                </Grid>
 
-                        <Grid size={{ xs: 12 }} sm={6}>
-                            <Controller
-                                name="tarjetaGrafica"
-                                control={control}
-                                render={({ field }) => (
-                                    <TextField
-                                        {...field}
-                                        label="Tarjeta Gráfica"
-                                        fullWidth
-                                        size="small"
-                                        placeholder="Ej: Intel Iris Xe"
-                                        error={!!errors.tarjetaGrafica}
-                                        helperText={errors.tarjetaGrafica?.message}
+                                <Grid size={{ xs: 12 }} sm={6}>
+                                    <Controller
+                                        name="tarjetaGrafica"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label="Tarjeta Gráfica"
+                                                fullWidth
+                                                size="small"
+                                                placeholder="Ej: Intel Iris Xe"
+                                                error={!!errors.tarjetaGrafica}
+                                                helperText={errors.tarjetaGrafica?.message}
+                                            />
+                                        )}
                                     />
-                                )}
-                            />
-                        </Grid>
+                                </Grid>
 
-                        {/* Puertos */}
-                        <Grid size={{ xs: 12 }}>
-                            <Divider sx={{ my: 1 }} />
-                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#32363a', mt: 2, mb: 1.5 }}>
-                                Conectividad
-                            </Typography>
-                        </Grid>
-                        <Grid size={{ xs: 12 }} sm={6} md={4}>
-                            <Controller
-                                name="puertoRed"
-                                control={control}
-                                render={({ field }) => (
-                                    <FormControlLabel
-                                        control={<Switch {...field} checked={field.value} size="small" />}
-                                        label="Puerto Red"
+                                {/* Puertos - Solo para LAPTOP y DESKTOP */}
+                                <Grid size={{ xs: 12 }}>
+                                    <Divider sx={{ my: 1 }} />
+                                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#32363a', mt: 2, mb: 1.5 }}>
+                                        Conectividad
+                                    </Typography>
+                                </Grid>
+                                <Grid size={{ xs: 12 }} sm={6} md={4}>
+                                    <Controller
+                                        name="puertoRed"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <FormControlLabel
+                                                control={<Switch {...field} checked={field.value} size="small" />}
+                                                label="Puerto Red"
+                                            />
+                                        )}
                                     />
-                                )}
-                            />
-                        </Grid>
-                        <Grid size={{ xs: 12 }} sm={6} md={4}>
-                            <Controller
-                                name="puertoUSB"
-                                control={control}
-                                render={({ field }) => (
-                                    <FormControlLabel
-                                        control={<Switch {...field} checked={field.value} size="small" />}
-                                        label="Puerto USB"
+                                </Grid>
+                                <Grid size={{ xs: 12 }} sm={6} md={4}>
+                                    <Controller
+                                        name="puertosUSB"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <FormControlLabel
+                                                control={<Switch {...field} checked={field.value} size="small" />}
+                                                label="Puerto USB"
+                                            />
+                                        )}
                                     />
-                                )}
-                            />
-                        </Grid>
-                        <Grid size={{ xs: 12 }} sm={6} md={4}>
-                            <Controller
-                                name="puertoSerial"
-                                control={control}
-                                render={({ field }) => (
-                                    <FormControlLabel
-                                        control={<Switch {...field} checked={field.value} size="small" />}
-                                        label="Puerto Serial"
+                                </Grid>
+                                <Grid size={{ xs: 12 }} sm={6} md={4}>
+                                    <Controller
+                                        name="puertoSerial"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <FormControlLabel
+                                                control={<Switch {...field} checked={field.value} size="small" />}
+                                                label="Puerto Serial"
+                                            />
+                                        )}
                                     />
-                                )}
-                            />
-                        </Grid>
+                                </Grid>
 
-                        <Grid size={{ xs: 12 }} sm={6} md={4}>
-                            <Controller
-                                name="puertoHDMI"
-                                control={control}
-                                render={({ field }) => (
-                                    <FormControlLabel
-                                        control={<Switch {...field} checked={field.value} size="small" />}
-                                        label="Puerto HDMI"
+                                <Grid size={{ xs: 12 }} sm={6} md={4}>
+                                    <Controller
+                                        name="puertoHDMI"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <FormControlLabel
+                                                control={<Switch {...field} checked={field.value} size="small" />}
+                                                label="Puerto HDMI"
+                                            />
+                                        )}
                                     />
-                                )}
-                            />
-                        </Grid>
-                        <Grid size={{ xs: 12 }} sm={6} md={4}>
-                            <Controller
-                                name="puertoC"
-                                control={control}
-                                render={({ field }) => (
-                                    <FormControlLabel
-                                        control={<Switch {...field} checked={field.value} size="small" />}
-                                        label="Puerto C"
+                                </Grid>
+                                <Grid size={{ xs: 12 }} sm={6} md={4}>
+                                    <Controller
+                                        name="puertoC"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <FormControlLabel
+                                                control={<Switch {...field} checked={field.value} size="small" />}
+                                                label="Puerto C"
+                                            />
+                                        )}
                                     />
-                                )}
-                            />
-                        </Grid>
+                                </Grid>
+                            </>
+                        )}
 
                         {/* Observaciones */}
                         <Grid size={{ xs: 12 }}>
+                            {esAccesorio && <Divider sx={{ my: 1 }} />}
                             <Controller
                                 name="observaciones"
                                 control={control}

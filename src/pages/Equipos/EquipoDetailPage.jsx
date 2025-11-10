@@ -47,6 +47,10 @@ import {
     AssignmentInd as AssignmentIndIcon,
     AssignmentReturn as AssignmentReturnIcon,
     SwapHoriz as SwapHorizIcon,
+    Keyboard,
+    MouseOutlined,
+    MonitorHeartOutlined,
+    ColorLensRounded,
 } from '@mui/icons-material';
 import moment from 'moment';
 import 'moment/locale/es';
@@ -246,11 +250,18 @@ const EquipoDetailPage = () => {
 
     const getTipoIcon = (tipo) => {
         switch (tipo) {
-            case 'Laptop':
+            case 'LAPTOP':
                 return <LaptopIcon sx={{ fontSize: 80, color: '#0854a0' }} />;
-            case 'Desktop':
-            case 'PC':
+            case 'DESKTOP':
                 return <ComputerIcon sx={{ fontSize: 80, color: '#0854a0' }} />;
+            case 'MOUSE':
+                return <MouseOutlined sx={{ fontSize: 80, color: '#0854a0' }} />;
+            case 'MONITOR':
+                return <MonitorHeartOutlined sx={{ fontSize: 80, color: '#0854a0' }} />;
+            case 'COOLER':
+                return <ColorLensRounded sx={{ fontSize: 80, color: '#0854a0' }} />;
+            case 'TECLADO':
+                return <Keyboard sx={{ fontSize: 80, color: '#0854a0' }} />;
             default:
                 return <ComputerIcon sx={{ fontSize: 80, color: '#0854a0' }} />;
         }
@@ -393,7 +404,7 @@ const EquipoDetailPage = () => {
                                 borderRadius: 2,
                             }}
                         >
-                            {getTipoIcon(equipo.equipo)}
+                            {getTipoIcon(equipo.tipo)}
                         </Box>
                         <Typography variant="h5" sx={{ fontWeight: 500, mb: 1 }}>
                             {equipo.marca}
@@ -407,16 +418,20 @@ const EquipoDetailPage = () => {
                                 color={getEstadoColor(equipo.estado)}
                             />
                             <Chip
-                                label={equipo.equipo}
+                                label={equipo.tipo}
                                 variant="outlined"
                             />
                         </Stack>
                         <Typography variant="body2" color="text.secondary">
                             Serie: {equipo.serie}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            Host: {equipo.host}
-                        </Typography>
+                        {
+                            equipo.host && (
+                                <Typography variant="body2" color="text.secondary">
+                                    Host: {equipo.host}
+                                </Typography>
+                            )
+                        }
                     </Paper>
 
                     {/* Usuario Asignado */}
@@ -463,176 +478,180 @@ const EquipoDetailPage = () => {
                 </Grid>
 
                 {/* Especificaciones Técnicas */}
-                <Grid size={{ xs: 12, md: 8 }}>
-                    <Paper
-                        elevation={0}
-                        sx={{
-                            p: 3,
-                            border: '1px solid #e5e5e5',
-                            borderRadius: '0.5rem',
-                            mb: 3,
-                        }}
-                    >
-                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#32363a' }}>
-                            Especificaciones Técnicas
-                        </Typography>
-                        <Divider sx={{ mb: 2 }} />
+                {
+                    equipo.procesador && (
+                        <Grid size={{ xs: 12, md: 8 }}>
+                            <Paper
+                                elevation={0}
+                                sx={{
+                                    p: 3,
+                                    border: '1px solid #e5e5e5',
+                                    borderRadius: '0.5rem',
+                                    mb: 3,
+                                }}
+                            >
+                                <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#32363a' }}>
+                                    Especificaciones Técnicas
+                                </Typography>
+                                <Divider sx={{ mb: 2 }} />
 
-                        <Grid container spacing={3}>
-                            <Grid size={{ xs: 12, md: 6 }}>
-                                <Box sx={{ mb: 2 }}>
-                                    <Typography variant="caption" color="text.secondary">
-                                        Procesador
-                                    </Typography>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                                        <MemoryIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
-                                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                            {equipo.procesador}
-                                        </Typography>
-                                    </Box>
-                                </Box>
-                            </Grid>
-
-                            <Grid size={{ xs: 12, md: 6 }}>
-                                <Box sx={{ mb: 2 }}>
-                                    <Typography variant="caption" color="text.secondary">
-                                        Memoria RAM
-                                    </Typography>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                                        <MemoryIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
-                                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                            {equipo.memoria}
-                                        </Typography>
-                                    </Box>
-                                </Box>
-                            </Grid>
-
-                            <Grid size={{ xs: 12, md: 6 }}>
-                                <Box sx={{ mb: 2 }}>
-                                    <Typography variant="caption" color="text.secondary">
-                                        Almacenamiento
-                                    </Typography>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                                        <StorageIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
-                                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                            {equipo.almacenamiento}
-                                        </Typography>
-                                    </Box>
-                                </Box>
-                            </Grid>
-
-                            {equipo.pantalla && (
-                                <Grid size={{ xs: 12, md: 6 }}>
-                                    <Box sx={{ mb: 2 }}>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Pantalla
-                                        </Typography>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                                            <VisibilityIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
-                                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                                {equipo.pantalla}
+                                <Grid container spacing={3}>
+                                    <Grid size={{ xs: 12, md: 6 }}>
+                                        <Box sx={{ mb: 2 }}>
+                                            <Typography variant="caption" color="text.secondary">
+                                                Procesador
                                             </Typography>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                                                <MemoryIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
+                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                                    {equipo.procesador}
+                                                </Typography>
+                                            </Box>
                                         </Box>
-                                    </Box>
-                                </Grid>
-                            )}
+                                    </Grid>
 
-                            {equipo.tarjetaGrafica && (
-                                <Grid size={{ xs: 12 }}>
-                                    <Box sx={{ mb: 2 }}>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Tarjeta Gráfica
-                                        </Typography>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                                            <VideocamIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
-                                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                                {equipo.tarjetaGrafica}
+                                    <Grid size={{ xs: 12, md: 6 }}>
+                                        <Box sx={{ mb: 2 }}>
+                                            <Typography variant="caption" color="text.secondary">
+                                                Memoria RAM
                                             </Typography>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                                                <MemoryIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
+                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                                    {equipo.memoria}
+                                                </Typography>
+                                            </Box>
                                         </Box>
-                                    </Box>
+                                    </Grid>
+
+                                    <Grid size={{ xs: 12, md: 6 }}>
+                                        <Box sx={{ mb: 2 }}>
+                                            <Typography variant="caption" color="text.secondary">
+                                                Almacenamiento
+                                            </Typography>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                                                <StorageIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
+                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                                    {equipo.almacenamiento}
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                    </Grid>
+
+                                    {equipo.pantalla && (
+                                        <Grid size={{ xs: 12, md: 6 }}>
+                                            <Box sx={{ mb: 2 }}>
+                                                <Typography variant="caption" color="text.secondary">
+                                                    Pantalla
+                                                </Typography>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                                                    <VisibilityIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
+                                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                                        {equipo.pantalla}
+                                                    </Typography>
+                                                </Box>
+                                            </Box>
+                                        </Grid>
+                                    )}
+
+                                    {equipo.tarjetaGrafica && (
+                                        <Grid size={{ xs: 12 }}>
+                                            <Box sx={{ mb: 2 }}>
+                                                <Typography variant="caption" color="text.secondary">
+                                                    Tarjeta Gráfica
+                                                </Typography>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                                                    <VideocamIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
+                                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                                        {equipo.tarjetaGrafica}
+                                                    </Typography>
+                                                </Box>
+                                            </Box>
+                                        </Grid>
+                                    )}
+
+                                    {/* Puertos */}
+                                    <Grid size={{ xs: 12 }}>
+                                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                                            Puertos y Conectividad
+                                        </Typography>
+                                        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                                            <PortIcon available={equipo.puertoRed} label="Puerto Red" />
+                                            <PortIcon available={equipo.puertosUSB} label="USB" />
+                                            <PortIcon available={equipo.puertoSerial} label="Serial" />
+                                            <PortIcon available={equipo.puertoHDMI} label="HDMI" />
+                                            <PortIcon available={equipo.puertoC} label="USB-C" />
+                                        </Stack>
+                                    </Grid>
                                 </Grid>
-                            )}
+                            </Paper>
 
-                            {/* Puertos */}
-                            <Grid size={{ xs: 12 }}>
-                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-                                    Puertos y Conectividad
+                            {/* Información Adicional */}
+                            <Paper
+                                elevation={0}
+                                sx={{
+                                    p: 3,
+                                    border: '1px solid #e5e5e5',
+                                    borderRadius: '0.5rem',
+                                }}
+                            >
+                                <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#32363a' }}>
+                                    Información Adicional
                                 </Typography>
-                                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                                    <PortIcon available={equipo.puertoRed} label="Puerto Red" />
-                                    <PortIcon available={equipo.puertosUSB} label="USB" />
-                                    <PortIcon available={equipo.puertoSerial} label="Serial" />
-                                    <PortIcon available={equipo.puertoHDMI} label="HDMI" />
-                                    <PortIcon available={equipo.puertoC} label="USB-C" />
-                                </Stack>
-                            </Grid>
-                        </Grid>
-                    </Paper>
+                                <Divider sx={{ mb: 2 }} />
 
-                    {/* Información Adicional */}
-                    <Paper
-                        elevation={0}
-                        sx={{
-                            p: 3,
-                            border: '1px solid #e5e5e5',
-                            borderRadius: '0.5rem',
-                        }}
-                    >
-                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#32363a' }}>
-                            Información Adicional
-                        </Typography>
-                        <Divider sx={{ mb: 2 }} />
+                                <Grid container spacing={2}>
+                                    <Grid size={{ xs: 12, md: 6 }}>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Fecha de Registro
+                                        </Typography>
+                                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                            {moment(equipo.fechaRegistro).format('DD/MM/YYYY')}
+                                        </Typography>
+                                    </Grid>
 
-                        <Grid container spacing={2}>
-                            <Grid size={{ xs: 12, md: 6 }}>
-                                <Typography variant="caption" color="text.secondary">
-                                    Fecha de Registro
-                                </Typography>
-                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                    {moment(equipo.fechaRegistro).format('DD/MM/YYYY')}
-                                </Typography>
-                            </Grid>
+                                    <Grid size={{ xs: 12, md: 6 }}>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Fecha de Compra
+                                        </Typography>
+                                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                            {moment(equipo.fechaCompra).format('DD/MM/YYYY')}
+                                        </Typography>
+                                    </Grid>
 
-                            <Grid size={{ xs: 12, md: 6 }}>
-                                <Typography variant="caption" color="text.secondary">
-                                    Fecha de Compra
-                                </Typography>
-                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                    {moment(equipo.fechaCompra).format('DD/MM/YYYY')}
-                                </Typography>
-                            </Grid>
+                                    <Grid size={{ xs: 12, md: 6 }}>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Primer Uso
+                                        </Typography>
+                                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                            {moment(equipo.primerUso).format('DD/MM/YYYY')}
+                                        </Typography>
+                                    </Grid>
 
-                            <Grid size={{ xs: 12, md: 6 }}>
-                                <Typography variant="caption" color="text.secondary">
-                                    Primer Uso
-                                </Typography>
-                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                    {moment(equipo.primerUso).format('DD/MM/YYYY')}
-                                </Typography>
-                            </Grid>
+                                    <Grid size={{ xs: 12, md: 6 }}>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Antigüedad
+                                        </Typography>
+                                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                            {equipo.antiguedad} {equipo.antiguedad === 1 ? 'año' : 'años'}
+                                        </Typography>
+                                    </Grid>
 
-                            <Grid size={{ xs: 12, md: 6 }}>
-                                <Typography variant="caption" color="text.secondary">
-                                    Antigüedad
-                                </Typography>
-                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                    {equipo.antiguedad} {equipo.antiguedad === 1 ? 'año' : 'años'}
-                                </Typography>
-                            </Grid>
-
-                            {equipo.observaciones && (
-                                <Grid size={{ xs: 12 }}>
-                                    <Typography variant="caption" color="text.secondary">
-                                        Observaciones
-                                    </Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                        {equipo.observaciones}
-                                    </Typography>
+                                    {equipo.observaciones && (
+                                        <Grid size={{ xs: 12 }}>
+                                            <Typography variant="caption" color="text.secondary">
+                                                Observaciones
+                                            </Typography>
+                                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                                {equipo.observaciones}
+                                            </Typography>
+                                        </Grid>
+                                    )}
                                 </Grid>
-                            )}
+                            </Paper>
                         </Grid>
-                    </Paper>
-                </Grid>
+                    )
+                }
 
                 {/* Historial de Asignaciones */}
                 {equipo.historial && equipo.historial.length > 0 && (

@@ -33,6 +33,13 @@ import {
     Laptop as LaptopIcon,
     Computer as ComputerIcon,
     Clear as ClearIcon,
+    LaptopChromebook,
+    ComputerOutlined,
+    SmartButtonOutlined,
+    MouseOutlined,
+    MonitorHeartOutlined,
+    ColorizeRounded,
+    Keyboard,
 } from '@mui/icons-material';
 import { equiposService } from '../../api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
@@ -41,6 +48,7 @@ import EquipoFormDialog from './EquipoFormDialog';
 import moment from 'moment';
 import 'moment/locale/es';
 import { useNavigate } from 'react-router-dom';
+import { TIPOS_EQUIPOS } from '../../constants';
 
 moment.locale('es');
 
@@ -65,19 +73,17 @@ const EquiposPage = () => {
     const [showFilters, setShowFilters] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
 
-    // Cargar equipos con filtros
     useEffect(() => {
         if (!isSearching) {
             loadEquipos();
         }
     }, [page, rowsPerPage, filterEstado, filterTipo, isSearching]);
 
-    // Búsqueda en tiempo real con debounce
     useEffect(() => {
         if (searchTerm.trim()) {
             const delayDebounce = setTimeout(() => {
                 handleSearch();
-            }, 500); // Espera 500ms después de que el usuario deja de escribir
+            }, 500);
 
             return () => clearTimeout(delayDebounce);
         } else {
@@ -88,10 +94,9 @@ const EquiposPage = () => {
 
     const loadEquipos = async () => {
         try {
-            setLoading(true);
             const response = await equiposService.filter({
                 estado: filterEstado,
-                equipo: filterTipo,
+                tipo: filterTipo,
                 page: page + 1,
                 limit: rowsPerPage,
             });
@@ -104,20 +109,18 @@ const EquiposPage = () => {
         }
     };
 
-    // Buscar equipos por texto
     const handleSearch = async () => {
         const term = searchTerm.trim();
-
         if (!term) {
             setIsSearching(false);
             loadEquipos();
             return;
         }
         try {
-            setLoading(true);
             setIsSearching(true);
             const response = await equiposService.search(term);
             let filteredData = response.data;
+            console.log(filteredData)
             if (filterEstado) {
                 filteredData = filteredData.filter(e => e.estado === filterEstado);
             }
@@ -131,8 +134,6 @@ const EquiposPage = () => {
             showNotification('Error en la búsqueda', 'error');
             setEquipos([]);
             setTotalCount(0);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -247,9 +248,25 @@ const EquiposPage = () => {
         return colors[estado] || 'default';
     };
 
-    // Obtener icono del tipo
+
     const getTipoIcon = (tipo) => {
-        return tipo === 'Laptop' ? <LaptopIcon sx={{ fontSize: 20 }} /> : <ComputerIcon sx={{ fontSize: 20 }} />;
+        switch (tipo) {
+            case 'LAPTOP':
+                return <LaptopChromebook sx={{ fontSize: 20 }} />;
+            case 'DESKTOP':
+                return <ComputerOutlined sx={{ fontSize: 20 }} />;
+            case 'CELULAR':
+                return <SmartButtonOutlined sx={{ fontSize: 20 }} />;
+            case 'MOUSE':
+                return <MouseOutlined sx={{ fontSize: 20 }} />;
+            case 'MONITOR':
+                return <MonitorHeartOutlined sx={{ fontSize: 20 }} />;
+            case 'COOLER':
+                return <ColorizeRounded sx={{ fontSize: 20 }} />;
+            case 'TECLADO':
+                return <Keyboard sx={{ fontSize: 20 }} />;
+        }
+
     };
 
     // Navegar al detalle
@@ -441,6 +458,7 @@ const EquiposPage = () => {
                             label="Tipo"
                             value={filterTipo}
                             onChange={(e) => {
+                                console.log(e.target.value);
                                 setFilterTipo(e.target.value);
                                 setPage(0);
                             }}
@@ -448,8 +466,13 @@ const EquiposPage = () => {
                             sx={{ minWidth: 150 }}
                         >
                             <MenuItem value="">Todos</MenuItem>
-                            <MenuItem value="LAPTOP">Laptop</MenuItem>
-                            <MenuItem value="DESKTOP">Desktop</MenuItem>
+                            {
+                                TIPOS_EQUIPOS.map((tipo) => (
+                                    <MenuItem key={tipo} value={tipo}>
+                                        {tipo}
+                                    </MenuItem>
+                                ))
+                            }
                         </TextField>
 
                         {(filterEstado || filterTipo) && (
@@ -557,8 +580,8 @@ const EquiposPage = () => {
                                     >
                                         <TableCell>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                {getTipoIcon(equipo.equipo)}
-                                                <Typography variant="body2">{equipo.equipo}</Typography>
+                                                {getTipoIcon(equipo.tipo)}
+                                                <Typography variant="body2">{equipo.tipo}</Typography>
                                             </Box>
                                         </TableCell>
                                         <TableCell>
@@ -576,7 +599,7 @@ const EquiposPage = () => {
                                         </TableCell>
                                         <TableCell>
                                             <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.813rem' }}>
-                                                {equipo.host}
+                                                {equipo.host || '-'}
                                             </Typography>
                                         </TableCell>
                                         <TableCell>
@@ -592,12 +615,16 @@ const EquiposPage = () => {
                                             />
                                         </TableCell>
                                         <TableCell>
-                                            <Typography variant="caption" sx={{ display: 'block', color: '#32363a' }}>
-                                                {equipo.procesador}
-                                            </Typography>
-                                            <Typography variant="caption" sx={{ color: '#6a6d70' }}>
-                                                {equipo.memoria} | {equipo.almacenamiento}
-                                            </Typography>
+                                            {equipo.procesador ? (
+                                                <>
+                                                    <Typography variant="caption" sx={{ display: 'block', color: '#32363a' }}>
+                                                        {equipo.procesador}
+                                                    </Typography>
+                                                    <Typography variant="caption" sx={{ color: '#6a6d70' }}>
+                                                        {equipo.memoria} | {equipo.almacenamiento}
+                                                    </Typography>
+                                                </>
+                                            ) : '-'}
                                         </TableCell>
                                         <TableCell>
                                             {equipo.asignacionActual ? (

@@ -3,6 +3,7 @@ import axiosInstance from './axios.config';
 const equiposService = {
     getAll: async (params = {}) => {
         try {
+
             const response = await axiosInstance.get('/equipos', { params });
             return response.data;
         } catch (error) {
@@ -70,7 +71,7 @@ const equiposService = {
             const response = await axiosInstance.get('/equipos', {
                 params: {
                     estado: filters.estado,
-                    equipo: filters.equipo,
+                    tipo: filters.tipo,
                     marca: filters.marca,
                     page: filters.page || 1,
                     limit: filters.limit || 10

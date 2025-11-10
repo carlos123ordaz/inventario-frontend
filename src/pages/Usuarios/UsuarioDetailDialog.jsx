@@ -292,7 +292,7 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
                                             <TableBody>
                                                 {usuario.equiposAsignados.map((asignacion) => (
                                                     <TableRow key={asignacion._id}>
-                                                        <TableCell>{asignacion.equipo?.equipo}</TableCell>
+                                                        <TableCell>{asignacion.equipo?.tipo}</TableCell>
                                                         <TableCell>
                                                             {asignacion.equipo?.marca} {asignacion.equipo?.modelo}
                                                         </TableCell>

@@ -1,3 +1,12 @@
+export const TIPOS_EQUIPOS = [
+    'LAPTOP',
+    'DESKTOP',
+    'CELULAR',
+    'MOUSE',
+    'MONITOR',
+    'COOLER',
+    'TECLADO'
+]
 export const AREAS = ['Transformación Digital', 'Corsusa International S.A.C.',
     'Gerencia General, Dpto. de Administración Financiera, Dpto. Administración y Logística, Dpto. Recursos Humanos, Comité HSL, EPS, Dpto. QHSE',
     'Dpto. TD, Marketing, Dpto. Ventas, Dpto. Servicios, Dpto. Proyectos, Gerencia General Adjunta',
