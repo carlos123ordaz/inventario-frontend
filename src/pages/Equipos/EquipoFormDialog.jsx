@@ -17,11 +17,17 @@ import {
     IconButton,
     Alert,
     Collapse,
+    Paper,
+    InputAdornment,
+    Tooltip,
 } from '@mui/material';
 import {
     Close as CloseIcon,
     Save as SaveIcon,
     Warning as WarningIcon,
+    Visibility as VisibilityIcon,
+    VisibilityOff as VisibilityOffIcon,
+    Lock as LockIcon,
 } from '@mui/icons-material';
 import { equiposService } from '../../api';
 import moment from 'moment';
@@ -32,7 +38,16 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
     const [error, setError] = useState(null);
     const [validationErrors, setValidationErrors] = useState([]);
     const [tipoSeleccionado, setTipoSeleccionado] = useState('LAPTOP');
+    const [showPasswords, setShowPasswords] = useState({
+        biosPass: false,
+        adminPass: false,
+        equipoPass: false,
+        pin: false,
+    });
+
     const esAccesorio = ['MOUSE', 'MONITOR', 'TECLADO', 'COOLER', 'CELULAR'].includes(tipoSeleccionado);
+    const mostrarClaves = ['LAPTOP', 'DESKTOP'].includes(tipoSeleccionado);
+
     const {
         control,
         handleSubmit,
@@ -60,6 +75,21 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
             puertoSerial: false,
             puertoHDMI: false,
             puertoC: false,
+            // NUEVOS CAMPOS: Claves de seguridad
+            clavesBIOS: {
+                contrasena: '',
+                notas: '',
+            },
+            clavesAdministrador: {
+                usuario: '',
+                contrasena: '',
+                notas: '',
+            },
+            clavesEquipo: {
+                usuario: '',
+                contrasena: '',
+                notas: '',
+            },
             observaciones: '',
         },
     });
@@ -92,6 +122,22 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                 puertoSerial: equipoData.puertoSerial || false,
                 puertoHDMI: equipoData.puertoHDMI || false,
                 puertoC: equipoData.puertoC || false,
+                // Claves de seguridad
+                clavesBIOS: {
+                    contrasena: equipoData.clavesBIOS?.contrasena || '',
+                    notas: equipoData.clavesBIOS?.notas || '',
+                },
+                clavesAdministrador: {
+                    usuario: equipoData.clavesAdministrador?.usuario || '',
+                    contrasena: equipoData.clavesAdministrador?.contrasena || '',
+                    notas: equipoData.clavesAdministrador?.notas || '',
+                },
+                clavesEquipo: {
+                    usuario: equipoData.clavesEquipo?.usuario || '',
+                    contrasena: equipoData.clavesEquipo?.contrasena || '',
+                    notas: equipoData.clavesEquipo?.notas || '',
+                },
+
                 observaciones: equipoData.observaciones || '',
             });
             setTipoSeleccionado(equipoData.tipo);
@@ -115,6 +161,21 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                 puertoSerial: false,
                 puertoHDMI: false,
                 puertoC: false,
+                clavesBIOS: {
+                    contrasena: '',
+                    notas: '',
+                },
+                clavesAdministrador: {
+                    usuario: '',
+                    contrasena: '',
+                    notas: '',
+                },
+                clavesEquipo: {
+                    usuario: '',
+                    contrasena: '',
+                    notas: '',
+                },
+
                 observaciones: '',
             });
             setTipoSeleccionado('LAPTOP');
@@ -212,6 +273,13 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
         }
     };
 
+    const togglePasswordVisibility = (field) => {
+        setShowPasswords(prev => ({
+            ...prev,
+            [field]: !prev[field]
+        }));
+    };
+
     return (
         <Dialog
             open={open}
@@ -243,7 +311,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
             </DialogTitle>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-                <DialogContent sx={{ pt: 3 }}>
+                <DialogContent sx={{ pt: 3, maxHeight: '70vh', overflow: 'auto' }}>
                     {/* Alerta de Error General */}
                     <Collapse in={!!error}>
                         <Alert
@@ -474,6 +542,36 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                             />
                         </Grid>
 
+                        <Grid size={{ xs: 12 }} sm={6}>
+                            <Controller
+                                name="primerUso"
+                                control={control}
+                                rules={{
+                                    validate: (value) => {
+                                        if (!value) return true;
+                                        const fecha = new Date(value);
+                                        const hoy = new Date();
+                                        if (fecha > hoy) {
+                                            return 'La fecha no puede ser futura';
+                                        }
+                                        return true;
+                                    },
+                                }}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Primer Uso"
+                                        type="date"
+                                        fullWidth
+                                        size="small"
+                                        InputLabelProps={{ shrink: true }}
+                                        error={!!errors.primerUso}
+                                        helperText={errors.primerUso?.message}
+                                    />
+                                )}
+                            />
+                        </Grid>
+
                         {/* Especificaciones Técnicas - Solo para LAPTOP y DESKTOP */}
                         {!esAccesorio && (
                             <>
@@ -647,6 +745,224 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                             />
                                         )}
                                     />
+                                </Grid>
+
+                                {/* ========== SECCIÓN DE CLAVES DE SEGURIDAD ========== */}
+                                <Grid size={{ xs: 12 }}>
+                                    <Divider sx={{ my: 1 }} />
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, mb: 1.5 }}>
+                                        <LockIcon sx={{ color: '#0854a0', fontSize: 20 }} />
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#32363a' }}>
+                                            Claves de Seguridad
+                                        </Typography>
+                                    </Box>
+                                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>
+                                        Almacena las credenciales de acceso de este equipo de forma segura
+                                    </Typography>
+                                </Grid>
+
+                                {/* BIOS */}
+                                <Grid size={{ xs: 12 }}>
+                                    <Paper sx={{ p: 2, backgroundColor: '#f9fafb', border: '1px solid #e5e5e5' }}>
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: '#32363a' }}>
+                                            🔐 Contraseña BIOS
+                                        </Typography>
+                                        <Grid container spacing={1.5}>
+                                            <Grid size={{ xs: 12 }} sm={6}>
+                                                <Controller
+                                                    name="clavesBIOS.contrasena"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            {...field}
+                                                            label="Contraseña BIOS"
+                                                            fullWidth
+                                                            size="small"
+                                                            type={showPasswords.biosPass ? 'text' : 'password'}
+                                                            placeholder="••••••••"
+                                                            InputProps={{
+                                                                endAdornment: (
+                                                                    <InputAdornment position="end">
+                                                                        <Tooltip title={showPasswords.biosPass ? 'Ocultar' : 'Mostrar'}>
+                                                                            <IconButton
+                                                                                size="small"
+                                                                                onClick={() => togglePasswordVisibility('biosPass')}
+                                                                            >
+                                                                                {showPasswords.biosPass ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
+                                                                            </IconButton>
+                                                                        </Tooltip>
+                                                                    </InputAdornment>
+                                                                ),
+                                                            }}
+                                                        />
+                                                    )}
+                                                />
+                                            </Grid>
+                                            <Grid size={{ xs: 12 }}>
+                                                <Controller
+                                                    name="clavesBIOS.notas"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            {...field}
+                                                            label="Notas"
+                                                            fullWidth
+                                                            size="small"
+                                                            multiline
+                                                            rows={2}
+                                                            placeholder="Información adicional..."
+                                                        />
+                                                    )}
+                                                />
+                                            </Grid>
+                                        </Grid>
+                                    </Paper>
+                                </Grid>
+
+                                {/* ADMINISTRADOR */}
+                                <Grid size={{ xs: 12 }}>
+                                    <Paper sx={{ p: 2, backgroundColor: '#f9fafb', border: '1px solid #e5e5e5' }}>
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: '#32363a' }}>
+                                            👤 Contraseña Administrador
+                                        </Typography>
+                                        <Grid container spacing={1.5}>
+                                            <Grid size={{ xs: 12 }} sm={6}>
+                                                <Controller
+                                                    name="clavesAdministrador.usuario"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            {...field}
+                                                            label="Usuario Administrador"
+                                                            fullWidth
+                                                            size="small"
+                                                            placeholder="Ej: Administrator"
+                                                        />
+                                                    )}
+                                                />
+                                            </Grid>
+                                            <Grid size={{ xs: 12 }} sm={6}>
+                                                <Controller
+                                                    name="clavesAdministrador.contrasena"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            {...field}
+                                                            label="Contraseña Admin"
+                                                            fullWidth
+                                                            size="small"
+                                                            type={showPasswords.adminPass ? 'text' : 'password'}
+                                                            placeholder="••••••••"
+                                                            InputProps={{
+                                                                endAdornment: (
+                                                                    <InputAdornment position="end">
+                                                                        <Tooltip title={showPasswords.adminPass ? 'Ocultar' : 'Mostrar'}>
+                                                                            <IconButton
+                                                                                size="small"
+                                                                                onClick={() => togglePasswordVisibility('adminPass')}
+                                                                            >
+                                                                                {showPasswords.adminPass ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
+                                                                            </IconButton>
+                                                                        </Tooltip>
+                                                                    </InputAdornment>
+                                                                ),
+                                                            }}
+                                                        />
+                                                    )}
+                                                />
+                                            </Grid>
+                                            <Grid size={{ xs: 12 }}>
+                                                <Controller
+                                                    name="clavesAdministrador.notas"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            {...field}
+                                                            label="Notas"
+                                                            fullWidth
+                                                            size="small"
+                                                            multiline
+                                                            rows={2}
+                                                            placeholder="Información adicional..."
+                                                        />
+                                                    )}
+                                                />
+                                            </Grid>
+                                        </Grid>
+                                    </Paper>
+                                </Grid>
+
+                                {/* EQUIPO / USUARIO */}
+                                <Grid size={{ xs: 12 }}>
+                                    <Paper sx={{ p: 2, backgroundColor: '#f9fafb', border: '1px solid #e5e5e5' }}>
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: '#32363a' }}>
+                                            🖥️ Contraseña Usuario Equipo
+                                        </Typography>
+                                        <Grid container spacing={1.5}>
+                                            <Grid size={{ xs: 12 }} sm={6}>
+                                                <Controller
+                                                    name="clavesEquipo.usuario"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            {...field}
+                                                            label="Usuario Equipo"
+                                                            fullWidth
+                                                            size="small"
+                                                            placeholder="Ej: usuario"
+                                                        />
+                                                    )}
+                                                />
+                                            </Grid>
+                                            <Grid size={{ xs: 12 }} sm={6}>
+                                                <Controller
+                                                    name="clavesEquipo.contrasena"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            {...field}
+                                                            label="Contraseña Equipo"
+                                                            fullWidth
+                                                            size="small"
+                                                            type={showPasswords.equipoPass ? 'text' : 'password'}
+                                                            placeholder="••••••••"
+                                                            InputProps={{
+                                                                endAdornment: (
+                                                                    <InputAdornment position="end">
+                                                                        <Tooltip title={showPasswords.equipoPass ? 'Ocultar' : 'Mostrar'}>
+                                                                            <IconButton
+                                                                                size="small"
+                                                                                onClick={() => togglePasswordVisibility('equipoPass')}
+                                                                            >
+                                                                                {showPasswords.equipoPass ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
+                                                                            </IconButton>
+                                                                        </Tooltip>
+                                                                    </InputAdornment>
+                                                                ),
+                                                            }}
+                                                        />
+                                                    )}
+                                                />
+                                            </Grid>
+                                            <Grid size={{ xs: 12 }}>
+                                                <Controller
+                                                    name="clavesEquipo.notas"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            {...field}
+                                                            label="Notas"
+                                                            fullWidth
+                                                            size="small"
+                                                            multiline
+                                                            rows={2}
+                                                            placeholder="Información adicional..."
+                                                        />
+                                                    )}
+                                                />
+                                            </Grid>
+                                        </Grid>
+                                    </Paper>
                                 </Grid>
                             </>
                         )}

@@ -15,8 +15,6 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    Breadcrumbs,
-    Link,
     Alert,
     Stack,
     Dialog,
@@ -26,6 +24,10 @@ import {
     TextField,
     MenuItem,
     Autocomplete,
+    Card,
+    CardContent,
+    InputAdornment,
+    Tooltip,
 } from '@mui/material';
 import {
     ArrowBack as ArrowBackIcon,
@@ -36,6 +38,7 @@ import {
     Memory as MemoryIcon,
     Storage as StorageIcon,
     Visibility as VisibilityIcon,
+    VisibilityOff as VisibilityOffIcon,
     Usb as UsbIcon,
     Wifi as WifiIcon,
     Cable as CableIcon,
@@ -47,6 +50,8 @@ import {
     AssignmentInd as AssignmentIndIcon,
     AssignmentReturn as AssignmentReturnIcon,
     SwapHoriz as SwapHorizIcon,
+    Lock as LockIcon,
+    ContentCopy as ContentCopyIcon,
     Keyboard,
     MouseOutlined,
     MonitorHeartOutlined,
@@ -65,33 +70,49 @@ const EquipoDetailPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
+    // ========== ESTADOS PRINCIPALES ==========
     const [equipo, setEquipo] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [copiedField, setCopiedField] = useState(null);
+
+    // ========== ESTADOS DE DIÁLOGOS ==========
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [assignDialogOpen, setAssignDialogOpen] = useState(false);
     const [returnDialogOpen, setReturnDialogOpen] = useState(false);
     const [transferDialogOpen, setTransferDialogOpen] = useState(false);
-    const [error, setError] = useState(null);
+
+    // ========== ESTADOS DE USUARIO ==========
     const [usuarios, setUsuarios] = useState([]);
     const [loadingUsuarios, setLoadingUsuarios] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
-    // Estados del formulario de asignación
+    // ========== ESTADOS DE ASIGNACIÓN ==========
     const [selectedUsuario, setSelectedUsuario] = useState(null);
     const [tipoUso, setTipoUso] = useState('Asignación Definitiva');
     const [observaciones, setObservaciones] = useState('');
 
-    // Estados del formulario de devolución
+    // ========== ESTADOS DE DEVOLUCIÓN ==========
     const [observacionesDevolucion, setObservacionesDevolucion] = useState('');
 
-    // Estados del formulario de transferencia
+    // ========== ESTADOS DE TRANSFERENCIA ==========
     const [nuevoUsuario, setNuevoUsuario] = useState(null);
     const [observacionesTransferencia, setObservacionesTransferencia] = useState('');
 
+    // ========== ESTADOS DE SEGURIDAD ==========
+    const [showPasswords, setShowPasswords] = useState({
+        bios: false,
+        admin: false,
+        equipo: false,
+        pin: false,
+    });
+
+    // ========== EFECTOS ==========
     useEffect(() => {
         loadEquipo();
     }, [id]);
 
+    // ========== FUNCIONES DE CARGA ==========
     const loadEquipo = async () => {
         try {
             setLoading(true);
@@ -116,119 +137,11 @@ const EquipoDetailPage = () => {
         }
     };
 
-    const handleDelete = async () => {
-        try {
-            await equiposService.delete(id);
-            navigate(ROUTES.EQUIPOS.LIST);
-        } catch (error) {
-            setError(error.response?.data?.message || 'Error al eliminar equipo');
-            setDeleteDialogOpen(false);
-        }
-    };
-
-    // Abrir diálogo de asignación
-    const handleOpenAssign = () => {
-        loadUsuarios();
-        setAssignDialogOpen(true);
-    };
-
-    // Cerrar diálogo de asignación
-    const handleCloseAssign = () => {
-        setAssignDialogOpen(false);
-        setSelectedUsuario(null);
-        setTipoUso('Asignación Definitiva');
-        setObservaciones('');
-    };
-
-    // Asignar equipo
-    const handleAssign = async () => {
-        if (!selectedUsuario) {
-            alert('Por favor selecciona un usuario');
-            return;
-        }
-
-        try {
-            setSubmitting(true);
-            await historialService.asignar({
-                equipoId: id,
-                usuarioId: selectedUsuario._id,
-                tipoUso,
-                observaciones,
-            });
-            setError(null);
-            alert('Equipo asignado correctamente');
-            handleCloseAssign();
-            loadEquipo();
-        } catch (error) {
-            setError(error.response?.data?.message || 'Error al asignar equipo');
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    // Abrir diálogo de devolución
-    const handleOpenReturn = () => {
-        setReturnDialogOpen(true);
-    };
-
-    // Cerrar diálogo de devolución
-    const handleCloseReturn = () => {
-        setReturnDialogOpen(false);
-        setObservacionesDevolucion('');
-    };
-
-    // Devolver equipo
-    const handleReturn = async () => {
-        try {
-            setSubmitting(true);
-            await historialService.devolverPorEquipo(id, observacionesDevolucion);
-            setError(null);
-            alert('Equipo devuelto correctamente');
-            handleCloseReturn();
-            loadEquipo();
-        } catch (error) {
-            setError(error.response?.data?.message || 'Error al devolver equipo');
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    // Abrir diálogo de transferencia
-    const handleOpenTransfer = () => {
-        loadUsuarios();
-        setTransferDialogOpen(true);
-    };
-
-    // Cerrar diálogo de transferencia
-    const handleCloseTransfer = () => {
-        setTransferDialogOpen(false);
-        setNuevoUsuario(null);
-        setObservacionesTransferencia('');
-    };
-
-    // Transferir equipo
-    const handleTransfer = async () => {
-        if (!nuevoUsuario) {
-            alert('Por favor selecciona un usuario');
-            return;
-        }
-
-        try {
-            setSubmitting(true);
-            await historialService.transferir({
-                equipoId: id,
-                nuevoUsuarioId: nuevoUsuario._id,
-                observaciones: observacionesTransferencia,
-            });
-            setError(null);
-            alert('Equipo transferido correctamente');
-            handleCloseTransfer();
-            loadEquipo();
-        } catch (error) {
-            setError(error.response?.data?.message || 'Error al transferir equipo');
-        } finally {
-            setSubmitting(false);
-        }
+    // ========== FUNCIONES DE UTILIDAD ==========
+    const copyToClipboard = (text, field) => {
+        navigator.clipboard.writeText(text);
+        setCopiedField(field);
+        setTimeout(() => setCopiedField(null), 2000);
     };
 
     const getEstadoColor = (estado) => {
@@ -267,6 +180,228 @@ const EquipoDetailPage = () => {
         }
     };
 
+    // ========== FUNCIONES DE ELIMINAR ==========
+    const handleDelete = async () => {
+        try {
+            await equiposService.delete(id);
+            navigate(ROUTES.EQUIPOS.LIST);
+        } catch (error) {
+            setError(error.response?.data?.message || 'Error al eliminar equipo');
+            setDeleteDialogOpen(false);
+        }
+    };
+
+    // ========== FUNCIONES DE ASIGNACIÓN ==========
+    const handleOpenAssign = () => {
+        loadUsuarios();
+        setAssignDialogOpen(true);
+    };
+
+    const handleCloseAssign = () => {
+        setAssignDialogOpen(false);
+        setSelectedUsuario(null);
+        setTipoUso('Asignación Definitiva');
+        setObservaciones('');
+    };
+
+    const handleAssign = async () => {
+        if (!selectedUsuario) {
+            alert('Por favor selecciona un usuario');
+            return;
+        }
+
+        try {
+            setSubmitting(true);
+            await historialService.asignar({
+                equipoId: id,
+                usuarioId: selectedUsuario._id,
+                tipoUso,
+                observaciones,
+            });
+            setError(null);
+            alert('Equipo asignado correctamente');
+            handleCloseAssign();
+            loadEquipo();
+        } catch (error) {
+            setError(error.response?.data?.message || 'Error al asignar equipo');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    // ========== FUNCIONES DE DEVOLUCIÓN ==========
+    const handleOpenReturn = () => {
+        setReturnDialogOpen(true);
+    };
+
+    const handleCloseReturn = () => {
+        setReturnDialogOpen(false);
+        setObservacionesDevolucion('');
+    };
+
+    const handleReturn = async () => {
+        try {
+            setSubmitting(true);
+            await historialService.devolverPorEquipo(id, observacionesDevolucion);
+            setError(null);
+            alert('Equipo devuelto correctamente');
+            handleCloseReturn();
+            loadEquipo();
+        } catch (error) {
+            setError(error.response?.data?.message || 'Error al devolver equipo');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    // ========== FUNCIONES DE TRANSFERENCIA ==========
+    const handleOpenTransfer = () => {
+        loadUsuarios();
+        setTransferDialogOpen(true);
+    };
+
+    const handleCloseTransfer = () => {
+        setTransferDialogOpen(false);
+        setNuevoUsuario(null);
+        setObservacionesTransferencia('');
+    };
+
+    const handleTransfer = async () => {
+        if (!nuevoUsuario) {
+            alert('Por favor selecciona un usuario');
+            return;
+        }
+
+        try {
+            setSubmitting(true);
+            await historialService.transferir({
+                equipoId: id,
+                nuevoUsuarioId: nuevoUsuario._id,
+                observaciones: observacionesTransferencia,
+            });
+            setError(null);
+            alert('Equipo transferido correctamente');
+            handleCloseTransfer();
+            loadEquipo();
+        } catch (error) {
+            setError(error.response?.data?.message || 'Error al transferir equipo');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    // ========== COMPONENTE REUTILIZABLE PARA CLAVES ==========
+    const ClaveSeguridad = ({ titulo, icono, usuario, contrasena, notas, campo }) => (
+        <Card sx={{ border: '1px solid #e5e5e5', backgroundColor: '#fafafa' }}>
+            <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 600, color: '#32363a' }}>
+                        {icono} {titulo}
+                    </Typography>
+                </Box>
+                <Grid container spacing={2}>
+                    {usuario && (
+                        <Grid size={{ xs: 12 }} sm={6}>
+                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                Usuario
+                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontFamily: 'monospace',
+                                        backgroundColor: '#fff',
+                                        p: 1,
+                                        borderRadius: 1,
+                                        flex: 1,
+                                        border: '1px solid #e5e5e5',
+                                    }}
+                                >
+                                    {usuario || '-'}
+                                </Typography>
+                                <Tooltip title={copiedField === `${campo}-user` ? '¡Copiado!' : 'Copiar'}>
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => copyToClipboard(usuario, `${campo}-user`)}
+                                    >
+                                        <ContentCopyIcon fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+                            </Box>
+                        </Grid>
+                    )}
+                    {contrasena && (
+                        <Grid size={{ xs: 12 }} sm={usuario ? 6 : 12}>
+                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                Contraseña
+                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontFamily: 'monospace',
+                                        backgroundColor: '#fff',
+                                        p: 1,
+                                        borderRadius: 1,
+                                        flex: 1,
+                                        border: '1px solid #e5e5e5',
+                                    }}
+                                >
+                                    {showPasswords[campo] ? contrasena : '••••••••'}
+                                </Typography>
+                                <Tooltip title={showPasswords[campo] ? 'Ocultar' : 'Mostrar'}>
+                                    <IconButton
+                                        size="small"
+                                        onClick={() =>
+                                            setShowPasswords(prev => ({
+                                                ...prev,
+                                                [campo]: !prev[campo],
+                                            }))
+                                        }
+                                    >
+                                        {showPasswords[campo] ? (
+                                            <VisibilityOffIcon fontSize="small" />
+                                        ) : (
+                                            <VisibilityIcon fontSize="small" />
+                                        )}
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title={copiedField === `${campo}-pass` ? '¡Copiado!' : 'Copiar'}>
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => copyToClipboard(contrasena, `${campo}-pass`)}
+                                    >
+                                        <ContentCopyIcon fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+                            </Box>
+                        </Grid>
+                    )}
+                    {notas && (
+                        <Grid size={{ xs: 12 }}>
+                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                Notas
+                            </Typography>
+                            <Typography
+                                variant="body2"
+                                sx={{
+                                    backgroundColor: '#fff',
+                                    p: 1,
+                                    borderRadius: 1,
+                                    border: '1px solid #e5e5e5',
+                                    color: '#666',
+                                }}
+                            >
+                                {notas || '-'}
+                            </Typography>
+                        </Grid>
+                    )}
+                </Grid>
+            </CardContent>
+        </Card>
+    );
+
+    // ========== COMPONENTE DE PUERTO ==========
     const PortIcon = ({ available, label }) => (
         <Chip
             icon={available ? <CheckIcon /> : <CloseIcon />}
@@ -277,6 +412,7 @@ const EquipoDetailPage = () => {
         />
     );
 
+    // ========== RENDERIZADO ==========
     if (loading) {
         return <LoadingSpinner />;
     }
@@ -303,6 +439,10 @@ const EquipoDetailPage = () => {
     }
 
     const isAsignado = equipo.asignacionActual && equipo.estado === 'En Uso';
+    const tieneClaves = equipo.clavesBIOS?.contrasena ||
+        equipo.clavesAdministrador?.contrasena ||
+        equipo.clavesEquipo?.contrasena ||
+        equipo.PIN?.valor;
 
     return (
         <Box>
@@ -311,6 +451,8 @@ const EquipoDetailPage = () => {
                     {error}
                 </Alert>
             )}
+
+            {/* ========== HEADER ==========*/}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <IconButton onClick={() => navigate(ROUTES.EQUIPOS.LIST)}>
@@ -321,7 +463,6 @@ const EquipoDetailPage = () => {
                     </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', gap: 1 }}>
-                    {/* Botones de asignación/devolución */}
                     {!isAsignado ? (
                         <Button
                             variant="contained"
@@ -380,8 +521,9 @@ const EquipoDetailPage = () => {
                 </Box>
             </Box>
 
+            {/* ========== CONTENIDO PRINCIPAL ==========*/}
             <Grid container spacing={3}>
-                {/* Información Principal */}
+                {/* INFORMACIÓN PRINCIPAL */}
                 <Grid size={{ xs: 12, md: 6 }}>
                     <Paper
                         elevation={0}
@@ -425,16 +567,14 @@ const EquipoDetailPage = () => {
                         <Typography variant="body2" color="text.secondary">
                             Serie: {equipo.serie}
                         </Typography>
-                        {
-                            equipo.host && (
-                                <Typography variant="body2" color="text.secondary">
-                                    Host: {equipo.host}
-                                </Typography>
-                            )
-                        }
+                        {equipo.host && (
+                            <Typography variant="body2" color="text.secondary">
+                                Host: {equipo.host}
+                            </Typography>
+                        )}
                     </Paper>
 
-                    {/* Usuario Asignado */}
+                    {/* USUARIO ASIGNADO */}
                     {equipo.asignacionActual && (
                         <Paper
                             elevation={0}
@@ -477,183 +617,246 @@ const EquipoDetailPage = () => {
                     )}
                 </Grid>
 
-                {/* Especificaciones Técnicas */}
-                {
-                    equipo.procesador && (
-                        <Grid size={{ xs: 12, md: 8 }}>
-                            <Paper
-                                elevation={0}
-                                sx={{
-                                    p: 3,
-                                    border: '1px solid #e5e5e5',
-                                    borderRadius: '0.5rem',
-                                    mb: 3,
-                                }}
-                            >
-                                <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#32363a' }}>
-                                    Especificaciones Técnicas
-                                </Typography>
-                                <Divider sx={{ mb: 2 }} />
+                {/* ESPECIFICACIONES TÉCNICAS */}
+                {equipo.procesador && (
+                    <Grid size={{ xs: 12, md: 8 }}>
+                        <Paper
+                            elevation={0}
+                            sx={{
+                                p: 3,
+                                border: '1px solid #e5e5e5',
+                                borderRadius: '0.5rem',
+                                mb: 3,
+                            }}
+                        >
+                            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#32363a' }}>
+                                Especificaciones Técnicas
+                            </Typography>
+                            <Divider sx={{ mb: 2 }} />
 
-                                <Grid container spacing={3}>
-                                    <Grid size={{ xs: 12, md: 6 }}>
-                                        <Box sx={{ mb: 2 }}>
-                                            <Typography variant="caption" color="text.secondary">
-                                                Procesador
-                                            </Typography>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                                                <MemoryIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
-                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                                    {equipo.procesador}
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-                                    </Grid>
-
-                                    <Grid size={{ xs: 12, md: 6 }}>
-                                        <Box sx={{ mb: 2 }}>
-                                            <Typography variant="caption" color="text.secondary">
-                                                Memoria RAM
-                                            </Typography>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                                                <MemoryIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
-                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                                    {equipo.memoria}
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-                                    </Grid>
-
-                                    <Grid size={{ xs: 12, md: 6 }}>
-                                        <Box sx={{ mb: 2 }}>
-                                            <Typography variant="caption" color="text.secondary">
-                                                Almacenamiento
-                                            </Typography>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                                                <StorageIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
-                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                                    {equipo.almacenamiento}
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-                                    </Grid>
-
-                                    {equipo.pantalla && (
-                                        <Grid size={{ xs: 12, md: 6 }}>
-                                            <Box sx={{ mb: 2 }}>
-                                                <Typography variant="caption" color="text.secondary">
-                                                    Pantalla
-                                                </Typography>
-                                                <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                                                    <VisibilityIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
-                                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                                        {equipo.pantalla}
-                                                    </Typography>
-                                                </Box>
-                                            </Box>
-                                        </Grid>
-                                    )}
-
-                                    {equipo.tarjetaGrafica && (
-                                        <Grid size={{ xs: 12 }}>
-                                            <Box sx={{ mb: 2 }}>
-                                                <Typography variant="caption" color="text.secondary">
-                                                    Tarjeta Gráfica
-                                                </Typography>
-                                                <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                                                    <VideocamIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
-                                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                                        {equipo.tarjetaGrafica}
-                                                    </Typography>
-                                                </Box>
-                                            </Box>
-                                        </Grid>
-                                    )}
-
-                                    {/* Puertos */}
-                                    <Grid size={{ xs: 12 }}>
-                                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-                                            Puertos y Conectividad
-                                        </Typography>
-                                        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                                            <PortIcon available={equipo.puertoRed} label="Puerto Red" />
-                                            <PortIcon available={equipo.puertosUSB} label="USB" />
-                                            <PortIcon available={equipo.puertoSerial} label="Serial" />
-                                            <PortIcon available={equipo.puertoHDMI} label="HDMI" />
-                                            <PortIcon available={equipo.puertoC} label="USB-C" />
-                                        </Stack>
-                                    </Grid>
-                                </Grid>
-                            </Paper>
-
-                            {/* Información Adicional */}
-                            <Paper
-                                elevation={0}
-                                sx={{
-                                    p: 3,
-                                    border: '1px solid #e5e5e5',
-                                    borderRadius: '0.5rem',
-                                }}
-                            >
-                                <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#32363a' }}>
-                                    Información Adicional
-                                </Typography>
-                                <Divider sx={{ mb: 2 }} />
-
-                                <Grid container spacing={2}>
-                                    <Grid size={{ xs: 12, md: 6 }}>
+                            <Grid container spacing={3}>
+                                <Grid size={{ xs: 12, md: 6 }}>
+                                    <Box sx={{ mb: 2 }}>
                                         <Typography variant="caption" color="text.secondary">
-                                            Fecha de Registro
+                                            Procesador
                                         </Typography>
-                                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                            {moment(equipo.fechaRegistro).format('DD/MM/YYYY')}
-                                        </Typography>
-                                    </Grid>
-
-                                    <Grid size={{ xs: 12, md: 6 }}>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Fecha de Compra
-                                        </Typography>
-                                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                            {moment(equipo.fechaCompra).format('DD/MM/YYYY')}
-                                        </Typography>
-                                    </Grid>
-
-                                    <Grid size={{ xs: 12, md: 6 }}>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Primer Uso
-                                        </Typography>
-                                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                            {moment(equipo.primerUso).format('DD/MM/YYYY')}
-                                        </Typography>
-                                    </Grid>
-
-                                    <Grid size={{ xs: 12, md: 6 }}>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Antigüedad
-                                        </Typography>
-                                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                            {equipo.antiguedad} {equipo.antiguedad === 1 ? 'año' : 'años'}
-                                        </Typography>
-                                    </Grid>
-
-                                    {equipo.observaciones && (
-                                        <Grid size={{ xs: 12 }}>
-                                            <Typography variant="caption" color="text.secondary">
-                                                Observaciones
-                                            </Typography>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                                            <MemoryIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
                                             <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                                {equipo.observaciones}
+                                                {equipo.procesador}
                                             </Typography>
-                                        </Grid>
-                                    )}
+                                        </Box>
+                                    </Box>
                                 </Grid>
-                            </Paper>
-                        </Grid>
-                    )
-                }
 
-                {/* Historial de Asignaciones */}
+                                <Grid size={{ xs: 12, md: 6 }}>
+                                    <Box sx={{ mb: 2 }}>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Memoria RAM
+                                        </Typography>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                                            <MemoryIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
+                                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                                {equipo.memoria}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                </Grid>
+
+                                <Grid size={{ xs: 12, md: 6 }}>
+                                    <Box sx={{ mb: 2 }}>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Almacenamiento
+                                        </Typography>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                                            <StorageIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
+                                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                                {equipo.almacenamiento}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                </Grid>
+
+                                {equipo.pantalla && (
+                                    <Grid size={{ xs: 12, md: 6 }}>
+                                        <Box sx={{ mb: 2 }}>
+                                            <Typography variant="caption" color="text.secondary">
+                                                Pantalla
+                                            </Typography>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                                                <VisibilityIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
+                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                                    {equipo.pantalla}
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                    </Grid>
+                                )}
+
+                                {equipo.tarjetaGrafica && (
+                                    <Grid size={{ xs: 12 }}>
+                                        <Box sx={{ mb: 2 }}>
+                                            <Typography variant="caption" color="text.secondary">
+                                                Tarjeta Gráfica
+                                            </Typography>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                                                <VideocamIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
+                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                                    {equipo.tarjetaGrafica}
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                    </Grid>
+                                )}
+
+                                {/* PUERTOS */}
+                                <Grid size={{ xs: 12 }}>
+                                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                                        Puertos y Conectividad
+                                    </Typography>
+                                    <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                                        <PortIcon available={equipo.puertoRed} label="Puerto Red" />
+                                        <PortIcon available={equipo.puertosUSB} label="USB" />
+                                        <PortIcon available={equipo.puertoSerial} label="Serial" />
+                                        <PortIcon available={equipo.puertoHDMI} label="HDMI" />
+                                        <PortIcon available={equipo.puertoC} label="USB-C" />
+                                    </Stack>
+                                </Grid>
+                            </Grid>
+                        </Paper>
+
+                        {/* INFORMACIÓN ADICIONAL */}
+                        <Paper
+                            elevation={0}
+                            sx={{
+                                p: 3,
+                                border: '1px solid #e5e5e5',
+                                borderRadius: '0.5rem',
+                            }}
+                        >
+                            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#32363a' }}>
+                                Información Adicional
+                            </Typography>
+                            <Divider sx={{ mb: 2 }} />
+
+                            <Grid container spacing={2}>
+                                <Grid size={{ xs: 12, md: 6 }}>
+                                    <Typography variant="caption" color="text.secondary">
+                                        Fecha de Registro
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                        {moment(equipo.fechaRegistro).format('DD/MM/YYYY')}
+                                    </Typography>
+                                </Grid>
+
+                                <Grid size={{ xs: 12, md: 6 }}>
+                                    <Typography variant="caption" color="text.secondary">
+                                        Fecha de Compra
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                        {moment(equipo.fechaCompra).format('DD/MM/YYYY')}
+                                    </Typography>
+                                </Grid>
+
+                                <Grid size={{ xs: 12, md: 6 }}>
+                                    <Typography variant="caption" color="text.secondary">
+                                        Primer Uso
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                        {moment(equipo.primerUso).format('DD/MM/YYYY')}
+                                    </Typography>
+                                </Grid>
+
+                                <Grid size={{ xs: 12, md: 6 }}>
+                                    <Typography variant="caption" color="text.secondary">
+                                        Antigüedad
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                        {equipo.antiguedad} {equipo.antiguedad === 1 ? 'año' : 'años'}
+                                    </Typography>
+                                </Grid>
+
+                                {equipo.observaciones && (
+                                    <Grid size={{ xs: 12 }}>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Observaciones
+                                        </Typography>
+                                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                            {equipo.observaciones}
+                                        </Typography>
+                                    </Grid>
+                                )}
+                            </Grid>
+                        </Paper>
+                    </Grid>
+                )}
+
+                {/* ========== SECCIÓN DE CLAVES DE SEGURIDAD ==========*/}
+                {tieneClaves && (
+                    <Grid size={{ xs: 12 }}>
+                        <Paper
+                            elevation={0}
+                            sx={{
+                                p: 3,
+                                border: '2px solid #0854a0',
+                                borderRadius: '0.5rem',
+                                backgroundColor: '#f0f7ff',
+                            }}
+                        >
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+                                <LockIcon sx={{ fontSize: 24, color: '#0854a0' }} />
+                                <Typography variant="h6" sx={{ fontWeight: 600, color: '#32363a' }}>
+                                    Claves de Seguridad
+                                </Typography>
+                            </Box>
+                            <Divider sx={{ mb: 3 }} />
+
+                            <Grid container spacing={2}>
+
+
+                                {equipo.clavesAdministrador?.contrasena && (
+                                    <Grid size={{ xs: 12, md: 6 }}>
+                                        <ClaveSeguridad
+                                            titulo="Contraseña Administrador"
+                                            icono="👤"
+                                            usuario={equipo.clavesAdministrador?.usuario}
+                                            contrasena={equipo.clavesAdministrador?.contrasena}
+                                            notas={equipo.clavesAdministrador?.notas}
+                                            campo="admin"
+                                        />
+                                    </Grid>
+                                )}
+
+                                {equipo.clavesEquipo?.contrasena && (
+                                    <Grid size={{ xs: 12, md: 6 }}>
+                                        <ClaveSeguridad
+                                            titulo="Contraseña Usuario Equipo"
+                                            icono="🖥️"
+                                            usuario={equipo.clavesEquipo?.usuario}
+                                            contrasena={equipo.clavesEquipo?.contrasena}
+                                            notas={equipo.clavesEquipo?.notas}
+                                            campo="equipo"
+                                        />
+                                    </Grid>
+                                )}
+                                {equipo.clavesBIOS?.contrasena && (
+                                    <Grid size={{ xs: 12, md: 6 }}>
+                                        <ClaveSeguridad
+                                            titulo="Contraseña BIOS"
+                                            icono="🔐"
+                                            usuario={equipo.clavesBIOS?.usuario}
+                                            contrasena={equipo.clavesBIOS?.contrasena}
+                                            notas={equipo.clavesBIOS?.notas}
+                                            campo="bios"
+                                        />
+                                    </Grid>
+                                )}
+                            </Grid>
+                        </Paper>
+                    </Grid>
+                )}
+
+                {/* HISTORIAL DE ASIGNACIONES */}
                 {equipo.historial && equipo.historial.length > 0 && (
                     <Grid size={{ xs: 12 }}>
                         <Paper
@@ -734,7 +937,9 @@ const EquipoDetailPage = () => {
                 )}
             </Grid>
 
-            {/* Diálogo de Asignación */}
+            {/* ========== DIÁLOGOS ==========*/}
+
+            {/* DIÁLOGO DE ASIGNACIÓN */}
             <Dialog
                 open={assignDialogOpen}
                 onClose={handleCloseAssign}
@@ -850,7 +1055,7 @@ const EquipoDetailPage = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* Diálogo de Devolución */}
+            {/* DIÁLOGO DE DEVOLUCIÓN */}
             <Dialog
                 open={returnDialogOpen}
                 onClose={handleCloseReturn}
@@ -929,7 +1134,7 @@ const EquipoDetailPage = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* Diálogo de Transferencia */}
+            {/* DIÁLOGO DE TRANSFERENCIA */}
             <Dialog
                 open={transferDialogOpen}
                 onClose={handleCloseTransfer}
@@ -1040,7 +1245,7 @@ const EquipoDetailPage = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* Diálogo de Confirmación de Eliminación */}
+            {/* DIÁLOGO DE ELIMINACIÓN */}
             <ConfirmDialog
                 open={deleteDialogOpen}
                 title="Eliminar Equipo"

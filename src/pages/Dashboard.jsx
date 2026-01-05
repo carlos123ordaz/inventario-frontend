@@ -32,7 +32,7 @@ import {
     Laptop as LaptopIcon,
     DesktopWindows as DesktopIcon,
 } from '@mui/icons-material';
-import { equiposService, usuariosService, historialService } from '../api';
+import { equiposService, historialService } from '../api';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { ROUTES } from '../routes/routes.constants';
 import moment from 'moment';
