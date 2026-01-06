@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { Box, useMediaQuery, useTheme, Container, IconButton, Tooltip } from '@mui/material';
+import { Box, useMediaQuery, useTheme, Container, IconButton } from '@mui/material';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
@@ -15,7 +15,6 @@ const MainLayout = () => {
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-    const [darkMode, setDarkMode] = useState(false);
     const { setUser } = useContext(MainContext);
     const navigate = useNavigate();
 
@@ -49,10 +48,6 @@ const MainLayout = () => {
         }
     };
 
-    const handleToggleDarkMode = () => {
-        setDarkMode(!darkMode);
-    };
-
     const handleCollapseToggle = () => {
         setSidebarCollapsed(!sidebarCollapsed);
     };
@@ -64,7 +59,7 @@ const MainLayout = () => {
             sx={{
                 display: 'flex',
                 minHeight: '100vh',
-                backgroundColor: darkMode ? '#121212' : '#f5f5f5',
+                backgroundColor: theme.palette.background.default,
             }}
         >
             <Sidebar
@@ -85,8 +80,8 @@ const MainLayout = () => {
                         top: '50%',
                         transform: 'translateY(-50%)',
                         zIndex: theme.zIndex.drawer + 1,
-                        backgroundColor: 'background.paper',
-                        boxShadow: 2,
+                        backgroundColor: theme.palette.background.paper,
+                        boxShadow: theme.shadows[2],
                         width: 36,
                         height: 36,
                         transition: theme.transitions.create(['left'], {
@@ -94,8 +89,8 @@ const MainLayout = () => {
                             duration: theme.transitions.duration.leavingScreen,
                         }),
                         '&:hover': {
-                            backgroundColor: 'action.hover',
-                            boxShadow: 4,
+                            backgroundColor: theme.palette.action.hover,
+                            boxShadow: theme.shadows[4],
                         },
                     }}
                 >
@@ -120,8 +115,6 @@ const MainLayout = () => {
             >
                 <Navbar
                     onMenuClick={handleSidebarToggle}
-                    darkMode={darkMode}
-                    onToggleDarkMode={handleToggleDarkMode}
                     showMenuIcon={isMobile}
                 />
 
@@ -129,7 +122,7 @@ const MainLayout = () => {
                     sx={{
                         flexGrow: 1,
                         mt: `${NAVBAR_HEIGHT}px`,
-                        backgroundColor: darkMode ? '#121212' : '#f5f5f5',
+                        backgroundColor: theme.palette.background.default,
                         minHeight: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
                     }}
                 >

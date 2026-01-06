@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     Box,
@@ -28,6 +28,7 @@ import {
     CardContent,
     InputAdornment,
     Tooltip,
+    useTheme,
 } from '@mui/material';
 import {
     ArrowBack as ArrowBackIcon,
@@ -63,12 +64,15 @@ import { equiposService, usuariosService, historialService } from '../../api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import { ROUTES } from '../../routes/routes.constants';
+import { MainContext } from '../../context/MainContextProvider';
 
 moment.locale('es');
 
 const EquipoDetailPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const theme = useTheme();
+    const { darkMode } = useContext(MainContext);
 
     // ========== ESTADOS PRINCIPALES ==========
     const [equipo, setEquipo] = useState(null);
@@ -162,21 +166,22 @@ const EquipoDetailPage = () => {
     };
 
     const getTipoIcon = (tipo) => {
+        const iconColor = darkMode ? '#64B5F6' : '#0854a0';
         switch (tipo) {
             case 'LAPTOP':
-                return <LaptopIcon sx={{ fontSize: 80, color: '#0854a0' }} />;
+                return <LaptopIcon sx={{ fontSize: 80, color: iconColor }} />;
             case 'DESKTOP':
-                return <ComputerIcon sx={{ fontSize: 80, color: '#0854a0' }} />;
+                return <ComputerIcon sx={{ fontSize: 80, color: iconColor }} />;
             case 'MOUSE':
-                return <MouseOutlined sx={{ fontSize: 80, color: '#0854a0' }} />;
+                return <MouseOutlined sx={{ fontSize: 80, color: iconColor }} />;
             case 'MONITOR':
-                return <MonitorHeartOutlined sx={{ fontSize: 80, color: '#0854a0' }} />;
+                return <MonitorHeartOutlined sx={{ fontSize: 80, color: iconColor }} />;
             case 'COOLER':
-                return <ColorLensRounded sx={{ fontSize: 80, color: '#0854a0' }} />;
+                return <ColorLensRounded sx={{ fontSize: 80, color: iconColor }} />;
             case 'TECLADO':
-                return <Keyboard sx={{ fontSize: 80, color: '#0854a0' }} />;
+                return <Keyboard sx={{ fontSize: 80, color: iconColor }} />;
             default:
-                return <ComputerIcon sx={{ fontSize: 80, color: '#0854a0' }} />;
+                return <ComputerIcon sx={{ fontSize: 80, color: iconColor }} />;
         }
     };
 
@@ -292,10 +297,13 @@ const EquipoDetailPage = () => {
 
     // ========== COMPONENTE REUTILIZABLE PARA CLAVES ==========
     const ClaveSeguridad = ({ titulo, icono, usuario, contrasena, notas, campo }) => (
-        <Card sx={{ border: '1px solid #e5e5e5', backgroundColor: '#fafafa' }}>
+        <Card sx={{
+            border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
+            backgroundColor: darkMode ? theme.palette.background.paper : '#fafafa'
+        }}>
             <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                    <Typography variant="body1" sx={{ fontWeight: 600, color: '#32363a' }}>
+                    <Typography variant="body1" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
                         {icono} {titulo}
                     </Typography>
                 </Box>
@@ -310,11 +318,12 @@ const EquipoDetailPage = () => {
                                     variant="body2"
                                     sx={{
                                         fontFamily: 'monospace',
-                                        backgroundColor: '#fff',
+                                        backgroundColor: darkMode ? theme.palette.background.default : '#fff',
                                         p: 1,
                                         borderRadius: 1,
                                         flex: 1,
-                                        border: '1px solid #e5e5e5',
+                                        border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
+                                        color: theme.palette.text.primary
                                     }}
                                 >
                                     {usuario || '-'}
@@ -340,11 +349,12 @@ const EquipoDetailPage = () => {
                                     variant="body2"
                                     sx={{
                                         fontFamily: 'monospace',
-                                        backgroundColor: '#fff',
+                                        backgroundColor: darkMode ? theme.palette.background.default : '#fff',
                                         p: 1,
                                         borderRadius: 1,
                                         flex: 1,
-                                        border: '1px solid #e5e5e5',
+                                        border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
+                                        color: theme.palette.text.primary
                                     }}
                                 >
                                     {showPasswords[campo] ? contrasena : '••••••••'}
@@ -385,11 +395,11 @@ const EquipoDetailPage = () => {
                             <Typography
                                 variant="body2"
                                 sx={{
-                                    backgroundColor: '#fff',
+                                    backgroundColor: darkMode ? theme.palette.background.default : '#fff',
                                     p: 1,
                                     borderRadius: 1,
-                                    border: '1px solid #e5e5e5',
-                                    color: '#666',
+                                    border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
+                                    color: theme.palette.text.secondary,
                                 }}
                             >
                                 {notas || '-'}
@@ -458,7 +468,7 @@ const EquipoDetailPage = () => {
                     <IconButton onClick={() => navigate(ROUTES.EQUIPOS.LIST)}>
                         <ArrowBackIcon />
                     </IconButton>
-                    <Typography variant="h4" sx={{ fontWeight: 400, fontSize: '1.75rem', color: '#32363a' }}>
+                    <Typography variant="h4" sx={{ fontWeight: 400, fontSize: '1.75rem', color: theme.palette.text.primary }}>
                         Detalle del Equipo
                     </Typography>
                 </Box>
@@ -469,11 +479,11 @@ const EquipoDetailPage = () => {
                             startIcon={<AssignmentIndIcon />}
                             onClick={handleOpenAssign}
                             sx={{
-                                backgroundColor: '#0854a0',
+                                backgroundColor: theme.palette.primary.main,
                                 textTransform: 'none',
                                 boxShadow: 'none',
                                 '&:hover': {
-                                    backgroundColor: '#0a6ed1',
+                                    backgroundColor: theme.palette.primary.dark,
                                     boxShadow: 'none',
                                 },
                             }}
@@ -488,8 +498,8 @@ const EquipoDetailPage = () => {
                                 onClick={handleOpenTransfer}
                                 sx={{
                                     textTransform: 'none',
-                                    borderColor: '#0854a0',
-                                    color: '#0854a0',
+                                    borderColor: theme.palette.primary.main,
+                                    color: theme.palette.primary.main,
                                 }}
                             >
                                 Transferir
@@ -500,8 +510,8 @@ const EquipoDetailPage = () => {
                                 onClick={handleOpenReturn}
                                 sx={{
                                     textTransform: 'none',
-                                    borderColor: '#0854a0',
-                                    color: '#0854a0',
+                                    borderColor: theme.palette.primary.main,
+                                    color: theme.palette.primary.main,
                                 }}
                             >
                                 Devolver
@@ -529,9 +539,10 @@ const EquipoDetailPage = () => {
                         elevation={0}
                         sx={{
                             p: 3,
-                            border: '1px solid #e5e5e5',
+                            border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
                             borderRadius: '0.5rem',
                             textAlign: 'center',
+                            backgroundColor: darkMode ? theme.palette.background.paper : 'white'
                         }}
                     >
                         <Box
@@ -542,13 +553,13 @@ const EquipoDetailPage = () => {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                backgroundColor: '#f0f7ff',
+                                backgroundColor: darkMode ? 'rgba(100, 181, 246, 0.1)' : '#f0f7ff',
                                 borderRadius: 2,
                             }}
                         >
                             {getTipoIcon(equipo.tipo)}
                         </Box>
-                        <Typography variant="h5" sx={{ fontWeight: 500, mb: 1 }}>
+                        <Typography variant="h5" sx={{ fontWeight: 500, mb: 1, color: theme.palette.text.primary }}>
                             {equipo.marca}
                         </Typography>
                         <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
@@ -581,19 +592,19 @@ const EquipoDetailPage = () => {
                             sx={{
                                 p: 2,
                                 mt: 2,
-                                border: '1px solid #e5e5e5',
+                                border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
                                 borderRadius: '0.5rem',
-                                backgroundColor: '#f0f7ff',
+                                backgroundColor: darkMode ? 'rgba(100, 181, 246, 0.05)' : '#f0f7ff',
                             }}
                         >
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                <PersonIcon sx={{ mr: 1, color: '#0854a0' }} />
-                                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                                <PersonIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
+                                <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
                                     Usuario Asignado
                                 </Typography>
                             </Box>
                             <Divider sx={{ mb: 2 }} />
-                            <Typography variant="body1" sx={{ fontWeight: 500, mb: 0.5 }}>
+                            <Typography variant="body1" sx={{ fontWeight: 500, mb: 0.5, color: theme.palette.text.primary }}>
                                 {equipo.asignacionActual.usuario?.nombreCompleto ||
                                     `${equipo.asignacionActual.usuario?.nombre} ${equipo.asignacionActual.usuario?.apellido}`}
                             </Typography>
@@ -624,12 +635,13 @@ const EquipoDetailPage = () => {
                             elevation={0}
                             sx={{
                                 p: 3,
-                                border: '1px solid #e5e5e5',
+                                border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
                                 borderRadius: '0.5rem',
                                 mb: 3,
+                                backgroundColor: darkMode ? theme.palette.background.paper : 'white'
                             }}
                         >
-                            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#32363a' }}>
+                            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: theme.palette.text.primary }}>
                                 Especificaciones Técnicas
                             </Typography>
                             <Divider sx={{ mb: 2 }} />
@@ -642,7 +654,7 @@ const EquipoDetailPage = () => {
                                         </Typography>
                                         <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
                                             <MemoryIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
-                                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                            <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
                                                 {equipo.procesador}
                                             </Typography>
                                         </Box>
@@ -656,7 +668,7 @@ const EquipoDetailPage = () => {
                                         </Typography>
                                         <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
                                             <MemoryIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
-                                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                            <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
                                                 {equipo.memoria}
                                             </Typography>
                                         </Box>
@@ -670,7 +682,7 @@ const EquipoDetailPage = () => {
                                         </Typography>
                                         <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
                                             <StorageIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
-                                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                            <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
                                                 {equipo.almacenamiento}
                                             </Typography>
                                         </Box>
@@ -685,7 +697,7 @@ const EquipoDetailPage = () => {
                                             </Typography>
                                             <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
                                                 <VisibilityIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
-                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                                <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
                                                     {equipo.pantalla}
                                                 </Typography>
                                             </Box>
@@ -701,7 +713,7 @@ const EquipoDetailPage = () => {
                                             </Typography>
                                             <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
                                                 <VideocamIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
-                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                                <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
                                                     {equipo.tarjetaGrafica}
                                                 </Typography>
                                             </Box>
@@ -730,11 +742,12 @@ const EquipoDetailPage = () => {
                             elevation={0}
                             sx={{
                                 p: 3,
-                                border: '1px solid #e5e5e5',
+                                border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
                                 borderRadius: '0.5rem',
+                                backgroundColor: darkMode ? theme.palette.background.paper : 'white'
                             }}
                         >
-                            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#32363a' }}>
+                            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: theme.palette.text.primary }}>
                                 Información Adicional
                             </Typography>
                             <Divider sx={{ mb: 2 }} />
@@ -744,7 +757,7 @@ const EquipoDetailPage = () => {
                                     <Typography variant="caption" color="text.secondary">
                                         Fecha de Registro
                                     </Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                    <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
                                         {moment(equipo.fechaRegistro).format('DD/MM/YYYY')}
                                     </Typography>
                                 </Grid>
@@ -753,7 +766,7 @@ const EquipoDetailPage = () => {
                                     <Typography variant="caption" color="text.secondary">
                                         Fecha de Compra
                                     </Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                    <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
                                         {moment(equipo.fechaCompra).format('DD/MM/YYYY')}
                                     </Typography>
                                 </Grid>
@@ -762,7 +775,7 @@ const EquipoDetailPage = () => {
                                     <Typography variant="caption" color="text.secondary">
                                         Primer Uso
                                     </Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                    <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
                                         {moment(equipo.primerUso).format('DD/MM/YYYY')}
                                     </Typography>
                                 </Grid>
@@ -771,7 +784,7 @@ const EquipoDetailPage = () => {
                                     <Typography variant="caption" color="text.secondary">
                                         Antigüedad
                                     </Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                    <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
                                         {equipo.antiguedad} {equipo.antiguedad === 1 ? 'año' : 'años'}
                                     </Typography>
                                 </Grid>
@@ -781,7 +794,7 @@ const EquipoDetailPage = () => {
                                         <Typography variant="caption" color="text.secondary">
                                             Observaciones
                                         </Typography>
-                                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                        <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
                                             {equipo.observaciones}
                                         </Typography>
                                     </Grid>
@@ -798,22 +811,20 @@ const EquipoDetailPage = () => {
                             elevation={0}
                             sx={{
                                 p: 3,
-                                border: '2px solid #0854a0',
+                                border: `2px solid ${theme.palette.primary.main}`,
                                 borderRadius: '0.5rem',
-                                backgroundColor: '#f0f7ff',
+                                backgroundColor: darkMode ? 'rgba(100, 181, 246, 0.05)' : '#f0f7ff',
                             }}
                         >
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-                                <LockIcon sx={{ fontSize: 24, color: '#0854a0' }} />
-                                <Typography variant="h6" sx={{ fontWeight: 600, color: '#32363a' }}>
+                                <LockIcon sx={{ fontSize: 24, color: theme.palette.primary.main }} />
+                                <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
                                     Claves de Seguridad
                                 </Typography>
                             </Box>
                             <Divider sx={{ mb: 3 }} />
 
                             <Grid container spacing={2}>
-
-
                                 {equipo.clavesAdministrador?.contrasena && (
                                     <Grid size={{ xs: 12, md: 6 }}>
                                         <ClaveSeguridad
@@ -863,13 +874,14 @@ const EquipoDetailPage = () => {
                             elevation={0}
                             sx={{
                                 p: 3,
-                                border: '1px solid #e5e5e5',
+                                border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
                                 borderRadius: '0.5rem',
+                                backgroundColor: darkMode ? theme.palette.background.paper : 'white'
                             }}
                         >
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                <HistoryIcon sx={{ mr: 1, color: '#0854a0' }} />
-                                <Typography variant="h6" sx={{ fontWeight: 600, color: '#32363a' }}>
+                                <HistoryIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
+                                <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
                                     Historial de Asignaciones
                                 </Typography>
                             </Box>
@@ -879,25 +891,53 @@ const EquipoDetailPage = () => {
                                 <Table>
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600 }}>
+                                            <TableCell sx={{
+                                                backgroundColor: darkMode ? theme.palette.action.hover : '#fafafa',
+                                                fontWeight: 600,
+                                                color: theme.palette.text.primary
+                                            }}>
                                                 Usuario
                                             </TableCell>
-                                            <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600 }}>
+                                            <TableCell sx={{
+                                                backgroundColor: darkMode ? theme.palette.action.hover : '#fafafa',
+                                                fontWeight: 600,
+                                                color: theme.palette.text.primary
+                                            }}>
                                                 Área
                                             </TableCell>
-                                            <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600 }}>
+                                            <TableCell sx={{
+                                                backgroundColor: darkMode ? theme.palette.action.hover : '#fafafa',
+                                                fontWeight: 600,
+                                                color: theme.palette.text.primary
+                                            }}>
                                                 Tipo de Uso
                                             </TableCell>
-                                            <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600 }}>
+                                            <TableCell sx={{
+                                                backgroundColor: darkMode ? theme.palette.action.hover : '#fafafa',
+                                                fontWeight: 600,
+                                                color: theme.palette.text.primary
+                                            }}>
                                                 Fecha Asignación
                                             </TableCell>
-                                            <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600 }}>
+                                            <TableCell sx={{
+                                                backgroundColor: darkMode ? theme.palette.action.hover : '#fafafa',
+                                                fontWeight: 600,
+                                                color: theme.palette.text.primary
+                                            }}>
                                                 Fecha Devolución
                                             </TableCell>
-                                            <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600 }}>
+                                            <TableCell sx={{
+                                                backgroundColor: darkMode ? theme.palette.action.hover : '#fafafa',
+                                                fontWeight: 600,
+                                                color: theme.palette.text.primary
+                                            }}>
                                                 Tiempo de Uso
                                             </TableCell>
-                                            <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600 }}>
+                                            <TableCell sx={{
+                                                backgroundColor: darkMode ? theme.palette.action.hover : '#fafafa',
+                                                fontWeight: 600,
+                                                color: theme.palette.text.primary
+                                            }}>
                                                 Estado
                                             </TableCell>
                                         </TableRow>
@@ -905,21 +945,27 @@ const EquipoDetailPage = () => {
                                     <TableBody>
                                         {equipo.historial.map((asignacion) => (
                                             <TableRow key={asignacion._id} hover>
-                                                <TableCell>
+                                                <TableCell sx={{ color: theme.palette.text.primary }}>
                                                     {asignacion.usuario?.nombreCompleto ||
                                                         `${asignacion.usuario?.nombre} ${asignacion.usuario?.apellido}`}
                                                 </TableCell>
-                                                <TableCell>{asignacion.usuario?.area}</TableCell>
-                                                <TableCell>{asignacion.tipoUso}</TableCell>
-                                                <TableCell>
+                                                <TableCell sx={{ color: theme.palette.text.primary }}>
+                                                    {asignacion.usuario?.area}
+                                                </TableCell>
+                                                <TableCell sx={{ color: theme.palette.text.primary }}>
+                                                    {asignacion.tipoUso}
+                                                </TableCell>
+                                                <TableCell sx={{ color: theme.palette.text.primary }}>
                                                     {moment(asignacion.fechaAsignacion).format('DD/MM/YYYY')}
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell sx={{ color: theme.palette.text.primary }}>
                                                     {asignacion.fechaDevolucion
                                                         ? moment(asignacion.fechaDevolucion).format('DD/MM/YYYY')
                                                         : '-'}
                                                 </TableCell>
-                                                <TableCell>{asignacion.tiempoUso} días</TableCell>
+                                                <TableCell sx={{ color: theme.palette.text.primary }}>
+                                                    {asignacion.tiempoUso} días
+                                                </TableCell>
                                                 <TableCell>
                                                     <Chip
                                                         label={asignacion.activo ? 'Activo' : 'Finalizado'}
@@ -953,13 +999,13 @@ const EquipoDetailPage = () => {
             >
                 <DialogTitle
                     sx={{
-                        backgroundColor: '#fafafa',
-                        borderBottom: '1px solid #e5e5e5',
+                        backgroundColor: darkMode ? theme.palette.background.default : '#fafafa',
+                        borderBottom: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
                     }}
                 >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <AssignmentIndIcon sx={{ color: '#0854a0' }} />
-                        <Typography variant="h6" sx={{ fontWeight: 400 }}>
+                        <AssignmentIndIcon sx={{ color: theme.palette.primary.main }} />
+                        <Typography variant="h6" sx={{ fontWeight: 400, color: theme.palette.text.primary }}>
                             Asignar Equipo
                         </Typography>
                     </Box>
@@ -1029,8 +1075,8 @@ const EquipoDetailPage = () => {
                     sx={{
                         px: 3,
                         py: 2,
-                        backgroundColor: '#fafafa',
-                        borderTop: '1px solid #e5e5e5',
+                        backgroundColor: darkMode ? theme.palette.background.default : '#fafafa',
+                        borderTop: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
                     }}
                 >
                     <Button onClick={handleCloseAssign} disabled={submitting} sx={{ textTransform: 'none' }}>
@@ -1041,11 +1087,11 @@ const EquipoDetailPage = () => {
                         variant="contained"
                         disabled={submitting || !selectedUsuario}
                         sx={{
-                            backgroundColor: '#0854a0',
+                            backgroundColor: theme.palette.primary.main,
                             textTransform: 'none',
                             boxShadow: 'none',
                             '&:hover': {
-                                backgroundColor: '#0a6ed1',
+                                backgroundColor: theme.palette.primary.dark,
                                 boxShadow: 'none',
                             },
                         }}
@@ -1069,13 +1115,13 @@ const EquipoDetailPage = () => {
             >
                 <DialogTitle
                     sx={{
-                        backgroundColor: '#fafafa',
-                        borderBottom: '1px solid #e5e5e5',
+                        backgroundColor: darkMode ? theme.palette.background.default : '#fafafa',
+                        borderBottom: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
                     }}
                 >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <AssignmentReturnIcon sx={{ color: '#0854a0' }} />
-                        <Typography variant="h6" sx={{ fontWeight: 400 }}>
+                        <AssignmentReturnIcon sx={{ color: theme.palette.primary.main }} />
+                        <Typography variant="h6" sx={{ fontWeight: 400, color: theme.palette.text.primary }}>
                             Devolver Equipo
                         </Typography>
                     </Box>
@@ -1085,10 +1131,10 @@ const EquipoDetailPage = () => {
                         El equipo será devuelto y quedará disponible para una nueva asignación.
                     </Alert>
 
-                    <Typography variant="body2" sx={{ mb: 2 }}>
+                    <Typography variant="body2" sx={{ mb: 2, color: theme.palette.text.primary }}>
                         <strong>Equipo:</strong> {equipo.marca} {equipo.modelo}
                     </Typography>
-                    <Typography variant="body2" sx={{ mb: 3 }}>
+                    <Typography variant="body2" sx={{ mb: 3, color: theme.palette.text.primary }}>
                         <strong>Usuario actual:</strong>{' '}
                         {equipo.asignacionActual?.usuario?.nombreCompleto ||
                             `${equipo.asignacionActual?.usuario?.nombre} ${equipo.asignacionActual?.usuario?.apellido}`}
@@ -1108,8 +1154,8 @@ const EquipoDetailPage = () => {
                     sx={{
                         px: 3,
                         py: 2,
-                        backgroundColor: '#fafafa',
-                        borderTop: '1px solid #e5e5e5',
+                        backgroundColor: darkMode ? theme.palette.background.default : '#fafafa',
+                        borderTop: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
                     }}
                 >
                     <Button onClick={handleCloseReturn} disabled={submitting} sx={{ textTransform: 'none' }}>
@@ -1120,11 +1166,11 @@ const EquipoDetailPage = () => {
                         variant="contained"
                         disabled={submitting}
                         sx={{
-                            backgroundColor: '#0854a0',
+                            backgroundColor: theme.palette.primary.main,
                             textTransform: 'none',
                             boxShadow: 'none',
                             '&:hover': {
-                                backgroundColor: '#0a6ed1',
+                                backgroundColor: theme.palette.primary.dark,
                                 boxShadow: 'none',
                             },
                         }}
@@ -1148,13 +1194,13 @@ const EquipoDetailPage = () => {
             >
                 <DialogTitle
                     sx={{
-                        backgroundColor: '#fafafa',
-                        borderBottom: '1px solid #e5e5e5',
+                        backgroundColor: darkMode ? theme.palette.background.default : '#fafafa',
+                        borderBottom: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
                     }}
                 >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <SwapHorizIcon sx={{ color: '#0854a0' }} />
-                        <Typography variant="h6" sx={{ fontWeight: 400 }}>
+                        <SwapHorizIcon sx={{ color: theme.palette.primary.main }} />
+                        <Typography variant="h6" sx={{ fontWeight: 400, color: theme.palette.text.primary }}>
                             Transferir Equipo
                         </Typography>
                     </Box>
@@ -1164,10 +1210,10 @@ const EquipoDetailPage = () => {
                         El equipo será transferido del usuario actual al nuevo usuario seleccionado.
                     </Alert>
 
-                    <Typography variant="body2" sx={{ mb: 2 }}>
+                    <Typography variant="body2" sx={{ mb: 2, color: theme.palette.text.primary }}>
                         <strong>Equipo:</strong> {equipo.marca} {equipo.modelo}
                     </Typography>
-                    <Typography variant="body2" sx={{ mb: 3 }}>
+                    <Typography variant="body2" sx={{ mb: 3, color: theme.palette.text.primary }}>
                         <strong>Usuario actual:</strong>{' '}
                         {equipo.asignacionActual?.usuario?.nombreCompleto ||
                             `${equipo.asignacionActual?.usuario?.nombre} ${equipo.asignacionActual?.usuario?.apellido}`}
@@ -1219,8 +1265,8 @@ const EquipoDetailPage = () => {
                     sx={{
                         px: 3,
                         py: 2,
-                        backgroundColor: '#fafafa',
-                        borderTop: '1px solid #e5e5e5',
+                        backgroundColor: darkMode ? theme.palette.background.default : '#fafafa',
+                        borderTop: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
                     }}
                 >
                     <Button onClick={handleCloseTransfer} disabled={submitting} sx={{ textTransform: 'none' }}>
@@ -1231,11 +1277,11 @@ const EquipoDetailPage = () => {
                         variant="contained"
                         disabled={submitting || !nuevoUsuario}
                         sx={{
-                            backgroundColor: '#0854a0',
+                            backgroundColor: theme.palette.primary.main,
                             textTransform: 'none',
                             boxShadow: 'none',
                             '&:hover': {
-                                backgroundColor: '#0a6ed1',
+                                backgroundColor: theme.palette.primary.dark,
                                 boxShadow: 'none',
                             },
                         }}

@@ -21,6 +21,7 @@ import {
     Avatar,
     Stack,
     Tooltip,
+    useTheme,
 } from '@mui/material';
 import {
     Search as SearchIcon,
@@ -42,6 +43,7 @@ moment.locale('es');
 
 const HistorialPage = () => {
     const navigate = useNavigate();
+    const theme = useTheme();
 
     // Estados
     const [historial, setHistorial] = useState([]);
@@ -130,7 +132,7 @@ const HistorialPage = () => {
             {/* Header */}
             <Box sx={{ mb: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                    <Typography variant="h4" sx={{ fontWeight: 600, color: '#354a5f' }}>
+                    <Typography variant="h4" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
                         Historial de Asignaciones
                     </Typography>
                 </Box>
@@ -145,7 +147,7 @@ const HistorialPage = () => {
                 sx={{
                     p: 2,
                     mb: 3,
-                    border: '1px solid #e0e0e0',
+                    border: `1px solid ${theme.palette.divider}`,
                     borderRadius: 1,
                 }}
             >
@@ -198,21 +200,41 @@ const HistorialPage = () => {
             <Paper
                 elevation={0}
                 sx={{
-                    border: '1px solid #e0e0e0',
+                    border: `1px solid ${theme.palette.divider}`,
                     borderRadius: 1,
                 }}
             >
                 <TableContainer>
                     <Table>
-                        <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
+                        <TableHead
+                            sx={{
+                                backgroundColor: theme.palette.mode === 'dark'
+                                    ? theme.palette.surface?.main
+                                    : '#f5f5f5'
+                            }}
+                        >
                             <TableRow>
-                                <TableCell sx={{ fontWeight: 600 }}>Usuario</TableCell>
-                                <TableCell sx={{ fontWeight: 600 }}>Equipo</TableCell>
-                                <TableCell sx={{ fontWeight: 600 }}>Tipo de Uso</TableCell>
-                                <TableCell sx={{ fontWeight: 600 }}>Fecha Asignación</TableCell>
-                                <TableCell sx={{ fontWeight: 600 }}>Fecha Devolución</TableCell>
-                                <TableCell sx={{ fontWeight: 600 }}>Tiempo de Uso</TableCell>
-                                <TableCell sx={{ fontWeight: 600 }}>Estado</TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                    Usuario
+                                </TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                    Equipo
+                                </TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                    Tipo de Uso
+                                </TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                    Fecha Asignación
+                                </TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                    Fecha Devolución
+                                </TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                    Tiempo de Uso
+                                </TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                    Estado
+                                </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -230,7 +252,9 @@ const HistorialPage = () => {
                                         key={registro._id}
                                         sx={{
                                             '&:hover': {
-                                                backgroundColor: '#f9fafb',
+                                                backgroundColor: theme.palette.mode === 'dark'
+                                                    ? 'rgba(255, 255, 255, 0.05)'
+                                                    : '#f9fafb',
                                             },
                                         }}
                                     >
@@ -240,7 +264,7 @@ const HistorialPage = () => {
                                                     sx={{
                                                         width: 32,
                                                         height: 32,
-                                                        backgroundColor: '#0070f3',
+                                                        backgroundColor: theme.palette.primary.main,
                                                         fontSize: '0.875rem',
                                                     }}
                                                 >
@@ -259,7 +283,7 @@ const HistorialPage = () => {
                                         </TableCell>
                                         <TableCell>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                <ComputerIcon sx={{ fontSize: 20, color: 'text.secondary' }} />
+                                                <ComputerIcon sx={{ fontSize: 20, color: theme.palette.text.secondary }} />
                                                 <Box>
                                                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
                                                         {registro.equipo?.marca} {registro.equipo?.modelo}
@@ -280,7 +304,7 @@ const HistorialPage = () => {
                                         </TableCell>
                                         <TableCell>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                                <CalendarIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                                                <CalendarIcon sx={{ fontSize: 16, color: theme.palette.text.secondary }} />
                                                 <Typography variant="body2">
                                                     {moment(registro.fechaAsignacion).format('DD/MM/YYYY')}
                                                 </Typography>
@@ -293,7 +317,7 @@ const HistorialPage = () => {
                                             {registro.fechaDevolucion ? (
                                                 <>
                                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                                        <CalendarIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                                                        <CalendarIcon sx={{ fontSize: 16, color: theme.palette.text.secondary }} />
                                                         <Typography variant="body2">
                                                             {moment(registro.fechaDevolucion).format('DD/MM/YYYY')}
                                                         </Typography>
@@ -336,6 +360,11 @@ const HistorialPage = () => {
                     labelDisplayedRows={({ from, to, count }) =>
                         `${from}-${to} de ${count !== -1 ? count : `más de ${to}`}`
                     }
+                    sx={{
+                        backgroundColor: theme.palette.mode === 'dark'
+                            ? theme.palette.surface?.main
+                            : '#f5f5f5',
+                    }}
                 />
             </Paper>
         </Box>

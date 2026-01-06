@@ -18,6 +18,7 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    useTheme,
 } from '@mui/material';
 import {
     Close as CloseIcon,
@@ -38,6 +39,7 @@ import 'moment/locale/es';
 moment.locale('es');
 
 const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDelete }) => {
+    const theme = useTheme();
     const [usuario, setUsuario] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -92,11 +94,13 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     pb: 2,
-                    backgroundColor: '#fafafa',
-                    borderBottom: '1px solid #e5e5e5',
+                    backgroundColor: theme.palette.mode === 'dark'
+                        ? theme.palette.surface?.main
+                        : '#fafafa',
+                    borderBottom: `1px solid ${theme.palette.divider}`,
                 }}
             >
-                <Typography variant="h6" sx={{ fontWeight: 400, color: '#32363a' }}>
+                <Typography variant="h6" sx={{ fontWeight: 400, color: theme.palette.text.primary }}>
                     Detalle del Usuario
                 </Typography>
                 <IconButton onClick={onClose} size="small">
@@ -118,7 +122,7 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
                                     sx={{
                                         width: 80,
                                         height: 80,
-                                        backgroundColor: '#0854a0',
+                                        backgroundColor: theme.palette.primary.main,
                                         fontSize: '1.75rem',
                                         fontWeight: 600,
                                     }}
@@ -144,16 +148,23 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
 
                         {/* Información Personal */}
                         <Grid size={{ xs: 12 }}>
-                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#32363a', mb: 2 }}>
+                            <Typography
+                                variant="subtitle2"
+                                sx={{
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                    mb: 2
+                                }}
+                            >
                                 Información Personal
                             </Typography>
                         </Grid>
 
                         <Grid size={{ xs: 12 }} sm={6}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                <BadgeIcon sx={{ color: '#6a6d70', fontSize: 20 }} />
+                                <BadgeIcon sx={{ color: theme.palette.text.secondary, fontSize: 20 }} />
                                 <Box>
-                                    <Typography variant="caption" sx={{ color: '#6a6d70', display: 'block' }}>
+                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary, display: 'block' }}>
                                         DNI
                                     </Typography>
                                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
@@ -165,9 +176,9 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
 
                         <Grid size={{ xs: 12 }} sm={6}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                <PersonIcon sx={{ color: '#6a6d70', fontSize: 20 }} />
+                                <PersonIcon sx={{ color: theme.palette.text.secondary, fontSize: 20 }} />
                                 <Box>
-                                    <Typography variant="caption" sx={{ color: '#6a6d70', display: 'block' }}>
+                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary, display: 'block' }}>
                                         Iniciales
                                     </Typography>
                                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
@@ -180,16 +191,24 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
                         {/* Información Laboral */}
                         <Grid size={{ xs: 12 }}>
                             <Divider sx={{ my: 1 }} />
-                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#32363a', mb: 2, mt: 2 }}>
+                            <Typography
+                                variant="subtitle2"
+                                sx={{
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                    mb: 2,
+                                    mt: 2
+                                }}
+                            >
                                 Información Laboral
                             </Typography>
                         </Grid>
 
                         <Grid size={{ xs: 12 }} sm={6}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                <WorkIcon sx={{ color: '#6a6d70', fontSize: 20 }} />
+                                <WorkIcon sx={{ color: theme.palette.text.secondary, fontSize: 20 }} />
                                 <Box>
-                                    <Typography variant="caption" sx={{ color: '#6a6d70', display: 'block' }}>
+                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary, display: 'block' }}>
                                         Cargo
                                     </Typography>
                                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
@@ -201,9 +220,9 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
 
                         <Grid size={{ xs: 12 }} sm={6}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                <BusinessIcon sx={{ color: '#6a6d70', fontSize: 20 }} />
+                                <BusinessIcon sx={{ color: theme.palette.text.secondary, fontSize: 20 }} />
                                 <Box>
-                                    <Typography variant="caption" sx={{ color: '#6a6d70', display: 'block' }}>
+                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary, display: 'block' }}>
                                         Área
                                     </Typography>
                                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
@@ -216,16 +235,24 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
                         {/* Contacto */}
                         <Grid size={{ xs: 12 }}>
                             <Divider sx={{ my: 1 }} />
-                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#32363a', mb: 2, mt: 2 }}>
+                            <Typography
+                                variant="subtitle2"
+                                sx={{
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                    mb: 2,
+                                    mt: 2
+                                }}
+                            >
                                 Información de Contacto
                             </Typography>
                         </Grid>
 
                         <Grid size={{ xs: 12 }} sm={6}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                <EmailIcon sx={{ color: '#6a6d70', fontSize: 20 }} />
+                                <EmailIcon sx={{ color: theme.palette.text.secondary, fontSize: 20 }} />
                                 <Box>
-                                    <Typography variant="caption" sx={{ color: '#6a6d70', display: 'block' }}>
+                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary, display: 'block' }}>
                                         Correo Electrónico
                                     </Typography>
                                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
@@ -237,9 +264,9 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
 
                         <Grid size={{ xs: 12 }} sm={6}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                <PhoneIcon sx={{ color: '#6a6d70', fontSize: 20 }} />
+                                <PhoneIcon sx={{ color: theme.palette.text.secondary, fontSize: 20 }} />
                                 <Box>
-                                    <Typography variant="caption" sx={{ color: '#6a6d70', display: 'block' }}>
+                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary, display: 'block' }}>
                                         Teléfono
                                     </Typography>
                                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
@@ -256,7 +283,7 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
                                     <Divider sx={{ my: 1 }} />
                                 </Grid>
                                 <Grid size={{ xs: 12 }}>
-                                    <Typography variant="caption" sx={{ color: '#6a6d70', display: 'block', mb: 0.5 }}>
+                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary, display: 'block', mb: 0.5 }}>
                                         Observaciones
                                     </Typography>
                                     <Typography variant="body2">
@@ -272,8 +299,14 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
                                 <Grid size={{ xs: 12 }}>
                                     <Divider sx={{ my: 1 }} />
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, mb: 2 }}>
-                                        <ComputerIcon sx={{ color: '#0854a0', fontSize: 20 }} />
-                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#32363a' }}>
+                                        <ComputerIcon sx={{ color: theme.palette.primary.main, fontSize: 20 }} />
+                                        <Typography
+                                            variant="subtitle2"
+                                            sx={{
+                                                fontWeight: 600,
+                                                color: theme.palette.text.primary
+                                            }}
+                                        >
                                             Equipos Asignados ({usuario.equiposAsignados.length})
                                         </Typography>
                                     </Box>
@@ -283,10 +316,18 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
                                         <Table size="small">
                                             <TableHead>
                                                 <TableRow>
-                                                    <TableCell sx={{ fontWeight: 600 }}>Equipo</TableCell>
-                                                    <TableCell sx={{ fontWeight: 600 }}>Marca/Modelo</TableCell>
-                                                    <TableCell sx={{ fontWeight: 600 }}>Serie</TableCell>
-                                                    <TableCell sx={{ fontWeight: 600 }}>Fecha Asignación</TableCell>
+                                                    <TableCell sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                                        Equipo
+                                                    </TableCell>
+                                                    <TableCell sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                                        Marca/Modelo
+                                                    </TableCell>
+                                                    <TableCell sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                                        Serie
+                                                    </TableCell>
+                                                    <TableCell sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                                        Fecha Asignación
+                                                    </TableCell>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
@@ -318,8 +359,10 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
                 sx={{
                     px: 3,
                     py: 2,
-                    backgroundColor: '#fafafa',
-                    borderTop: '1px solid #e5e5e5',
+                    backgroundColor: theme.palette.mode === 'dark'
+                        ? theme.palette.surface?.main
+                        : '#fafafa',
+                    borderTop: `1px solid ${theme.palette.divider}`,
                     justifyContent: 'space-between',
                 }}
             >
@@ -339,7 +382,7 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
                         onClick={onClose}
                         sx={{
                             textTransform: 'none',
-                            color: '#32363a',
+                            color: theme.palette.text.primary,
                         }}
                     >
                         Cerrar
@@ -349,11 +392,11 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
                         startIcon={<EditIcon />}
                         onClick={onEdit}
                         sx={{
-                            backgroundColor: '#0854a0',
+                            backgroundColor: theme.palette.primary.main,
                             textTransform: 'none',
                             boxShadow: 'none',
                             '&:hover': {
-                                backgroundColor: '#0a6ed1',
+                                backgroundColor: theme.palette.primary.dark,
                                 boxShadow: 'none',
                             },
                         }}

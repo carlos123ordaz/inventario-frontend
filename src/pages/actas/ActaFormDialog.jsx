@@ -1,4 +1,3 @@
-// src/pages/Actas/ActaFormDialog.jsx
 import React, { useState, useEffect } from 'react';
 import {
     Dialog,
@@ -23,6 +22,7 @@ import {
     InputLabel,
     Select,
     MenuItem,
+    useTheme,
 } from '@mui/material';
 import {
     Close as CloseIcon,
@@ -33,6 +33,7 @@ import {
 import actasService from '../../api/actasService';
 
 const ActaFormDialog = ({ open, onClose, onSuccess, editMode, actaData }) => {
+    const theme = useTheme();
     const [formData, setFormData] = useState({
         titulo: '',
         descripcion: '',
@@ -80,13 +81,11 @@ const ActaFormDialog = ({ open, onClose, onSuccess, editMode, actaData }) => {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            // Validar que sea un archivo .docx
             if (!file.name.endsWith('.docx')) {
                 setError('Solo se permiten archivos .docx');
                 return;
             }
 
-            // Validar tamaño (máximo 10MB)
             if (file.size > 10 * 1024 * 1024) {
                 setError('El archivo no debe superar los 10MB');
                 return;
@@ -115,10 +114,8 @@ const ActaFormDialog = ({ open, onClose, onSuccess, editMode, actaData }) => {
 
         try {
             if (editMode) {
-                // Modo edición - solo actualizar datos
                 await actasService.update(actaData._id, formData);
             } else {
-                // Modo creación - subir archivo y crear
                 const formDataToSend = new FormData();
                 formDataToSend.append('titulo', formData.titulo);
                 formDataToSend.append('descripcion', formData.descripcion);
@@ -147,11 +144,11 @@ const ActaFormDialog = ({ open, onClose, onSuccess, editMode, actaData }) => {
 
     const getCategoriaColor = (categoria) => {
         const colors = {
-            'usuario': '#2196f3',
-            'equipo': '#4caf50',
-            'general': '#ff9800',
+            'usuario': theme.palette.info.main,
+            'equipo': theme.palette.success.main,
+            'general': theme.palette.warning.main,
         };
-        return colors[categoria] || '#9e9e9e';
+        return colors[categoria] || theme.palette.text.secondary;
     };
 
     return (
@@ -177,7 +174,7 @@ const ActaFormDialog = ({ open, onClose, onSuccess, editMode, actaData }) => {
                     edge="end"
                     onClick={handleClose}
                     disabled={loading}
-                    sx={{ color: '#6a6d70' }}
+                    sx={{ color: theme.palette.text.secondary }}
                 >
                     <CloseIcon />
                 </IconButton>
@@ -245,13 +242,23 @@ const ActaFormDialog = ({ open, onClose, onSuccess, editMode, actaData }) => {
                                     textAlign: 'center',
                                     borderStyle: 'dashed',
                                     borderWidth: 2,
-                                    borderColor: selectedFile ? '#2196f3' : '#e0e0e0',
-                                    backgroundColor: selectedFile ? '#f5f9fc' : '#fafafa',
+                                    borderColor: selectedFile ? theme.palette.primary.main : theme.palette.divider,
+                                    backgroundColor: selectedFile
+                                        ? theme.palette.mode === 'dark'
+                                            ? 'rgba(100, 181, 246, 0.1)'
+                                            : '#f5f9fc'
+                                        : theme.palette.mode === 'dark'
+                                            ? 'rgba(255, 255, 255, 0.05)'
+                                            : '#fafafa',
                                     cursor: 'pointer',
-                                    transition: 'all 0.3s',
+                                    transition: theme.transitions.create('all', {
+                                        duration: theme.transitions.duration.shorter,
+                                    }),
                                     '&:hover': {
-                                        borderColor: '#2196f3',
-                                        backgroundColor: '#f5f9fc',
+                                        borderColor: theme.palette.primary.main,
+                                        backgroundColor: theme.palette.mode === 'dark'
+                                            ? 'rgba(100, 181, 246, 0.1)'
+                                            : '#f5f9fc',
                                     }
                                 }}
                                 onClick={() => document.getElementById('file-input').click()}
@@ -267,7 +274,7 @@ const ActaFormDialog = ({ open, onClose, onSuccess, editMode, actaData }) => {
 
                                 {selectedFile ? (
                                     <Box>
-                                        <CheckIcon sx={{ fontSize: 48, color: '#2196f3', mb: 1 }} />
+                                        <CheckIcon sx={{ fontSize: 48, color: theme.palette.success.main, mb: 1 }} />
                                         <Typography variant="body1" sx={{ fontWeight: 500, mb: 0.5 }}>
                                             {selectedFile.name}
                                         </Typography>
@@ -277,7 +284,7 @@ const ActaFormDialog = ({ open, onClose, onSuccess, editMode, actaData }) => {
                                     </Box>
                                 ) : (
                                     <Box>
-                                        <UploadIcon sx={{ fontSize: 48, color: '#9e9e9e', mb: 1 }} />
+                                        <UploadIcon sx={{ fontSize: 48, color: theme.palette.text.secondary, mb: 1, opacity: 0.5 }} />
                                         <Typography variant="body1" sx={{ mb: 0.5 }}>
                                             Haz clic para seleccionar un archivo
                                         </Typography>
@@ -350,7 +357,7 @@ const ActaFormDialog = ({ open, onClose, onSuccess, editMode, actaData }) => {
                                                                         height: 20,
                                                                         fontSize: '0.7rem',
                                                                         backgroundColor: getCategoriaColor(campo.categoria),
-                                                                        color: '#fff'
+                                                                        color: theme.palette.getContrastText(getCategoriaColor(campo.categoria))
                                                                     }}
                                                                 />
                                                                 <Chip
@@ -390,11 +397,11 @@ const ActaFormDialog = ({ open, onClose, onSuccess, editMode, actaData }) => {
                         variant="contained"
                         disabled={loading}
                         sx={{
-                            backgroundColor: '#0854a0',
+                            backgroundColor: theme.palette.primary.main,
                             textTransform: 'none',
                             minWidth: 100,
                             '&:hover': {
-                                backgroundColor: '#0a6ed1',
+                                backgroundColor: theme.palette.primary.dark,
                             },
                         }}
                     >

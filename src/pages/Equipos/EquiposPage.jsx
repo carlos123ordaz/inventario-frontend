@@ -21,6 +21,7 @@ import {
     MenuItem,
     Alert,
     Snackbar,
+    useTheme,
 } from '@mui/material';
 import {
     Add as AddIcon,
@@ -30,8 +31,6 @@ import {
     Edit as EditIcon,
     Delete as DeleteIcon,
     MoreVert as MoreVertIcon,
-    Laptop as LaptopIcon,
-    Computer as ComputerIcon,
     Clear as ClearIcon,
     LaptopChromebook,
     ComputerOutlined,
@@ -54,6 +53,7 @@ moment.locale('es');
 
 const EquiposPage = () => {
     const navigate = useNavigate();
+    const theme = useTheme();
 
     // Estados
     const [equipos, setEquipos] = useState([]);
@@ -120,7 +120,6 @@ const EquiposPage = () => {
             setIsSearching(true);
             const response = await equiposService.search(term);
             let filteredData = response.data;
-            console.log(filteredData)
             if (filterEstado) {
                 filteredData = filteredData.filter(e => e.estado === filterEstado);
             }
@@ -145,21 +144,18 @@ const EquiposPage = () => {
         setIsSearching(false);
     };
 
-    // Limpiar solo búsqueda
     const handleClearSearch = () => {
         setSearchTerm('');
         setIsSearching(false);
         setPage(0);
     };
 
-    // Abrir diálogo para crear
     const handleCreate = () => {
         setEditMode(false);
         setSelectedEquipo(null);
         setFormDialogOpen(true);
     };
 
-    // Abrir diálogo para editar
     const handleEdit = (equipo) => {
         setEditMode(true);
         setSelectedEquipo(equipo);
@@ -167,7 +163,6 @@ const EquiposPage = () => {
         handleMenuClose();
     };
 
-    // Eliminar equipo
     const handleDeleteClick = (equipo) => {
         setSelectedEquipo(equipo);
         setDeleteDialogOpen(true);
@@ -179,7 +174,6 @@ const EquiposPage = () => {
             await equiposService.delete(selectedEquipo._id);
             showNotification('Equipo eliminado correctamente', 'success');
 
-            // Recargar según el modo actual
             if (isSearching && searchTerm.trim()) {
                 handleSearch();
             } else {
@@ -194,7 +188,6 @@ const EquiposPage = () => {
         }
     };
 
-    // Manejar guardado del formulario
     const handleFormSuccess = () => {
         setFormDialogOpen(false);
         showNotification(
@@ -202,7 +195,6 @@ const EquiposPage = () => {
             'success'
         );
 
-        // Recargar según el modo actual
         if (isSearching && searchTerm.trim()) {
             handleSearch();
         } else {
@@ -210,9 +202,8 @@ const EquiposPage = () => {
         }
     };
 
-    // Menú de acciones
     const handleMenuOpen = (event, equipo) => {
-        event.stopPropagation(); // Evitar que se active el click de la fila
+        event.stopPropagation();
         setAnchorEl(event.currentTarget);
         setSelectedEquipo(equipo);
     };
@@ -221,7 +212,6 @@ const EquiposPage = () => {
         setAnchorEl(null);
     };
 
-    // Paginación (solo funciona cuando no está buscando)
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -231,12 +221,10 @@ const EquiposPage = () => {
         setPage(0);
     };
 
-    // Notificaciones
     const showNotification = (message, severity = 'success') => {
         setNotification({ open: true, message, severity });
     };
 
-    // Obtener color del estado
     const getEstadoColor = (estado) => {
         const colors = {
             'Disponible': 'success',
@@ -247,7 +235,6 @@ const EquiposPage = () => {
         };
         return colors[estado] || 'default';
     };
-
 
     const getTipoIcon = (tipo) => {
         switch (tipo) {
@@ -265,11 +252,11 @@ const EquiposPage = () => {
                 return <ColorizeRounded sx={{ fontSize: 20 }} />;
             case 'TECLADO':
                 return <Keyboard sx={{ fontSize: 20 }} />;
+            default:
+                return null;
         }
-
     };
 
-    // Navegar al detalle
     const handleRowClick = (equipoId) => {
         navigate(`/equipos/${equipoId}`);
     };
@@ -278,27 +265,26 @@ const EquiposPage = () => {
         return <LoadingSpinner />;
     }
 
-    // Calcular equipos para la página actual (solo cuando está buscando)
     const displayedEquipos = isSearching
         ? equipos.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
         : equipos;
 
     return (
         <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            {/* Header Section - Estilo SAP Fiori */}
+            {/* Header Section */}
             <Box sx={{ mb: 3 }}>
                 <Typography
                     variant="h4"
                     sx={{
                         fontWeight: 400,
                         fontSize: '1.75rem',
-                        color: '#32363a',
+                        color: theme.palette.text.primary,
                         mb: 0.5,
                     }}
                 >
                     Gestión de Equipos
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#6a6d70' }}>
+                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                     {totalCount} {totalCount === 1 ? 'equipo' : 'equipos'}
                     {isSearching && searchTerm && (
                         <Chip
@@ -311,12 +297,12 @@ const EquiposPage = () => {
                 </Typography>
             </Box>
 
-            {/* Toolbar - Estilo SAP Fiori */}
+            {/* Toolbar */}
             <Paper
                 elevation={0}
                 sx={{
                     mb: 2,
-                    border: '1px solid #e5e5e5',
+                    border: `1px solid ${theme.palette.divider}`,
                     borderRadius: '0.5rem',
                     overflow: 'hidden',
                 }}
@@ -329,7 +315,9 @@ const EquiposPage = () => {
                         gap: 2,
                         flexWrap: 'wrap',
                         minHeight: 'auto !important',
-                        backgroundColor: '#fafafa',
+                        backgroundColor: theme.palette.mode === 'dark'
+                            ? theme.palette.surface?.main
+                            : '#fafafa',
                     }}
                 >
                     {/* Barra de búsqueda */}
@@ -341,17 +329,11 @@ const EquiposPage = () => {
                         sx={{
                             flexGrow: 1,
                             minWidth: 250,
-                            '& .MuiOutlinedInput-root': {
-                                backgroundColor: '#fff',
-                                '&:hover': {
-                                    backgroundColor: '#fff',
-                                },
-                            },
                         }}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <SearchIcon sx={{ color: '#6a6d70', fontSize: 20 }} />
+                                    <SearchIcon sx={{ color: theme.palette.text.secondary, fontSize: 20 }} />
                                 </InputAdornment>
                             ),
                             endAdornment: searchTerm && (
@@ -370,11 +352,17 @@ const EquiposPage = () => {
                             <IconButton
                                 onClick={() => setShowFilters(!showFilters)}
                                 sx={{
-                                    border: '1px solid #e5e5e5',
-                                    backgroundColor: showFilters ? '#0854a0' : '#fff',
-                                    color: showFilters ? '#fff' : '#0854a0',
+                                    border: `1px solid ${theme.palette.divider}`,
+                                    backgroundColor: showFilters
+                                        ? theme.palette.primary.main
+                                        : 'transparent',
+                                    color: showFilters
+                                        ? theme.palette.primary.contrastText
+                                        : theme.palette.primary.main,
                                     '&:hover': {
-                                        backgroundColor: showFilters ? '#0854a0' : '#f5f5f5',
+                                        backgroundColor: showFilters
+                                            ? theme.palette.primary.dark
+                                            : theme.palette.action.hover,
                                     },
                                 }}
                             >
@@ -392,9 +380,8 @@ const EquiposPage = () => {
                                     }
                                 }}
                                 sx={{
-                                    border: '1px solid #e5e5e5',
-                                    backgroundColor: '#fff',
-                                    '&:hover': { backgroundColor: '#f5f5f5' },
+                                    border: `1px solid ${theme.palette.divider}`,
+                                    '&:hover': { backgroundColor: theme.palette.action.hover },
                                 }}
                             >
                                 <RefreshIcon fontSize="small" />
@@ -406,12 +393,13 @@ const EquiposPage = () => {
                             startIcon={<AddIcon />}
                             onClick={handleCreate}
                             sx={{
-                                backgroundColor: '#0854a0',
+                                backgroundColor: theme.palette.primary.main,
+                                color: theme.palette.primary.contrastText,
                                 textTransform: 'none',
-                                fontWeight: 400,
+                                fontWeight: 500,
                                 boxShadow: 'none',
                                 '&:hover': {
-                                    backgroundColor: '#0a6ed1',
+                                    backgroundColor: theme.palette.primary.dark,
                                     boxShadow: 'none',
                                 },
                             }}
@@ -426,8 +414,7 @@ const EquiposPage = () => {
                     <Box
                         sx={{
                             p: 2,
-                            borderTop: '1px solid #e5e5e5',
-                            backgroundColor: '#fff',
+                            borderTop: `1px solid ${theme.palette.divider}`,
                             display: 'flex',
                             gap: 2,
                             flexWrap: 'wrap',
@@ -458,7 +445,6 @@ const EquiposPage = () => {
                             label="Tipo"
                             value={filterTipo}
                             onChange={(e) => {
-                                console.log(e.target.value);
                                 setFilterTipo(e.target.value);
                                 setPage(0);
                             }}
@@ -466,13 +452,11 @@ const EquiposPage = () => {
                             sx={{ minWidth: 150 }}
                         >
                             <MenuItem value="">Todos</MenuItem>
-                            {
-                                TIPOS_EQUIPOS.map((tipo) => (
-                                    <MenuItem key={tipo} value={tipo}>
-                                        {tipo}
-                                    </MenuItem>
-                                ))
-                            }
+                            {TIPOS_EQUIPOS.map((tipo) => (
+                                <MenuItem key={tipo} value={tipo}>
+                                    {tipo}
+                                </MenuItem>
+                            ))}
                         </TextField>
 
                         {(filterEstado || filterTipo) && (
@@ -482,7 +466,7 @@ const EquiposPage = () => {
                                 onClick={handleClearFilters}
                                 sx={{
                                     textTransform: 'none',
-                                    color: '#0854a0',
+                                    color: theme.palette.primary.main,
                                 }}
                             >
                                 Limpiar filtros
@@ -492,14 +476,14 @@ const EquiposPage = () => {
                 )}
             </Paper>
 
-            {/* Tabla - Estilo SAP Fiori */}
+            {/* Tabla */}
             <Paper
                 elevation={0}
                 sx={{
                     flexGrow: 1,
                     display: 'flex',
                     flexDirection: 'column',
-                    border: '1px solid #e5e5e5',
+                    border: `1px solid ${theme.palette.divider}`,
                     borderRadius: '0.5rem',
                     overflow: 'hidden',
                 }}
@@ -508,30 +492,79 @@ const EquiposPage = () => {
                     <Table stickyHeader>
                         <TableHead>
                             <TableRow>
-                                <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600, color: '#32363a' }}>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
                                     Tipo
                                 </TableCell>
-                                <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600, color: '#32363a' }}>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
                                     Marca / Modelo
                                 </TableCell>
-                                <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600, color: '#32363a' }}>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
                                     Serie
                                 </TableCell>
-                                <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600, color: '#32363a' }}>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
                                     Hostname
                                 </TableCell>
-                                <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600, color: '#32363a' }}>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
                                     Estado
                                 </TableCell>
-                                <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600, color: '#32363a' }}>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
                                     Especificaciones
                                 </TableCell>
-                                <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600, color: '#32363a' }}>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
                                     Usuario Asignado
                                 </TableCell>
                                 <TableCell
                                     align="center"
-                                    sx={{ backgroundColor: '#fafafa', fontWeight: 600, color: '#32363a', width: 80 }}
+                                    sx={{
+                                        backgroundColor: theme.palette.mode === 'dark'
+                                            ? theme.palette.surface?.main
+                                            : '#fafafa',
+                                        fontWeight: 600,
+                                        color: theme.palette.text.primary,
+                                        width: 80,
+                                    }}
                                 >
                                     Acciones
                                 </TableCell>
@@ -546,7 +579,7 @@ const EquiposPage = () => {
                                 </TableRow>
                             ) : displayedEquipos.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={8} align="center" sx={{ py: 8, color: '#6a6d70' }}>
+                                    <TableCell colSpan={8} align="center" sx={{ py: 8, color: theme.palette.text.secondary }}>
                                         {isSearching ? (
                                             <>
                                                 <Typography variant="body1" sx={{ mb: 1 }}>
@@ -572,9 +605,6 @@ const EquiposPage = () => {
                                         hover
                                         onClick={() => handleRowClick(equipo._id)}
                                         sx={{
-                                            '&:hover': {
-                                                backgroundColor: '#f5f9fc',
-                                            },
                                             cursor: 'pointer',
                                         }}
                                     >
@@ -588,7 +618,7 @@ const EquiposPage = () => {
                                             <Typography variant="body2" sx={{ fontWeight: 500 }}>
                                                 {equipo.marca}
                                             </Typography>
-                                            <Typography variant="caption" sx={{ color: '#6a6d70' }}>
+                                            <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
                                                 {equipo.modelo}
                                             </Typography>
                                         </TableCell>
@@ -617,10 +647,10 @@ const EquiposPage = () => {
                                         <TableCell>
                                             {equipo.procesador ? (
                                                 <>
-                                                    <Typography variant="caption" sx={{ display: 'block', color: '#32363a' }}>
+                                                    <Typography variant="caption" sx={{ display: 'block', color: theme.palette.text.primary }}>
                                                         {equipo.procesador}
                                                     </Typography>
-                                                    <Typography variant="caption" sx={{ color: '#6a6d70' }}>
+                                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
                                                         {equipo.memoria} | {equipo.almacenamiento}
                                                     </Typography>
                                                 </>
@@ -633,7 +663,7 @@ const EquiposPage = () => {
                                                         `${equipo.asignacionActual.usuario?.nombre} ${equipo.asignacionActual.usuario?.apellido}`}
                                                 </Typography>
                                             ) : (
-                                                <Typography variant="body2" sx={{ color: '#6a6d70', fontStyle: 'italic' }}>
+                                                <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontStyle: 'italic' }}>
                                                     Sin asignar
                                                 </Typography>
                                             )}
@@ -642,7 +672,7 @@ const EquiposPage = () => {
                                             <IconButton
                                                 size="small"
                                                 onClick={(e) => handleMenuOpen(e, equipo)}
-                                                sx={{ color: '#6a6d70' }}
+                                                sx={{ color: theme.palette.text.secondary }}
                                             >
                                                 <MoreVertIcon fontSize="small" />
                                             </IconButton>
@@ -666,8 +696,10 @@ const EquiposPage = () => {
                     labelRowsPerPage="Filas por página:"
                     labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
                     sx={{
-                        borderTop: '1px solid #e5e5e5',
-                        backgroundColor: '#fafafa',
+                        borderTop: `1px solid ${theme.palette.divider}`,
+                        backgroundColor: theme.palette.mode === 'dark'
+                            ? theme.palette.surface?.main
+                            : '#fafafa',
                     }}
                 />
             </Paper>
@@ -688,7 +720,7 @@ const EquiposPage = () => {
                 }}
             >
                 <MenuItem onClick={() => handleEdit(selectedEquipo)}>
-                    <EditIcon sx={{ mr: 1.5, fontSize: 18, color: '#6a6d70' }} />
+                    <EditIcon sx={{ mr: 1.5, fontSize: 18, color: theme.palette.text.secondary }} />
                     Editar
                 </MenuItem>
                 <MenuItem onClick={() => handleDeleteClick(selectedEquipo)} sx={{ color: 'error.main' }}>

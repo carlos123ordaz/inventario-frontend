@@ -20,6 +20,7 @@ import {
     Avatar,
     Chip,
     Divider,
+    useTheme,
 } from '@mui/material';
 import {
     ArrowBack as ArrowBackIcon,
@@ -34,6 +35,7 @@ import { ROUTES } from '../../routes/routes.constants';
 
 const AsignarPage = () => {
     const navigate = useNavigate();
+    const theme = useTheme();
     const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' });
     const [loading, setLoading] = useState(false);
     const [loadingData, setLoadingData] = useState(true);
@@ -142,7 +144,7 @@ const AsignarPage = () => {
                 <IconButton onClick={() => navigate(ROUTES.ASIGNACIONES.LIST)}>
                     <ArrowBackIcon />
                 </IconButton>
-                <Typography variant="h4" sx={{ fontWeight: 600, color: '#354a5f' }}>
+                <Typography variant="h4" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
                     Nueva Asignación
                 </Typography>
             </Box>
@@ -169,12 +171,12 @@ const AsignarPage = () => {
                             elevation={0}
                             sx={{
                                 p: 3,
-                                border: '1px solid #e0e0e0',
+                                border: `1px solid ${theme.palette.divider}`,
                                 borderRadius: 1,
                             }}
                         >
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                <ComputerIcon sx={{ mr: 1, color: '#0070f3' }} />
+                                <ComputerIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
                                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
                                     Seleccionar Equipo
                                 </Typography>
@@ -216,7 +218,13 @@ const AsignarPage = () => {
                             {selectedEquipo && (
                                 <Card
                                     elevation={0}
-                                    sx={{ mt: 2, backgroundColor: '#f0f7ff', border: '1px solid #0070f3' }}
+                                    sx={{
+                                        mt: 2,
+                                        backgroundColor: theme.palette.mode === 'dark'
+                                            ? 'rgba(100, 181, 246, 0.12)'
+                                            : '#f0f7ff',
+                                        border: `1px solid ${theme.palette.primary.main}`
+                                    }}
                                 >
                                     <CardContent>
                                         <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
@@ -245,12 +253,12 @@ const AsignarPage = () => {
                             elevation={0}
                             sx={{
                                 p: 3,
-                                border: '1px solid #e0e0e0',
+                                border: `1px solid ${theme.palette.divider}`,
                                 borderRadius: 1,
                             }}
                         >
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                <PersonIcon sx={{ mr: 1, color: '#0070f3' }} />
+                                <PersonIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
                                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
                                     Seleccionar Usuario
                                 </Typography>
@@ -281,7 +289,7 @@ const AsignarPage = () => {
                                                 sx={{
                                                     width: 32,
                                                     height: 32,
-                                                    backgroundColor: '#0070f3',
+                                                    backgroundColor: theme.palette.primary.main,
                                                     mr: 1,
                                                     fontSize: '0.875rem',
                                                 }}
@@ -305,7 +313,13 @@ const AsignarPage = () => {
                             {selectedUsuario && (
                                 <Card
                                     elevation={0}
-                                    sx={{ mt: 2, backgroundColor: '#f0f7ff', border: '1px solid #0070f3' }}
+                                    sx={{
+                                        mt: 2,
+                                        backgroundColor: theme.palette.mode === 'dark'
+                                            ? 'rgba(100, 181, 246, 0.12)'
+                                            : '#f0f7ff',
+                                        border: `1px solid ${theme.palette.primary.main}`
+                                    }}
                                 >
                                     <CardContent>
                                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -313,7 +327,7 @@ const AsignarPage = () => {
                                                 sx={{
                                                     width: 48,
                                                     height: 48,
-                                                    backgroundColor: '#0070f3',
+                                                    backgroundColor: theme.palette.primary.main,
                                                     mr: 2,
                                                 }}
                                             >
@@ -343,7 +357,7 @@ const AsignarPage = () => {
                             elevation={0}
                             sx={{
                                 p: 3,
-                                border: '1px solid #e0e0e0',
+                                border: `1px solid ${theme.palette.divider}`,
                                 borderRadius: 1,
                             }}
                         >
@@ -426,8 +440,8 @@ const AsignarPage = () => {
                                 startIcon={<SaveIcon />}
                                 disabled={loading || !selectedEquipo || !selectedUsuario}
                                 sx={{
-                                    backgroundColor: '#0070f3',
-                                    '&:hover': { backgroundColor: '#0051cc' },
+                                    backgroundColor: theme.palette.primary.main,
+                                    '&:hover': { backgroundColor: theme.palette.primary.dark },
                                     textTransform: 'none',
                                 }}
                             >

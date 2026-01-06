@@ -21,6 +21,7 @@ import {
     DialogContent,
     DialogActions,
     TextField,
+    useTheme,
 } from '@mui/material';
 import {
     Add as AddIcon,
@@ -43,6 +44,7 @@ moment.locale('es');
 
 const AsignacionesPage = () => {
     const navigate = useNavigate();
+    const theme = useTheme();
 
     // Estados
     const [asignaciones, setAsignaciones] = useState([]);
@@ -136,7 +138,7 @@ const AsignacionesPage = () => {
             {/* Header */}
             <Box sx={{ mb: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                    <Typography variant="h4" sx={{ fontWeight: 600, color: '#354a5f' }}>
+                    <Typography variant="h4" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
                         Asignaciones Activas
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 1 }}>
@@ -152,8 +154,8 @@ const AsignacionesPage = () => {
                             startIcon={<AddIcon />}
                             onClick={() => navigate(ROUTES.ASIGNACIONES.NEW)}
                             sx={{
-                                backgroundColor: '#0070f3',
-                                '&:hover': { backgroundColor: '#0051cc' },
+                                backgroundColor: theme.palette.primary.main,
+                                '&:hover': { backgroundColor: theme.palette.primary.dark },
                                 textTransform: 'none',
                                 fontWeight: 600,
                             }}
@@ -174,12 +176,21 @@ const AsignacionesPage = () => {
                         elevation={0}
                         sx={{
                             p: 2,
-                            border: '1px solid #e0e0e0',
+                            border: `1px solid ${theme.palette.divider}`,
                             borderRadius: 1,
-                            backgroundColor: '#f0f7ff',
+                            backgroundColor: theme.palette.mode === 'dark'
+                                ? 'rgba(100, 181, 246, 0.12)'
+                                : '#f0f7ff',
                         }}
                     >
-                        <Typography variant="h4" sx={{ fontWeight: 600, color: '#0070f3', mb: 0.5 }}>
+                        <Typography
+                            variant="h4"
+                            sx={{
+                                fontWeight: 600,
+                                color: theme.palette.primary.main,
+                                mb: 0.5
+                            }}
+                        >
                             {asignaciones.length}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -196,11 +207,11 @@ const AsignacionesPage = () => {
                     sx={{
                         p: 4,
                         textAlign: 'center',
-                        border: '1px solid #e0e0e0',
+                        border: `1px solid ${theme.palette.divider}`,
                         borderRadius: 1,
                     }}
                 >
-                    <AssignmentIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
+                    <AssignmentIcon sx={{ fontSize: 48, color: theme.palette.text.secondary, mb: 2 }} />
                     <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
                         No hay asignaciones activas
                     </Typography>
@@ -212,8 +223,8 @@ const AsignacionesPage = () => {
                         startIcon={<AddIcon />}
                         onClick={() => navigate(ROUTES.ASIGNACIONES.NEW)}
                         sx={{
-                            backgroundColor: '#0070f3',
-                            '&:hover': { backgroundColor: '#0051cc' },
+                            backgroundColor: theme.palette.primary.main,
+                            '&:hover': { backgroundColor: theme.palette.primary.dark },
                             textTransform: 'none',
                         }}
                     >
@@ -227,14 +238,16 @@ const AsignacionesPage = () => {
                             <Card
                                 elevation={0}
                                 sx={{
-                                    border: '1px solid #e0e0e0',
+                                    border: `1px solid ${theme.palette.divider}`,
                                     borderRadius: 1,
                                     height: '100%',
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    transition: 'all 0.2s',
+                                    transition: theme.transitions.create(['box-shadow', 'transform'], {
+                                        duration: theme.transitions.duration.shorter,
+                                    }),
                                     '&:hover': {
-                                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                        boxShadow: theme.shadows[4],
                                         transform: 'translateY(-2px)',
                                     },
                                 }}
@@ -261,7 +274,7 @@ const AsignacionesPage = () => {
                                             sx={{
                                                 width: 48,
                                                 height: 48,
-                                                backgroundColor: '#0070f3',
+                                                backgroundColor: theme.palette.primary.main,
                                                 mr: 1.5,
                                             }}
                                         >
@@ -282,13 +295,15 @@ const AsignacionesPage = () => {
                                     <Box
                                         sx={{
                                             p: 1.5,
-                                            backgroundColor: '#f5f5f5',
+                                            backgroundColor: theme.palette.mode === 'dark'
+                                                ? 'rgba(100, 181, 246, 0.12)'
+                                                : '#f5f5f5',
                                             borderRadius: 1,
                                             mb: 2,
                                         }}
                                     >
                                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                                            <ComputerIcon sx={{ fontSize: 18, color: 'text.secondary', mr: 1 }} />
+                                            <ComputerIcon sx={{ fontSize: 18, color: theme.palette.text.secondary, mr: 1 }} />
                                             <Typography variant="body2" sx={{ fontWeight: 500 }}>
                                                 {asignacion.equipo?.marca} {asignacion.equipo?.modelo}
                                             </Typography>
@@ -300,7 +315,7 @@ const AsignacionesPage = () => {
 
                                     {/* Fechas */}
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                        <CalendarIcon sx={{ fontSize: 16, color: 'text.secondary', mr: 1 }} />
+                                        <CalendarIcon sx={{ fontSize: 16, color: theme.palette.text.secondary, mr: 1 }} />
                                         <Typography variant="caption" color="text.secondary">
                                             Asignado el {moment(asignacion.fechaAsignacion).format('DD/MM/YYYY')}
                                         </Typography>

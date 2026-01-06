@@ -1,4 +1,3 @@
-// src/pages/Usuarios/UsuariosPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import {
     Box,
@@ -23,6 +22,7 @@ import {
     MenuItem,
     Alert,
     Snackbar,
+    useTheme,
 } from '@mui/material';
 import {
     Add as AddIcon,
@@ -45,6 +45,8 @@ import GenerarActaDialog from './GenerarActaDialog';
 import { AREAS } from '../../constants';
 
 const UsuariosPage = () => {
+    const theme = useTheme();
+
     // Estados
     const [usuarios, setUsuarios] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -110,7 +112,7 @@ const UsuariosPage = () => {
             } else {
                 loadUsuarios();
             }
-        }, 500); // 500ms de espera después de dejar de escribir
+        }, 500);
 
         return () => clearTimeout(debounceTimer);
     }, [searchTerm]);
@@ -237,30 +239,30 @@ const UsuariosPage = () => {
 
     return (
         <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            {/* Header Section - Estilo SAP Fiori */}
+            {/* Header Section */}
             <Box sx={{ mb: 3 }}>
                 <Typography
                     variant="h4"
                     sx={{
                         fontWeight: 400,
                         fontSize: '1.75rem',
-                        color: '#32363a',
+                        color: theme.palette.text.primary,
                         mb: 0.5,
                     }}
                 >
                     Gestión de Usuarios
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#6a6d70' }}>
+                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                     {totalCount} {totalCount === 1 ? 'usuario' : 'usuarios'}
                 </Typography>
             </Box>
 
-            {/* Toolbar - Estilo SAP Fiori */}
+            {/* Toolbar */}
             <Paper
                 elevation={0}
                 sx={{
                     mb: 2,
-                    border: '1px solid #e5e5e5',
+                    border: `1px solid ${theme.palette.divider}`,
                     borderRadius: '0.5rem',
                     overflow: 'hidden',
                 }}
@@ -273,7 +275,9 @@ const UsuariosPage = () => {
                         gap: 2,
                         flexWrap: 'wrap',
                         minHeight: 'auto !important',
-                        backgroundColor: '#fafafa',
+                        backgroundColor: theme.palette.mode === 'dark'
+                            ? theme.palette.surface?.main
+                            : '#fafafa',
                     }}
                 >
                     {/* Barra de búsqueda */}
@@ -285,17 +289,11 @@ const UsuariosPage = () => {
                         sx={{
                             flexGrow: 1,
                             minWidth: 250,
-                            '& .MuiOutlinedInput-root': {
-                                backgroundColor: '#fff',
-                                '&:hover': {
-                                    backgroundColor: '#fff',
-                                },
-                            },
                         }}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <SearchIcon sx={{ color: '#6a6d70', fontSize: 20 }} />
+                                    <SearchIcon sx={{ color: theme.palette.text.secondary, fontSize: 20 }} />
                                 </InputAdornment>
                             ),
                             endAdornment: searchTerm && (
@@ -314,11 +312,17 @@ const UsuariosPage = () => {
                             <IconButton
                                 onClick={() => setShowFilters(!showFilters)}
                                 sx={{
-                                    border: '1px solid #e5e5e5',
-                                    backgroundColor: showFilters ? '#0854a0' : '#fff',
-                                    color: showFilters ? '#fff' : '#0854a0',
+                                    border: `1px solid ${theme.palette.divider}`,
+                                    backgroundColor: showFilters
+                                        ? theme.palette.primary.main
+                                        : 'transparent',
+                                    color: showFilters
+                                        ? theme.palette.primary.contrastText
+                                        : theme.palette.primary.main,
                                     '&:hover': {
-                                        backgroundColor: showFilters ? '#0854a0' : '#f5f5f5',
+                                        backgroundColor: showFilters
+                                            ? theme.palette.primary.dark
+                                            : theme.palette.action.hover,
                                     },
                                 }}
                             >
@@ -330,9 +334,8 @@ const UsuariosPage = () => {
                             <IconButton
                                 onClick={loadUsuarios}
                                 sx={{
-                                    border: '1px solid #e5e5e5',
-                                    backgroundColor: '#fff',
-                                    '&:hover': { backgroundColor: '#f5f5f5' },
+                                    border: `1px solid ${theme.palette.divider}`,
+                                    '&:hover': { backgroundColor: theme.palette.action.hover },
                                 }}
                             >
                                 <RefreshIcon fontSize="small" />
@@ -344,12 +347,12 @@ const UsuariosPage = () => {
                             startIcon={<AddIcon />}
                             onClick={handleCreate}
                             sx={{
-                                backgroundColor: '#0854a0',
+                                backgroundColor: theme.palette.primary.main,
                                 textTransform: 'none',
-                                fontWeight: 400,
+                                fontWeight: 500,
                                 boxShadow: 'none',
                                 '&:hover': {
-                                    backgroundColor: '#0a6ed1',
+                                    backgroundColor: theme.palette.primary.dark,
                                     boxShadow: 'none',
                                 },
                             }}
@@ -364,8 +367,7 @@ const UsuariosPage = () => {
                     <Box
                         sx={{
                             p: 2,
-                            borderTop: '1px solid #e5e5e5',
-                            backgroundColor: '#fff',
+                            borderTop: `1px solid ${theme.palette.divider}`,
                             display: 'flex',
                             gap: 2,
                             flexWrap: 'wrap',
@@ -409,7 +411,7 @@ const UsuariosPage = () => {
                             onClick={handleClearFilters}
                             sx={{
                                 textTransform: 'none',
-                                color: '#0854a0',
+                                color: theme.palette.primary.main,
                             }}
                         >
                             Limpiar filtros
@@ -418,14 +420,14 @@ const UsuariosPage = () => {
                 )}
             </Paper>
 
-            {/* Tabla - Estilo SAP Fiori */}
+            {/* Tabla */}
             <Paper
                 elevation={0}
                 sx={{
                     flexGrow: 1,
                     display: 'flex',
                     flexDirection: 'column',
-                    border: '1px solid #e5e5e5',
+                    border: `1px solid ${theme.palette.divider}`,
                     borderRadius: '0.5rem',
                     overflow: 'hidden',
                 }}
@@ -434,30 +436,79 @@ const UsuariosPage = () => {
                     <Table stickyHeader>
                         <TableHead>
                             <TableRow>
-                                <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600, color: '#32363a' }}>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
                                     Usuario
                                 </TableCell>
-                                <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600, color: '#32363a' }}>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
                                     DNI
                                 </TableCell>
-                                <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600, color: '#32363a' }}>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
                                     Cargo
                                 </TableCell>
-                                <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600, color: '#32363a' }}>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
                                     Área
                                 </TableCell>
-                                <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600, color: '#32363a' }}>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
                                     Correo
                                 </TableCell>
-                                <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600, color: '#32363a' }}>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
                                     Teléfono
                                 </TableCell>
-                                <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600, color: '#32363a' }}>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
                                     Estado
                                 </TableCell>
                                 <TableCell
                                     align="center"
-                                    sx={{ backgroundColor: '#fafafa', fontWeight: 600, color: '#32363a', width: 80 }}
+                                    sx={{
+                                        backgroundColor: theme.palette.mode === 'dark'
+                                            ? theme.palette.surface?.main
+                                            : '#fafafa',
+                                        fontWeight: 600,
+                                        color: theme.palette.text.primary,
+                                        width: 80,
+                                    }}
                                 >
                                     Acciones
                                 </TableCell>
@@ -466,7 +517,7 @@ const UsuariosPage = () => {
                         <TableBody>
                             {usuarios.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={8} align="center" sx={{ py: 8, color: '#6a6d70' }}>
+                                    <TableCell colSpan={8} align="center" sx={{ py: 8, color: theme.palette.text.secondary }}>
                                         No se encontraron usuarios
                                     </TableCell>
                                 </TableRow>
@@ -476,9 +527,6 @@ const UsuariosPage = () => {
                                         key={usuario._id}
                                         hover
                                         sx={{
-                                            '&:hover': {
-                                                backgroundColor: '#f5f9fc',
-                                            },
                                             cursor: 'pointer',
                                         }}
                                         onClick={() => handleView(usuario)}
@@ -489,7 +537,7 @@ const UsuariosPage = () => {
                                                     sx={{
                                                         width: 32,
                                                         height: 32,
-                                                        backgroundColor: '#0854a0',
+                                                        backgroundColor: theme.palette.primary.main,
                                                         fontSize: '0.875rem',
                                                         fontWeight: 600,
                                                     }}
@@ -500,7 +548,7 @@ const UsuariosPage = () => {
                                                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
                                                         {usuario.nombreCompleto || `${usuario.nombre} ${usuario.apellido}`}
                                                     </Typography>
-                                                    <Typography variant="caption" sx={{ color: '#6a6d70' }}>
+                                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
                                                         @{usuario.usuario}
                                                     </Typography>
                                                 </Box>
@@ -516,7 +564,7 @@ const UsuariosPage = () => {
                                             <Typography variant="body2">{usuario.area}</Typography>
                                         </TableCell>
                                         <TableCell>
-                                            <Typography variant="body2" sx={{ color: '#6a6d70' }}>
+                                            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                                                 {usuario.correo}
                                             </Typography>
                                         </TableCell>
@@ -542,7 +590,7 @@ const UsuariosPage = () => {
                                                     e.stopPropagation();
                                                     handleMenuOpen(e, usuario);
                                                 }}
-                                                sx={{ color: '#6a6d70' }}
+                                                sx={{ color: theme.palette.text.secondary }}
                                             >
                                                 <MoreVertIcon fontSize="small" />
                                             </IconButton>
@@ -566,8 +614,10 @@ const UsuariosPage = () => {
                     labelRowsPerPage="Filas por página:"
                     labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
                     sx={{
-                        borderTop: '1px solid #e5e5e5',
-                        backgroundColor: '#fafafa',
+                        borderTop: `1px solid ${theme.palette.divider}`,
+                        backgroundColor: theme.palette.mode === 'dark'
+                            ? theme.palette.surface?.main
+                            : '#fafafa',
                     }}
                 />
             </Paper>
@@ -588,15 +638,15 @@ const UsuariosPage = () => {
                 }}
             >
                 <MenuItem onClick={() => handleView(selectedUsuario)}>
-                    <VisibilityIcon sx={{ mr: 1.5, fontSize: 18, color: '#6a6d70' }} />
+                    <VisibilityIcon sx={{ mr: 1.5, fontSize: 18, color: theme.palette.text.secondary }} />
                     Ver Detalle
                 </MenuItem>
                 <MenuItem onClick={() => handleGenerarActa(selectedUsuario)}>
-                    <DescriptionIcon sx={{ mr: 1.5, fontSize: 18, color: '#6a6d70' }} />
+                    <DescriptionIcon sx={{ mr: 1.5, fontSize: 18, color: theme.palette.text.secondary }} />
                     Generar Acta
                 </MenuItem>
                 <MenuItem onClick={() => handleEdit(selectedUsuario)}>
-                    <EditIcon sx={{ mr: 1.5, fontSize: 18, color: '#6a6d70' }} />
+                    <EditIcon sx={{ mr: 1.5, fontSize: 18, color: theme.palette.text.secondary }} />
                     Editar
                 </MenuItem>
                 <MenuItem onClick={() => handleDeleteClick(selectedUsuario)} sx={{ color: 'error.main' }}>

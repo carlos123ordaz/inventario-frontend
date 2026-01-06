@@ -19,6 +19,7 @@ import {
     TableHead,
     TableRow,
     Divider,
+    useTheme,
 } from '@mui/material';
 import {
     Computer as ComputerIcon,
@@ -42,6 +43,7 @@ moment.locale('es');
 
 const Dashboard = () => {
     const navigate = useNavigate();
+    const theme = useTheme();
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({
         totalEquipos: 0,
@@ -90,12 +92,14 @@ const Dashboard = () => {
         <Card
             elevation={0}
             sx={{
-                border: '1px solid #e0e0e0',
+                border: `1px solid ${theme.palette.divider}`,
                 borderRadius: 1,
                 cursor: onClick ? 'pointer' : 'default',
-                transition: 'all 0.2s',
+                transition: theme.transitions.create(['box-shadow', 'transform'], {
+                    duration: theme.transitions.duration.shorter,
+                }),
                 '&:hover': onClick ? {
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    boxShadow: theme.shadows[4],
                     transform: 'translateY(-2px)',
                 } : {},
             }}
@@ -118,7 +122,9 @@ const Dashboard = () => {
                     </Box>
                     <Avatar
                         sx={{
-                            backgroundColor: `${color}15`,
+                            backgroundColor: theme.palette.mode === 'dark'
+                                ? `${color}25`
+                                : `${color}15`,
                             color: color,
                             width: 56,
                             height: 56,
@@ -139,7 +145,14 @@ const Dashboard = () => {
         <Box>
             {/* Header */}
             <Box sx={{ mb: 4 }}>
-                <Typography variant="h4" sx={{ fontWeight: 600, color: '#354a5f', mb: 1 }}>
+                <Typography
+                    variant="h4"
+                    sx={{
+                        fontWeight: 600,
+                        color: theme.palette.text.primary,
+                        mb: 1
+                    }}
+                >
                     Dashboard
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -154,7 +167,7 @@ const Dashboard = () => {
                         title="Total de Equipos"
                         value={stats.totalEquipos}
                         icon={<ComputerIcon sx={{ fontSize: 28 }} />}
-                        color="#0070f3"
+                        color={theme.palette.primary.main}
                         subtitle="En inventario"
                         onClick={() => navigate(ROUTES.EQUIPOS.LIST)}
                     />
@@ -164,7 +177,7 @@ const Dashboard = () => {
                         title="Equipos Disponibles"
                         value={stats.disponibles}
                         icon={<CheckCircleIcon sx={{ fontSize: 28 }} />}
-                        color="#2e7d32"
+                        color={theme.palette.success.main}
                         subtitle="Listos para asignar"
                         onClick={() => navigate(ROUTES.EQUIPOS.LIST)}
                     />
@@ -174,7 +187,7 @@ const Dashboard = () => {
                         title="Equipos en Uso"
                         value={stats.enUso}
                         icon={<AssignmentIcon sx={{ fontSize: 28 }} />}
-                        color="#ed6c02"
+                        color={theme.palette.warning.main}
                         subtitle="Asignados actualmente"
                         onClick={() => navigate(ROUTES.ASIGNACIONES.LIST)}
                     />
@@ -184,7 +197,7 @@ const Dashboard = () => {
                         title="Total Usuarios"
                         value={stats.totalUsuarios}
                         icon={<PeopleIcon sx={{ fontSize: 28 }} />}
-                        color="#9c27b0"
+                        color={theme.palette.secondary.main}
                         subtitle="Registrados"
                         onClick={() => navigate(ROUTES.USUARIOS.LIST)}
                     />
@@ -197,7 +210,7 @@ const Dashboard = () => {
                         elevation={0}
                         sx={{
                             p: 3,
-                            border: '1px solid #e0e0e0',
+                            border: `1px solid ${theme.palette.divider}`,
                             borderRadius: 1,
                             height: '100%',
                         }}
@@ -211,9 +224,9 @@ const Dashboard = () => {
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                         {item._id === 'Laptop' ? (
-                                            <LaptopIcon sx={{ fontSize: 20, mr: 1, color: 'text.secondary' }} />
+                                            <LaptopIcon sx={{ fontSize: 20, mr: 1, color: theme.palette.text.secondary }} />
                                         ) : (
-                                            <DesktopIcon sx={{ fontSize: 20, mr: 1, color: 'text.secondary' }} />
+                                            <DesktopIcon sx={{ fontSize: 20, mr: 1, color: theme.palette.text.secondary }} />
                                         )}
                                         <Typography variant="body2">{item._id}</Typography>
                                     </Box>
@@ -227,9 +240,11 @@ const Dashboard = () => {
                                     sx={{
                                         height: 6,
                                         borderRadius: 3,
-                                        backgroundColor: '#e0e0e0',
+                                        backgroundColor: theme.palette.mode === 'dark'
+                                            ? 'rgba(100, 181, 246, 0.15)'
+                                            : '#e0e0e0',
                                         '& .MuiLinearProgress-bar': {
-                                            backgroundColor: '#0070f3',
+                                            backgroundColor: theme.palette.primary.main,
                                         },
                                     }}
                                 />
@@ -244,7 +259,7 @@ const Dashboard = () => {
                         elevation={0}
                         sx={{
                             p: 3,
-                            border: '1px solid #e0e0e0',
+                            border: `1px solid ${theme.palette.divider}`,
                             borderRadius: 1,
                             height: '100%',
                         }}
@@ -262,8 +277,17 @@ const Dashboard = () => {
                                     alignItems: 'center',
                                     mb: 2,
                                     p: 1.5,
-                                    backgroundColor: index === 0 ? '#f0f7ff' : '#f5f5f5',
+                                    backgroundColor: index === 0
+                                        ? theme.palette.mode === 'dark'
+                                            ? 'rgba(100, 181, 246, 0.12)'
+                                            : '#f0f7ff'
+                                        : theme.palette.mode === 'dark'
+                                            ? 'rgba(255, 255, 255, 0.05)'
+                                            : '#f5f5f5',
                                     borderRadius: 1,
+                                    transition: theme.transitions.create('background-color', {
+                                        duration: theme.transitions.duration.shorter,
+                                    }),
                                 }}
                             >
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -271,7 +295,9 @@ const Dashboard = () => {
                                         sx={{
                                             width: 32,
                                             height: 32,
-                                            backgroundColor: index === 0 ? '#0070f3' : '#757575',
+                                            backgroundColor: index === 0
+                                                ? theme.palette.primary.main
+                                                : theme.palette.text.secondary,
                                             mr: 1.5,
                                             fontSize: '0.875rem',
                                         }}
@@ -298,7 +324,7 @@ const Dashboard = () => {
                         elevation={0}
                         sx={{
                             p: 3,
-                            border: '1px solid #e0e0e0',
+                            border: `1px solid ${theme.palette.divider}`,
                             borderRadius: 1,
                             height: '100%',
                         }}
@@ -310,10 +336,10 @@ const Dashboard = () => {
                         <Box sx={{ mb: 2 }}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <CheckCircleIcon sx={{ fontSize: 20, color: '#2e7d32', mr: 1 }} />
+                                    <CheckCircleIcon sx={{ fontSize: 20, color: theme.palette.success.main, mr: 1 }} />
                                     <Typography variant="body2">Disponibles</Typography>
                                 </Box>
-                                <Typography variant="h6" sx={{ fontWeight: 600, color: '#2e7d32' }}>
+                                <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.success.main }}>
                                     {stats.disponibles}
                                 </Typography>
                             </Box>
@@ -321,10 +347,10 @@ const Dashboard = () => {
                         <Box sx={{ mb: 2 }}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <AssignmentIcon sx={{ fontSize: 20, color: '#0070f3', mr: 1 }} />
+                                    <AssignmentIcon sx={{ fontSize: 20, color: theme.palette.primary.main, mr: 1 }} />
                                     <Typography variant="body2">En Uso</Typography>
                                 </Box>
-                                <Typography variant="h6" sx={{ fontWeight: 600, color: '#0070f3' }}>
+                                <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.primary.main }}>
                                     {stats.enUso}
                                 </Typography>
                             </Box>
@@ -332,10 +358,10 @@ const Dashboard = () => {
                         <Box sx={{ mb: 2 }}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <WarningIcon sx={{ fontSize: 20, color: '#ed6c02', mr: 1 }} />
+                                    <WarningIcon sx={{ fontSize: 20, color: theme.palette.warning.main, mr: 1 }} />
                                     <Typography variant="body2">Mantenimiento</Typography>
                                 </Box>
-                                <Typography variant="h6" sx={{ fontWeight: 600, color: '#ed6c02' }}>
+                                <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.warning.main }}>
                                     {stats.mantenimiento}
                                 </Typography>
                             </Box>
@@ -344,7 +370,9 @@ const Dashboard = () => {
                             sx={{
                                 mt: 3,
                                 p: 2,
-                                backgroundColor: '#f0f7ff',
+                                backgroundColor: theme.palette.mode === 'dark'
+                                    ? 'rgba(100, 181, 246, 0.12)'
+                                    : '#f0f7ff',
                                 borderRadius: 1,
                                 textAlign: 'center',
                             }}
@@ -352,7 +380,7 @@ const Dashboard = () => {
                             <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
                                 Tasa de utilización
                             </Typography>
-                            <Typography variant="h5" sx={{ fontWeight: 600, color: '#0070f3' }}>
+                            <Typography variant="h5" sx={{ fontWeight: 600, color: theme.palette.primary.main }}>
                                 {stats.totalEquipos > 0
                                     ? Math.round((stats.enUso / stats.totalEquipos) * 100)
                                     : 0}%
@@ -367,7 +395,7 @@ const Dashboard = () => {
                         elevation={0}
                         sx={{
                             p: 3,
-                            border: '1px solid #e0e0e0',
+                            border: `1px solid ${theme.palette.divider}`,
                             borderRadius: 1,
                         }}
                     >
@@ -386,13 +414,29 @@ const Dashboard = () => {
                         <Divider sx={{ mb: 2 }} />
                         <TableContainer>
                             <Table>
-                                <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
+                                <TableHead
+                                    sx={{
+                                        backgroundColor: theme.palette.mode === 'dark'
+                                            ? theme.palette.surface?.main
+                                            : '#f5f5f5'
+                                    }}
+                                >
                                     <TableRow>
-                                        <TableCell sx={{ fontWeight: 600 }}>Usuario</TableCell>
-                                        <TableCell sx={{ fontWeight: 600 }}>Equipo</TableCell>
-                                        <TableCell sx={{ fontWeight: 600 }}>Acción</TableCell>
-                                        <TableCell sx={{ fontWeight: 600 }}>Fecha</TableCell>
-                                        <TableCell sx={{ fontWeight: 600 }}>Estado</TableCell>
+                                        <TableCell sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                            Usuario
+                                        </TableCell>
+                                        <TableCell sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                            Equipo
+                                        </TableCell>
+                                        <TableCell sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                            Acción
+                                        </TableCell>
+                                        <TableCell sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                            Fecha
+                                        </TableCell>
+                                        <TableCell sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                            Estado
+                                        </TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -413,7 +457,7 @@ const Dashboard = () => {
                                                             sx={{
                                                                 width: 32,
                                                                 height: 32,
-                                                                backgroundColor: '#0070f3',
+                                                                backgroundColor: theme.palette.primary.main,
                                                                 fontSize: '0.75rem',
                                                                 mr: 1,
                                                             }}

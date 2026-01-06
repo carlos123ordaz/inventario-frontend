@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import {
     Dialog,
@@ -20,6 +20,7 @@ import {
     Paper,
     InputAdornment,
     Tooltip,
+    useTheme,
 } from '@mui/material';
 import {
     Close as CloseIcon,
@@ -32,8 +33,12 @@ import {
 import { equiposService } from '../../api';
 import moment from 'moment';
 import { TIPOS_EQUIPOS } from '../../constants';
+import { MainContext } from '../../context/MainContextProvider';
 
 const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoData = null }) => {
+    const theme = useTheme();
+    const { darkMode } = useContext(MainContext);
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [validationErrors, setValidationErrors] = useState([]);
@@ -298,11 +303,12 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     pb: 2,
-                    backgroundColor: '#fafafa',
-                    borderBottom: '1px solid #e5e5e5',
+                    backgroundColor: darkMode ? theme.palette.background.default : '#fafafa',
+                    borderBottom: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
+                    color: theme.palette.text.primary,
                 }}
             >
-                <Typography variant="h6" sx={{ fontWeight: 400, color: '#32363a' }}>
+                <Typography variant="h6" sx={{ fontWeight: 400, color: theme.palette.text.primary }}>
                     {editMode ? 'Editar Equipo' : 'Nuevo Equipo'}
                 </Typography>
                 <IconButton onClick={handleClose} disabled={loading} size="small">
@@ -347,7 +353,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                     <Grid container spacing={2.5}>
                         {/* Información Básica */}
                         <Grid size={{ xs: 12 }}>
-                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#32363a', mb: 1.5 }}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: theme.palette.text.primary, mb: 1.5 }}>
                                 Información Básica
                             </Typography>
                         </Grid>
@@ -577,7 +583,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                             <>
                                 <Grid size={{ xs: 12 }}>
                                     <Divider sx={{ my: 1 }} />
-                                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#32363a', mt: 2, mb: 1.5 }}>
+                                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: theme.palette.text.primary, mt: 2, mb: 1.5 }}>
                                         Especificaciones Técnicas
                                     </Typography>
                                 </Grid>
@@ -681,7 +687,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                 {/* Puertos - Solo para LAPTOP y DESKTOP */}
                                 <Grid size={{ xs: 12 }}>
                                     <Divider sx={{ my: 1 }} />
-                                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#32363a', mt: 2, mb: 1.5 }}>
+                                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: theme.palette.text.primary, mt: 2, mb: 1.5 }}>
                                         Conectividad
                                     </Typography>
                                 </Grid>
@@ -751,8 +757,8 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                 <Grid size={{ xs: 12 }}>
                                     <Divider sx={{ my: 1 }} />
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, mb: 1.5 }}>
-                                        <LockIcon sx={{ color: '#0854a0', fontSize: 20 }} />
-                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#32363a' }}>
+                                        <LockIcon sx={{ color: theme.palette.primary.main, fontSize: 20 }} />
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
                                             Claves de Seguridad
                                         </Typography>
                                     </Box>
@@ -763,8 +769,12 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
 
                                 {/* BIOS */}
                                 <Grid size={{ xs: 12 }}>
-                                    <Paper sx={{ p: 2, backgroundColor: '#f9fafb', border: '1px solid #e5e5e5' }}>
-                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: '#32363a' }}>
+                                    <Paper sx={{
+                                        p: 2,
+                                        backgroundColor: darkMode ? theme.palette.background.default : '#f9fafb',
+                                        border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`
+                                    }}>
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: theme.palette.text.primary }}>
                                             🔐 Contraseña BIOS
                                         </Typography>
                                         <Grid container spacing={1.5}>
@@ -821,8 +831,12 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
 
                                 {/* ADMINISTRADOR */}
                                 <Grid size={{ xs: 12 }}>
-                                    <Paper sx={{ p: 2, backgroundColor: '#f9fafb', border: '1px solid #e5e5e5' }}>
-                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: '#32363a' }}>
+                                    <Paper sx={{
+                                        p: 2,
+                                        backgroundColor: darkMode ? theme.palette.background.default : '#f9fafb',
+                                        border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`
+                                    }}>
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: theme.palette.text.primary }}>
                                             👤 Contraseña Administrador
                                         </Typography>
                                         <Grid container spacing={1.5}>
@@ -894,8 +908,12 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
 
                                 {/* EQUIPO / USUARIO */}
                                 <Grid size={{ xs: 12 }}>
-                                    <Paper sx={{ p: 2, backgroundColor: '#f9fafb', border: '1px solid #e5e5e5' }}>
-                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: '#32363a' }}>
+                                    <Paper sx={{
+                                        p: 2,
+                                        backgroundColor: darkMode ? theme.palette.background.default : '#f9fafb',
+                                        border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`
+                                    }}>
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: theme.palette.text.primary }}>
                                             🖥️ Contraseña Usuario Equipo
                                         </Typography>
                                         <Grid container spacing={1.5}>
@@ -995,8 +1013,8 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                     sx={{
                         px: 3,
                         py: 2,
-                        backgroundColor: '#fafafa',
-                        borderTop: '1px solid #e5e5e5',
+                        backgroundColor: darkMode ? theme.palette.background.default : '#fafafa',
+                        borderTop: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
                     }}
                 >
                     <Button
@@ -1004,7 +1022,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                         disabled={loading}
                         sx={{
                             textTransform: 'none',
-                            color: '#32363a',
+                            color: theme.palette.text.primary,
                         }}
                     >
                         Cancelar
@@ -1015,11 +1033,11 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                         disabled={loading}
                         startIcon={<SaveIcon />}
                         sx={{
-                            backgroundColor: '#0854a0',
+                            backgroundColor: theme.palette.primary.main,
                             textTransform: 'none',
                             boxShadow: 'none',
                             '&:hover': {
-                                backgroundColor: '#0a6ed1',
+                                backgroundColor: theme.palette.primary.dark,
                                 boxShadow: 'none',
                             },
                         }}

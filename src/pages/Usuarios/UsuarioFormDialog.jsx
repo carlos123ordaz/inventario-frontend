@@ -15,6 +15,7 @@ import {
     Alert,
     Collapse,
     Box,
+    useTheme,
 } from '@mui/material';
 import {
     Close as CloseIcon,
@@ -25,6 +26,7 @@ import { usuariosService } from '../../api';
 import { AREAS } from '../../constants';
 
 const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuarioData = null }) => {
+    const theme = useTheme();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [validationErrors, setValidationErrors] = useState([]);
@@ -99,7 +101,6 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
                 observacion: '',
             });
         }
-        // Limpiar errores al abrir/cerrar
         setError(null);
         setValidationErrors([]);
     }, [editMode, usuarioData, reset, open]);
@@ -119,14 +120,11 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
         } catch (error) {
             console.error('Error al guardar usuario:', error);
 
-            // Manejar diferentes tipos de errores
             if (error.response) {
                 const { status, data } = error.response;
 
-                // Error 400 - Validación o datos duplicados
                 if (status === 400) {
                     if (data.message) {
-                        // Errores de campos duplicados
                         if (data.message.includes('dni')) {
                             setFieldError('dni', {
                                 type: 'manual',
@@ -146,17 +144,14 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
                             });
                             setError('El nombre de usuario ya está en uso');
                         } else if (data.message.includes('equipos asignados')) {
-                            // Error específico al eliminar usuario con equipos
                             setError(data.message);
                         } else {
                             setError(data.message);
                         }
                     }
 
-                    // Errores de validación múltiples del backend
                     if (data.errors && Array.isArray(data.errors)) {
                         setValidationErrors(data.errors);
-                        // Marcar campos con errores específicos
                         data.errors.forEach((err) => {
                             if (err.param) {
                                 setFieldError(err.param, {
@@ -166,31 +161,20 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
                             }
                         });
 
-                        // Si hay errores de validación pero no mensaje general
                         if (!data.message) {
                             setError('Por favor corrige los errores en el formulario');
                         }
                     }
-                }
-                // Error 404 - No encontrado (solo en edición)
-                else if (status === 404) {
+                } else if (status === 404) {
                     setError('El usuario no fue encontrado. Es posible que haya sido eliminado.');
-                }
-                // Error 500 - Error del servidor
-                else if (status === 500) {
+                } else if (status === 500) {
                     setError('Error en el servidor. Por favor, intenta nuevamente más tarde.');
-                }
-                // Otros errores
-                else {
+                } else {
                     setError(data.message || 'Ocurrió un error al guardar el usuario.');
                 }
-            }
-            // Error de red
-            else if (error.request) {
+            } else if (error.request) {
                 setError('No se pudo conectar con el servidor. Verifica tu conexión a internet.');
-            }
-            // Otros errores
-            else {
+            } else {
                 setError('Ocurrió un error inesperado. Por favor, intenta nuevamente.');
             }
         } finally {
@@ -224,11 +208,13 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     pb: 2,
-                    backgroundColor: '#fafafa',
-                    borderBottom: '1px solid #e5e5e5',
+                    backgroundColor: theme.palette.mode === 'dark'
+                        ? theme.palette.surface?.main
+                        : '#fafafa',
+                    borderBottom: `1px solid ${theme.palette.divider}`,
                 }}
             >
-                <Typography variant="h6" sx={{ fontWeight: 400, color: '#32363a' }}>
+                <Typography variant="h6" sx={{ fontWeight: 400, color: theme.palette.text.primary }}>
                     {editMode ? 'Editar Usuario' : 'Nuevo Usuario'}
                 </Typography>
                 <IconButton onClick={handleClose} disabled={loading} size="small">
@@ -273,7 +259,14 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
                     <Grid container spacing={2.5}>
                         {/* Información Personal */}
                         <Grid size={{ xs: 12 }}>
-                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#32363a', mb: 1.5 }}>
+                            <Typography
+                                variant="subtitle2"
+                                sx={{
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                    mb: 1.5
+                                }}
+                            >
                                 Información Personal
                             </Typography>
                         </Grid>
@@ -357,7 +350,15 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
                         {/* Información Laboral */}
                         <Grid size={{ xs: 12 }}>
                             <Divider sx={{ my: 1 }} />
-                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#32363a', mt: 2, mb: 1.5 }}>
+                            <Typography
+                                variant="subtitle2"
+                                sx={{
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                    mt: 2,
+                                    mb: 1.5
+                                }}
+                            >
                                 Información Laboral
                             </Typography>
                         </Grid>
@@ -410,7 +411,15 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
                         {/* Contacto */}
                         <Grid size={{ xs: 12 }}>
                             <Divider sx={{ my: 1 }} />
-                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#32363a', mt: 2, mb: 1.5 }}>
+                            <Typography
+                                variant="subtitle2"
+                                sx={{
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                    mt: 2,
+                                    mb: 1.5
+                                }}
+                            >
                                 Información de Contacto
                             </Typography>
                         </Grid>
@@ -470,7 +479,15 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
                         {/* Credenciales */}
                         <Grid size={{ xs: 12 }}>
                             <Divider sx={{ my: 1 }} />
-                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#32363a', mt: 2, mb: 1.5 }}>
+                            <Typography
+                                variant="subtitle2"
+                                sx={{
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                    mt: 2,
+                                    mb: 1.5
+                                }}
+                            >
                                 Credenciales de Sistema
                             </Typography>
                         </Grid>
@@ -584,8 +601,10 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
                     sx={{
                         px: 3,
                         py: 2,
-                        backgroundColor: '#fafafa',
-                        borderTop: '1px solid #e5e5e5',
+                        backgroundColor: theme.palette.mode === 'dark'
+                            ? theme.palette.surface?.main
+                            : '#fafafa',
+                        borderTop: `1px solid ${theme.palette.divider}`,
                     }}
                 >
                     <Button
@@ -593,7 +612,7 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
                         disabled={loading}
                         sx={{
                             textTransform: 'none',
-                            color: '#32363a',
+                            color: theme.palette.text.primary,
                         }}
                     >
                         Cancelar
@@ -604,11 +623,11 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
                         disabled={loading}
                         startIcon={<SaveIcon />}
                         sx={{
-                            backgroundColor: '#0854a0',
+                            backgroundColor: theme.palette.primary.main,
                             textTransform: 'none',
                             boxShadow: 'none',
                             '&:hover': {
-                                backgroundColor: '#0a6ed1',
+                                backgroundColor: theme.palette.primary.dark,
                                 boxShadow: 'none',
                             },
                         }}

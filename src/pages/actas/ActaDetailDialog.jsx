@@ -1,4 +1,3 @@
-// src/pages/Actas/ActaDetailDialog.jsx
 import React from 'react';
 import {
     Dialog,
@@ -17,6 +16,7 @@ import {
     ListItem,
     ListItemText,
     ListItemIcon,
+    useTheme,
 } from '@mui/material';
 import {
     Close as CloseIcon,
@@ -29,15 +29,17 @@ import {
 } from '@mui/icons-material';
 
 const ActaDetailDialog = ({ open, onClose, acta, onEdit, onDelete }) => {
+    const theme = useTheme();
+
     if (!acta) return null;
 
     const getCategoriaColor = (categoria) => {
         const colors = {
-            'usuario': '#2196f3',
-            'equipo': '#4caf50',
-            'general': '#ff9800',
+            'usuario': theme.palette.info.main,
+            'equipo': theme.palette.success.main,
+            'general': theme.palette.warning.main,
         };
-        return colors[categoria] || '#9e9e9e';
+        return colors[categoria] || theme.palette.text.secondary;
     };
 
     const handleDownload = () => {
@@ -61,12 +63,12 @@ const ActaDetailDialog = ({ open, onClose, acta, onEdit, onDelete }) => {
                 pb: 1,
             }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <DescriptionIcon sx={{ color: '#0854a0', fontSize: 28 }} />
+                    <DescriptionIcon sx={{ color: theme.palette.primary.main, fontSize: 28 }} />
                     <Typography variant="h6" sx={{ fontWeight: 500 }}>
                         Detalle de Plantilla
                     </Typography>
                 </Box>
-                <IconButton edge="end" onClick={onClose} sx={{ color: '#6a6d70' }}>
+                <IconButton edge="end" onClick={onClose} sx={{ color: theme.palette.text.secondary }}>
                     <CloseIcon />
                 </IconButton>
             </DialogTitle>
@@ -77,7 +79,14 @@ const ActaDetailDialog = ({ open, onClose, acta, onEdit, onDelete }) => {
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                     {/* Información General */}
                     <Paper variant="outlined" sx={{ p: 2.5 }}>
-                        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600, color: '#0854a0' }}>
+                        <Typography
+                            variant="subtitle2"
+                            sx={{
+                                mb: 2,
+                                fontWeight: 600,
+                                color: theme.palette.primary.main
+                            }}
+                        >
                             Información General
                         </Typography>
 
@@ -117,7 +126,10 @@ const ActaDetailDialog = ({ open, onClose, acta, onEdit, onDelete }) => {
                                 <Typography variant="caption" color="textSecondary">
                                     Archivo
                                 </Typography>
-                                <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
+                                <Typography
+                                    variant="body2"
+                                    sx={{ fontFamily: 'monospace', fontSize: '0.85rem' }}
+                                >
                                     {acta.archivoNombre}
                                 </Typography>
                             </Grid>
@@ -126,15 +138,35 @@ const ActaDetailDialog = ({ open, onClose, acta, onEdit, onDelete }) => {
 
                     {/* Estadísticas de Uso */}
                     <Paper variant="outlined" sx={{ p: 2.5 }}>
-                        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600, color: '#0854a0' }}>
+                        <Typography
+                            variant="subtitle2"
+                            sx={{
+                                mb: 2,
+                                fontWeight: 600,
+                                color: theme.palette.primary.main
+                            }}
+                        >
                             <StatsIcon sx={{ fontSize: 18, mr: 0.5, verticalAlign: 'middle' }} />
                             Estadísticas de Uso
                         </Typography>
 
                         <Grid container spacing={2}>
                             <Grid size={{ xs: 12, sm: 6 }}>
-                                <Box sx={{ textAlign: 'center', p: 2, backgroundColor: '#f5f9fc', borderRadius: 1 }}>
-                                    <Typography variant="h3" sx={{ color: '#0854a0', fontWeight: 500 }}>
+                                <Box sx={{
+                                    textAlign: 'center',
+                                    p: 2,
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? 'rgba(100, 181, 246, 0.1)'
+                                        : '#f5f9fc',
+                                    borderRadius: 1
+                                }}>
+                                    <Typography
+                                        variant="h3"
+                                        sx={{
+                                            color: theme.palette.primary.main,
+                                            fontWeight: 500
+                                        }}
+                                    >
                                         {acta.vecesUtilizada || 0}
                                     </Typography>
                                     <Typography variant="caption" color="textSecondary">
@@ -170,7 +202,14 @@ const ActaDetailDialog = ({ open, onClose, acta, onEdit, onDelete }) => {
                     {/* Campos Identificados */}
                     {acta.camposIdentificados && acta.camposIdentificados.length > 0 && (
                         <Paper variant="outlined" sx={{ p: 2.5 }}>
-                            <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600, color: '#0854a0' }}>
+                            <Typography
+                                variant="subtitle2"
+                                sx={{
+                                    mb: 2,
+                                    fontWeight: 600,
+                                    color: theme.palette.primary.main
+                                }}
+                            >
                                 Campos Identificados ({acta.camposIdentificados.length})
                             </Typography>
 
@@ -180,7 +219,9 @@ const ActaDetailDialog = ({ open, onClose, acta, onEdit, onDelete }) => {
                                         <ListItem
                                             key={index}
                                             sx={{
-                                                backgroundColor: index % 2 === 0 ? '#fafafa' : 'transparent',
+                                                backgroundColor: theme.palette.mode === 'dark'
+                                                    ? index % 2 === 0 ? 'rgba(255, 255, 255, 0.05)' : 'transparent'
+                                                    : index % 2 === 0 ? '#fafafa' : 'transparent',
                                                 borderRadius: 1,
                                                 mb: 0.5,
                                             }}
@@ -214,7 +255,7 @@ const ActaDetailDialog = ({ open, onClose, acta, onEdit, onDelete }) => {
                                                                 height: 20,
                                                                 fontSize: '0.7rem',
                                                                 backgroundColor: getCategoriaColor(campo.categoria),
-                                                                color: '#fff'
+                                                                color: theme.palette.getContrastText(getCategoriaColor(campo.categoria))
                                                             }}
                                                         />
                                                         <Chip
@@ -264,8 +305,8 @@ const ActaDetailDialog = ({ open, onClose, acta, onEdit, onDelete }) => {
                         variant="outlined"
                         sx={{
                             textTransform: 'none',
-                            borderColor: '#0854a0',
-                            color: '#0854a0',
+                            borderColor: theme.palette.primary.main,
+                            color: theme.palette.primary.main,
                         }}
                     >
                         Editar
@@ -274,10 +315,10 @@ const ActaDetailDialog = ({ open, onClose, acta, onEdit, onDelete }) => {
                         onClick={onClose}
                         variant="contained"
                         sx={{
-                            backgroundColor: '#0854a0',
+                            backgroundColor: theme.palette.primary.main,
                             textTransform: 'none',
                             '&:hover': {
-                                backgroundColor: '#0a6ed1',
+                                backgroundColor: theme.palette.primary.dark,
                             },
                         }}
                     >

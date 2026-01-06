@@ -1,4 +1,3 @@
-// src/pages/Actas/ActasPage.jsx
 import React, { useState, useEffect } from 'react';
 import {
     Box,
@@ -25,6 +24,7 @@ import {
     Card,
     CardContent,
     Grid,
+    useTheme,
 } from '@mui/material';
 import {
     Add as AddIcon,
@@ -46,6 +46,8 @@ import ActaFormDialog from './ActaFormDialog';
 import ActaDetailDialog from './ActaDetailDialog';
 
 const ActasPage = () => {
+    const theme = useTheme();
+
     // Estados
     const [actas, setActas] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -214,13 +216,13 @@ const ActasPage = () => {
                     sx={{
                         fontWeight: 400,
                         fontSize: '1.75rem',
-                        color: '#32363a',
+                        color: theme.palette.text.primary,
                         mb: 0.5,
                     }}
                 >
                     Gestión de Actas
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#6a6d70' }}>
+                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                     {totalCount} {totalCount === 1 ? 'plantilla' : 'plantillas'} registradas
                 </Typography>
             </Box>
@@ -229,43 +231,52 @@ const ActasPage = () => {
             {estadisticas && (
                 <Grid container spacing={2} sx={{ mb: 3 }}>
                     <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                        <Card elevation={0} sx={{ border: '1px solid #e5e5e5' }}>
+                        <Card elevation={0} sx={{ border: `1px solid ${theme.palette.divider}` }}>
                             <CardContent>
                                 <Typography variant="body2" color="textSecondary" gutterBottom>
                                     Total Plantillas
                                 </Typography>
-                                <Typography variant="h4" sx={{ color: '#0854a0', fontWeight: 500 }}>
+                                <Typography
+                                    variant="h4"
+                                    sx={{ color: theme.palette.primary.main, fontWeight: 500 }}
+                                >
                                     {estadisticas.resumen.totalActas}
                                 </Typography>
                             </CardContent>
                         </Card>
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                        <Card elevation={0} sx={{ border: '1px solid #e5e5e5' }}>
+                        <Card elevation={0} sx={{ border: `1px solid ${theme.palette.divider}` }}>
                             <CardContent>
                                 <Typography variant="body2" color="textSecondary" gutterBottom>
                                     Activas
                                 </Typography>
-                                <Typography variant="h4" sx={{ color: '#2e7d32', fontWeight: 500 }}>
+                                <Typography
+                                    variant="h4"
+                                    sx={{ color: theme.palette.success.main, fontWeight: 500 }}
+                                >
                                     {estadisticas.resumen.actasActivas}
                                 </Typography>
                             </CardContent>
                         </Card>
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                        <Card elevation={0} sx={{ border: '1px solid #e5e5e5' }}>
+                        <Card elevation={0} sx={{ border: `1px solid ${theme.palette.divider}` }}>
                             <CardContent>
                                 <Typography variant="body2" color="textSecondary" gutterBottom>
                                     Actas Generadas
                                 </Typography>
-                                <Typography variant="h4" sx={{ color: '#ed6c02', fontWeight: 500 }}>
+                                <Typography
+                                    variant="h4"
+                                    sx={{ color: theme.palette.warning.main, fontWeight: 500 }}
+                                >
                                     {estadisticas.resumen.totalGeneradas}
                                 </Typography>
                             </CardContent>
                         </Card>
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                        <Card elevation={0} sx={{ border: '1px solid #e5e5e5' }}>
+                        <Card elevation={0} sx={{ border: `1px solid ${theme.palette.divider}` }}>
                             <CardContent>
                                 <Typography variant="body2" color="textSecondary" gutterBottom>
                                     Más Usada
@@ -287,7 +298,7 @@ const ActasPage = () => {
                 elevation={0}
                 sx={{
                     mb: 2,
-                    border: '1px solid #e5e5e5',
+                    border: `1px solid ${theme.palette.divider}`,
                     borderRadius: '0.5rem',
                     overflow: 'hidden',
                 }}
@@ -300,7 +311,9 @@ const ActasPage = () => {
                         gap: 2,
                         flexWrap: 'wrap',
                         minHeight: 'auto !important',
-                        backgroundColor: '#fafafa',
+                        backgroundColor: theme.palette.mode === 'dark'
+                            ? theme.palette.surface?.main
+                            : '#fafafa',
                     }}
                 >
                     {/* Barra de búsqueda */}
@@ -312,14 +325,11 @@ const ActasPage = () => {
                         sx={{
                             flexGrow: 1,
                             minWidth: 250,
-                            '& .MuiOutlinedInput-root': {
-                                backgroundColor: '#fff',
-                            },
                         }}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <SearchIcon sx={{ color: '#6a6d70', fontSize: 20 }} />
+                                    <SearchIcon sx={{ color: theme.palette.text.secondary, fontSize: 20 }} />
                                 </InputAdornment>
                             ),
                             endAdornment: searchTerm && (
@@ -341,9 +351,8 @@ const ActasPage = () => {
                                     loadEstadisticas();
                                 }}
                                 sx={{
-                                    border: '1px solid #e5e5e5',
-                                    backgroundColor: '#fff',
-                                    '&:hover': { backgroundColor: '#f5f5f5' },
+                                    border: `1px solid ${theme.palette.divider}`,
+                                    '&:hover': { backgroundColor: theme.palette.action.hover },
                                 }}
                             >
                                 <RefreshIcon fontSize="small" />
@@ -355,12 +364,12 @@ const ActasPage = () => {
                             startIcon={<AddIcon />}
                             onClick={handleCreate}
                             sx={{
-                                backgroundColor: '#0854a0',
+                                backgroundColor: theme.palette.primary.main,
                                 textTransform: 'none',
-                                fontWeight: 400,
+                                fontWeight: 500,
                                 boxShadow: 'none',
                                 '&:hover': {
-                                    backgroundColor: '#0a6ed1',
+                                    backgroundColor: theme.palette.primary.dark,
                                     boxShadow: 'none',
                                 },
                             }}
@@ -378,7 +387,7 @@ const ActasPage = () => {
                     flexGrow: 1,
                     display: 'flex',
                     flexDirection: 'column',
-                    border: '1px solid #e5e5e5',
+                    border: `1px solid ${theme.palette.divider}`,
                     borderRadius: '0.5rem',
                     overflow: 'hidden',
                 }}
@@ -387,27 +396,70 @@ const ActasPage = () => {
                     <Table stickyHeader>
                         <TableHead>
                             <TableRow>
-                                <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600 }}>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
                                     Título
                                 </TableCell>
-                                <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600 }}>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
                                     Descripción
                                 </TableCell>
-                                <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600 }}>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
                                     Campos
                                 </TableCell>
-                                <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600 }}>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
                                     Veces Usada
                                 </TableCell>
-                                <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600 }}>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
                                     Estado
                                 </TableCell>
-                                <TableCell sx={{ backgroundColor: '#fafafa', fontWeight: 600 }}>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
                                     Fecha Creación
                                 </TableCell>
                                 <TableCell
                                     align="center"
-                                    sx={{ backgroundColor: '#fafafa', fontWeight: 600, width: 80 }}
+                                    sx={{
+                                        backgroundColor: theme.palette.mode === 'dark'
+                                            ? theme.palette.surface?.main
+                                            : '#fafafa',
+                                        fontWeight: 600,
+                                        color: theme.palette.text.primary,
+                                        width: 80,
+                                    }}
                                 >
                                     Acciones
                                 </TableCell>
@@ -416,7 +468,7 @@ const ActasPage = () => {
                         <TableBody>
                             {actasFiltradas.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={7} align="center" sx={{ py: 8, color: '#6a6d70' }}>
+                                    <TableCell colSpan={7} align="center" sx={{ py: 8, color: theme.palette.text.secondary }}>
                                         <FileIcon sx={{ fontSize: 48, mb: 2, opacity: 0.3 }} />
                                         <Typography>No se encontraron plantillas de actas</Typography>
                                     </TableCell>
@@ -427,14 +479,13 @@ const ActasPage = () => {
                                         key={acta._id}
                                         hover
                                         sx={{
-                                            '&:hover': { backgroundColor: '#f5f9fc' },
                                             cursor: 'pointer',
                                         }}
                                         onClick={() => handleView(acta)}
                                     >
                                         <TableCell>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                <DescriptionIcon sx={{ color: '#0854a0', fontSize: 20 }} />
+                                                <DescriptionIcon sx={{ color: theme.palette.primary.main, fontSize: 20 }} />
                                                 <Typography variant="body2" sx={{ fontWeight: 500 }}>
                                                     {acta.titulo}
                                                 </Typography>
@@ -444,7 +495,7 @@ const ActasPage = () => {
                                             <Typography
                                                 variant="body2"
                                                 sx={{
-                                                    color: '#6a6d70',
+                                                    color: theme.palette.text.secondary,
                                                     maxWidth: 300,
                                                     overflow: 'hidden',
                                                     textOverflow: 'ellipsis',
@@ -475,7 +526,7 @@ const ActasPage = () => {
                                             />
                                         </TableCell>
                                         <TableCell>
-                                            <Typography variant="body2" sx={{ color: '#6a6d70' }}>
+                                            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                                                 {new Date(acta.createdAt).toLocaleDateString('es-PE')}
                                             </Typography>
                                         </TableCell>
@@ -486,7 +537,7 @@ const ActasPage = () => {
                                                     e.stopPropagation();
                                                     handleMenuOpen(e, acta);
                                                 }}
-                                                sx={{ color: '#6a6d70' }}
+                                                sx={{ color: theme.palette.text.secondary }}
                                             >
                                                 <MoreVertIcon fontSize="small" />
                                             </IconButton>
@@ -510,8 +561,10 @@ const ActasPage = () => {
                     labelRowsPerPage="Filas por página:"
                     labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
                     sx={{
-                        borderTop: '1px solid #e5e5e5',
-                        backgroundColor: '#fafafa',
+                        borderTop: `1px solid ${theme.palette.divider}`,
+                        backgroundColor: theme.palette.mode === 'dark'
+                            ? theme.palette.surface?.main
+                            : '#fafafa',
                     }}
                 />
             </Paper>
@@ -527,15 +580,15 @@ const ActasPage = () => {
                 }}
             >
                 <MenuItem onClick={() => handleView(selectedActa)}>
-                    <VisibilityIcon sx={{ mr: 1.5, fontSize: 18, color: '#6a6d70' }} />
+                    <VisibilityIcon sx={{ mr: 1.5, fontSize: 18, color: theme.palette.text.secondary }} />
                     Ver Detalle
                 </MenuItem>
                 <MenuItem onClick={() => handleDownloadTemplate(selectedActa)}>
-                    <CloudDownloadIcon sx={{ mr: 1.5, fontSize: 18, color: '#6a6d70' }} />
+                    <CloudDownloadIcon sx={{ mr: 1.5, fontSize: 18, color: theme.palette.text.secondary }} />
                     Descargar Template
                 </MenuItem>
                 <MenuItem onClick={() => handleEdit(selectedActa)}>
-                    <EditIcon sx={{ mr: 1.5, fontSize: 18, color: '#6a6d70' }} />
+                    <EditIcon sx={{ mr: 1.5, fontSize: 18, color: theme.palette.text.secondary }} />
                     Editar
                 </MenuItem>
                 <MenuItem onClick={() => handleDeleteClick(selectedActa)} sx={{ color: 'error.main' }}>

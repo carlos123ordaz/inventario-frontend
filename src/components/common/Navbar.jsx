@@ -9,26 +9,24 @@ import {
     Menu,
     MenuItem,
     Tooltip,
-    Badge,
     Divider,
+    useTheme,
 } from '@mui/material';
 import {
     Menu as MenuIcon,
     AccountCircle,
     Brightness4,
     Brightness7,
-    Settings,
     Logout,
-    Person,
 } from '@mui/icons-material';
 import { MainContext } from '../../context/MainContextProvider';
 import { useNavigate } from 'react-router-dom';
 
-const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode, showMenuIcon = true }) => {
+const Navbar = ({ onMenuClick, showMenuIcon = true }) => {
     const [anchorElUser, setAnchorElUser] = useState(null);
-    const [anchorElNotif, setAnchorElNotif] = useState(null);
-    const { user, setUser } = useContext(MainContext);
+    const { user, setUser, darkMode, toggleDarkMode } = useContext(MainContext);
     const navigate = useNavigate();
+    const theme = useTheme();
 
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
@@ -38,7 +36,6 @@ const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode, showMenuIcon = true }
         setAnchorElUser(null);
     };
 
-
     const handleLogout = () => {
         setUser(null);
         localStorage.removeItem('user');
@@ -46,31 +43,8 @@ const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode, showMenuIcon = true }
         handleCloseUserMenu();
     };
 
-    const handleProfile = () => {
-        navigate('/perfil');
-        handleCloseUserMenu();
-    };
-
-    const handleSettings = () => {
-        navigate('/configuracion');
-        handleCloseUserMenu();
-    };
-
-
     return (
-        <AppBar
-            position="fixed"
-            sx={{
-                zIndex: (theme) => theme.zIndex.drawer + 1,
-                backgroundColor: darkMode ? '#1a1a1a' : '#fff',
-                color: darkMode ? '#fff' : 'text.primary',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
-                backdropFilter: 'blur(10px)',
-                background: darkMode
-                    ? 'linear-gradient(90deg, #1a1a1a 0%, #2d2d2d 100%)'
-                    : 'linear-gradient(90deg, #ffffff 0%, #f5f5f5 100%)',
-            }}
-        >
+        <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
             <Toolbar>
                 {showMenuIcon && (
                     <IconButton
@@ -81,7 +55,9 @@ const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode, showMenuIcon = true }
                         sx={{
                             mr: 2,
                             '&:hover': {
-                                backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.04)',
+                                backgroundColor: darkMode
+                                    ? 'rgba(255,255,255,0.1)'
+                                    : 'rgba(0,0,0,0.04)',
                             }
                         }}
                     >
@@ -107,24 +83,29 @@ const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode, showMenuIcon = true }
                     {/* Botón de modo oscuro/claro */}
                     <Tooltip title={darkMode ? "Modo claro" : "Modo oscuro"}>
                         <IconButton
-                            onClick={onToggleDarkMode}
+                            onClick={toggleDarkMode}
+                            color="inherit"
                             sx={{
-                                color: darkMode ? '#fff' : 'text.primary',
                                 '&:hover': {
-                                    backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.04)',
+                                    backgroundColor: darkMode
+                                        ? 'rgba(255,255,255,0.1)'
+                                        : 'rgba(0,0,0,0.04)',
                                 }
                             }}
                         >
                             {darkMode ? <Brightness7 /> : <Brightness4 />}
                         </IconButton>
                     </Tooltip>
+
+                    {/* Avatar y menú de usuario */}
                     <Tooltip title="Mi cuenta">
                         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0, ml: 2 }}>
                             <Avatar
                                 sx={{
                                     width: 40,
                                     height: 40,
-                                    background: '#667eea'
+                                    background: theme.palette.primary.main,
+                                    fontWeight: 600,
                                 }}
                             >
                                 {user?.correo ? user.correo[0].toUpperCase() : <AccountCircle />}
@@ -132,6 +113,7 @@ const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode, showMenuIcon = true }
                         </IconButton>
                     </Tooltip>
                 </Box>
+
                 <Menu
                     sx={{ mt: '45px' }}
                     id="menu-appbar"
@@ -151,7 +133,7 @@ const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode, showMenuIcon = true }
                         sx: {
                             minWidth: 200,
                             mt: 1,
-                            boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                            boxShadow: theme.shadows[8],
                         }
                     }}
                 >
@@ -163,15 +145,6 @@ const Navbar = ({ onMenuClick, darkMode, onToggleDarkMode, showMenuIcon = true }
                             Administrador
                         </Typography>
                     </Box>
-                    <Divider />
-                    {/* <MenuItem onClick={handleProfile}>
-                        <Person sx={{ mr: 2, fontSize: 20 }} />
-                        Mi Perfil
-                    </MenuItem>
-                    <MenuItem onClick={handleSettings}>
-                        <Settings sx={{ mr: 2, fontSize: 20 }} />
-                        Configuración
-                    </MenuItem> */}
                     <Divider />
                     <MenuItem onClick={handleLogout}>
                         <Logout sx={{ mr: 2, fontSize: 20 }} />
