@@ -54,7 +54,6 @@ const Dashboard = () => {
         asignacionesActivas: 0,
     });
     const [equiposStats, setEquiposStats] = useState(null);
-    const [historialStats, setHistorialStats] = useState(null);
     const [recentActivity, setRecentActivity] = useState([]);
 
     useEffect(() => {
@@ -79,7 +78,6 @@ const Dashboard = () => {
             });
 
             setEquiposStats(equiposRes.data);
-            setHistorialStats(historialRes.data);
             setRecentActivity(actividadRes.data);
         } catch (error) {
             console.error('Error al cargar datos del dashboard:', error);

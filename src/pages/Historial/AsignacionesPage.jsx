@@ -66,7 +66,7 @@ const AsignacionesPage = () => {
             const response = await historialService.getActivos();
             setAsignaciones(response.data);
         } catch (error) {
-            showNotification('Error al cargar asignaciones', 'error');
+            showNotification(error.message || 'Error al cargar asignaciones', 'error');
         } finally {
             setLoading(false);
         }

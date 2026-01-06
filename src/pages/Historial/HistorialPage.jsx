@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import {
     Box,
     Paper,
     Typography,
     Button,
     TextField,
-    InputAdornment,
-    IconButton,
     Chip,
     Table,
     TableBody,
@@ -19,30 +17,23 @@ import {
     Grid,
     MenuItem,
     Avatar,
-    Stack,
-    Tooltip,
     useTheme,
 } from '@mui/material';
 import {
-    Search as SearchIcon,
     FilterList as FilterIcon,
     Computer as ComputerIcon,
-    Person as PersonIcon,
     CalendarToday as CalendarIcon,
-    SwapHoriz as SwapHorizIcon,
     CheckCircle as CheckCircleIcon,
     Cancel as CancelIcon,
 } from '@mui/icons-material';
 import { historialService } from '../../api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import { ROUTES } from '../../routes/routes.constants';
 import moment from 'moment';
 import 'moment/locale/es';
 
 moment.locale('es');
 
 const HistorialPage = () => {
-    const navigate = useNavigate();
     const theme = useTheme();
 
     // Estados

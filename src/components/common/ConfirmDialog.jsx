@@ -45,20 +45,6 @@ const ConfirmDialog = ({
         }
     };
 
-    const getColor = () => {
-        switch (type) {
-            case 'error':
-                return 'error';
-            case 'success':
-                return 'success';
-            case 'info':
-                return 'info';
-            case 'warning':
-            default:
-                return 'warning';
-        }
-    };
-
     return (
         <Dialog
             open={open}

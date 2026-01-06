@@ -51,8 +51,6 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
     });
 
     const esAccesorio = ['MOUSE', 'MONITOR', 'TECLADO', 'COOLER', 'CELULAR'].includes(tipoSeleccionado);
-    const mostrarClaves = ['LAPTOP', 'DESKTOP'].includes(tipoSeleccionado);
-
     const {
         control,
         handleSubmit,

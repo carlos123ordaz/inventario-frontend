@@ -51,8 +51,6 @@ const AsignarPage = () => {
     const {
         control,
         handleSubmit,
-        formState: { errors },
-        watch,
     } = useForm({
         defaultValues: {
             equipoId: '',
@@ -77,7 +75,7 @@ const AsignarPage = () => {
             setEquiposDisponibles(equiposRes.data);
             setUsuarios(usuariosRes.data);
         } catch (error) {
-            showNotification('Error al cargar datos', 'error');
+            showNotification(error.message || 'Error al cargar datos', 'error');
         } finally {
             setLoadingData(false);
         }

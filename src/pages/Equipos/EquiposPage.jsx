@@ -104,7 +104,7 @@ const EquiposPage = () => {
             setEquipos(response.data);
             setTotalCount(response.pagination?.total || 0);
         } catch (error) {
-            showNotification('Error al cargar equipos', 'error');
+            showNotification(error.message || 'Error al cargar equipos', 'error');
         } finally {
             setLoading(false);
         }
@@ -131,7 +131,7 @@ const EquiposPage = () => {
             setTotalCount(filteredData.length);
             setPage(0);
         } catch (error) {
-            showNotification('Error en la búsqueda', 'error');
+            showNotification(error.message || 'Error en la búsqueda', 'error');
             setEquipos([]);
             setTotalCount(0);
         }

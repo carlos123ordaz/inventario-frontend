@@ -77,7 +77,7 @@ const ActasPage = () => {
             setActas(response.data);
             setTotalCount(response.pagination?.total || 0);
         } catch (error) {
-            showNotification('Error al cargar actas', 'error');
+            showNotification(error.message || 'Error al cargar actas', 'error');
         } finally {
             setLoading(false);
         }
@@ -284,9 +284,7 @@ const ActasPage = () => {
                                 <Typography variant="body1" sx={{ fontWeight: 500 }} noWrap>
                                     {estadisticas.actasMasUsadas[0]?.titulo || 'N/A'}
                                 </Typography>
-                                <Typography variant="caption" color="textSecondary">
-                                    {estadisticas.actasMasUsadas[0]?.vecesUtilizada || 0} usos
-                                </Typography>
+
                             </CardContent>
                         </Card>
                     </Grid>

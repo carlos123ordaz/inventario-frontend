@@ -123,7 +123,7 @@ const EquipoDetailPage = () => {
             const response = await equiposService.getById(id);
             setEquipo(response.data);
         } catch (error) {
-            setError('Error al cargar la información del equipo');
+            setError(error.message || 'Error al cargar la información del equipo');
         } finally {
             setLoading(false);
         }

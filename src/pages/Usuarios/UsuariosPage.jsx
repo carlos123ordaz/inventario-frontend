@@ -79,7 +79,7 @@ const UsuariosPage = () => {
             setUsuarios(response.data);
             setTotalCount(response.pagination?.total || 0);
         } catch (error) {
-            showNotification('Error al cargar usuarios', 'error');
+            showNotification(error.message || 'Error al cargar usuarios', 'error');
         } finally {
             setLoading(false);
         }
@@ -98,7 +98,7 @@ const UsuariosPage = () => {
             setUsuarios(response.data);
             setTotalCount(response.data.length);
         } catch (error) {
-            showNotification('Error en la búsqueda', 'error');
+            showNotification(error.message || 'Error en la búsqueda', 'error');
         } finally {
             setLoading(false);
         }
@@ -171,7 +171,7 @@ const UsuariosPage = () => {
     const handleDeleteConfirm = async () => {
         try {
             await usuariosService.delete(selectedUsuario._id);
-            showNotification('Usuario eliminado correctamente', 'success');
+            showNotification(selectedUsuario.nombre || 'Usuario eliminado correctamente', 'success');
             loadUsuarios();
         } catch (error) {
             const message = error.response?.data?.message || 'Error al eliminar usuario';
