@@ -22,6 +22,7 @@ import {
     Alert,
     Snackbar,
     useTheme,
+    Stack,
 } from '@mui/material';
 import {
     Add as AddIcon,
@@ -239,19 +240,19 @@ const EquiposPage = () => {
     const getTipoIcon = (tipo) => {
         switch (tipo) {
             case 'LAPTOP':
-                return <LaptopChromebook sx={{ fontSize: 20 }} />;
+                return <LaptopChromebook sx={{ fontSize: 18 }} />;
             case 'DESKTOP':
-                return <ComputerOutlined sx={{ fontSize: 20 }} />;
+                return <ComputerOutlined sx={{ fontSize: 18 }} />;
             case 'CELULAR':
-                return <SmartButtonOutlined sx={{ fontSize: 20 }} />;
+                return <SmartButtonOutlined sx={{ fontSize: 18 }} />;
             case 'MOUSE':
-                return <MouseOutlined sx={{ fontSize: 20 }} />;
+                return <MouseOutlined sx={{ fontSize: 18 }} />;
             case 'MONITOR':
-                return <MonitorHeartOutlined sx={{ fontSize: 20 }} />;
+                return <MonitorHeartOutlined sx={{ fontSize: 18 }} />;
             case 'COOLER':
-                return <ColorizeRounded sx={{ fontSize: 20 }} />;
+                return <ColorizeRounded sx={{ fontSize: 18 }} />;
             case 'TECLADO':
-                return <Keyboard sx={{ fontSize: 20 }} />;
+                return <Keyboard sx={{ fontSize: 18 }} />;
             default:
                 return null;
         }
@@ -270,70 +271,71 @@ const EquiposPage = () => {
         : equipos;
 
     return (
-        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            {/* Header Section */}
-            <Box sx={{ mb: 3 }}>
-                <Typography
-                    variant="h4"
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+            {/* Título y botón principal */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <Box>
+                    <Typography
+                        variant="h4"
+                        sx={{
+                            fontWeight: 500,
+                            color: theme.palette.text.primary,
+                            mb: 0.5,
+                        }}
+                    >
+                        Equipos
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                        Gestión de inventario de equipos
+                    </Typography>
+                </Box>
+                <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={handleCreate}
                     sx={{
-                        fontWeight: 400,
-                        fontSize: '1.75rem',
-                        color: theme.palette.text.primary,
-                        mb: 0.5,
+                        backgroundColor: theme.palette.primary.main,
+                        color: '#FFFFFF',
+                        textTransform: 'none',
+                        fontWeight: 500,
                     }}
                 >
-                    Gestión de Equipos
-                </Typography>
-                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                    {totalCount} {totalCount === 1 ? 'equipo' : 'equipos'}
-                    {isSearching && searchTerm && (
-                        <Chip
-                            label={`Buscando: "${searchTerm}"`}
-                            size="small"
-                            onDelete={handleClearSearch}
-                            sx={{ ml: 1, height: 20 }}
-                        />
-                    )}
-                </Typography>
+                    Crear Equipo
+                </Button>
             </Box>
 
-            {/* Toolbar */}
+            {/* Búsqueda y Filtros */}
             <Paper
                 elevation={0}
                 sx={{
-                    mb: 2,
                     border: `1px solid ${theme.palette.divider}`,
-                    borderRadius: '0.5rem',
+                    borderRadius: '4px',
                     overflow: 'hidden',
+                    backgroundColor: theme.palette.background.paper,
                 }}
             >
-                <Toolbar
+                <Box
                     sx={{
-                        px: 2,
-                        py: 1.5,
+                        p: 2,
                         display: 'flex',
-                        gap: 2,
+                        gap: 1.5,
+                        alignItems: 'center',
                         flexWrap: 'wrap',
-                        minHeight: 'auto !important',
-                        backgroundColor: theme.palette.mode === 'dark'
-                            ? theme.palette.surface?.main
-                            : '#fafafa',
+                        borderBottom: `1px solid ${theme.palette.divider}`,
                     }}
                 >
-                    {/* Barra de búsqueda */}
                     <TextField
                         placeholder="Buscar..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         size="small"
                         sx={{
-                            flexGrow: 1,
-                            minWidth: 250,
+                            width: 300,
                         }}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <SearchIcon sx={{ color: theme.palette.text.secondary, fontSize: 20 }} />
+                                    <SearchIcon sx={{ color: theme.palette.text.secondary, fontSize: 18 }} />
                                 </InputAdornment>
                             ),
                             endAdornment: searchTerm && (
@@ -346,23 +348,24 @@ const EquiposPage = () => {
                         }}
                     />
 
-                    {/* Botones de acción */}
-                    <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Box sx={{ display: 'flex', gap: 1, ml: 'auto' }}>
                         <Tooltip title="Filtros">
                             <IconButton
+                                size="small"
                                 onClick={() => setShowFilters(!showFilters)}
                                 sx={{
                                     border: `1px solid ${theme.palette.divider}`,
+                                    borderRadius: 1,
                                     backgroundColor: showFilters
                                         ? theme.palette.primary.main
                                         : 'transparent',
                                     color: showFilters
-                                        ? theme.palette.primary.contrastText
-                                        : theme.palette.primary.main,
+                                        ? '#FFFFFF'
+                                        : theme.palette.text.secondary,
                                     '&:hover': {
                                         backgroundColor: showFilters
                                             ? theme.palette.primary.dark
-                                            : theme.palette.action.hover,
+                                            : theme.palette.surface.light,
                                     },
                                 }}
                             >
@@ -372,6 +375,7 @@ const EquiposPage = () => {
 
                         <Tooltip title="Actualizar">
                             <IconButton
+                                size="small"
                                 onClick={() => {
                                     if (isSearching && searchTerm.trim()) {
                                         handleSearch();
@@ -381,44 +385,25 @@ const EquiposPage = () => {
                                 }}
                                 sx={{
                                     border: `1px solid ${theme.palette.divider}`,
-                                    '&:hover': { backgroundColor: theme.palette.action.hover },
+                                    borderRadius: 1,
                                 }}
                             >
                                 <RefreshIcon fontSize="small" />
                             </IconButton>
                         </Tooltip>
-
-                        <Button
-                            variant="contained"
-                            startIcon={<AddIcon />}
-                            onClick={handleCreate}
-                            sx={{
-                                backgroundColor: theme.palette.primary.main,
-                                color: theme.palette.primary.contrastText,
-                                textTransform: 'none',
-                                fontWeight: 500,
-                                boxShadow: 'none',
-                                '&:hover': {
-                                    backgroundColor: theme.palette.primary.dark,
-                                    boxShadow: 'none',
-                                },
-                            }}
-                        >
-                            Crear Equipo
-                        </Button>
                     </Box>
-                </Toolbar>
+                </Box>
 
-                {/* Panel de filtros colapsable */}
+                {/* Panel de filtros */}
                 {showFilters && (
                     <Box
                         sx={{
                             p: 2,
-                            borderTop: `1px solid ${theme.palette.divider}`,
                             display: 'flex',
                             gap: 2,
-                            flexWrap: 'wrap',
                             alignItems: 'center',
+                            flexWrap: 'wrap',
+                            backgroundColor: theme.palette.surface.light,
                         }}
                     >
                         <TextField
@@ -480,92 +465,24 @@ const EquiposPage = () => {
             <Paper
                 elevation={0}
                 sx={{
-                    flexGrow: 1,
-                    display: 'flex',
-                    flexDirection: 'column',
                     border: `1px solid ${theme.palette.divider}`,
-                    borderRadius: '0.5rem',
+                    borderRadius: '4px',
                     overflow: 'hidden',
+                    backgroundColor: theme.palette.background.paper,
                 }}
             >
-                <TableContainer sx={{ flexGrow: 1 }}>
-                    <Table stickyHeader>
+                <TableContainer>
+                    <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell sx={{
-                                    backgroundColor: theme.palette.mode === 'dark'
-                                        ? theme.palette.surface?.main
-                                        : '#fafafa',
-                                    fontWeight: 600,
-                                    color: theme.palette.text.primary,
-                                }}>
-                                    Tipo
-                                </TableCell>
-                                <TableCell sx={{
-                                    backgroundColor: theme.palette.mode === 'dark'
-                                        ? theme.palette.surface?.main
-                                        : '#fafafa',
-                                    fontWeight: 600,
-                                    color: theme.palette.text.primary,
-                                }}>
-                                    Marca / Modelo
-                                </TableCell>
-                                <TableCell sx={{
-                                    backgroundColor: theme.palette.mode === 'dark'
-                                        ? theme.palette.surface?.main
-                                        : '#fafafa',
-                                    fontWeight: 600,
-                                    color: theme.palette.text.primary,
-                                }}>
-                                    Serie
-                                </TableCell>
-                                <TableCell sx={{
-                                    backgroundColor: theme.palette.mode === 'dark'
-                                        ? theme.palette.surface?.main
-                                        : '#fafafa',
-                                    fontWeight: 600,
-                                    color: theme.palette.text.primary,
-                                }}>
-                                    Hostname
-                                </TableCell>
-                                <TableCell sx={{
-                                    backgroundColor: theme.palette.mode === 'dark'
-                                        ? theme.palette.surface?.main
-                                        : '#fafafa',
-                                    fontWeight: 600,
-                                    color: theme.palette.text.primary,
-                                }}>
-                                    Estado
-                                </TableCell>
-                                <TableCell sx={{
-                                    backgroundColor: theme.palette.mode === 'dark'
-                                        ? theme.palette.surface?.main
-                                        : '#fafafa',
-                                    fontWeight: 600,
-                                    color: theme.palette.text.primary,
-                                }}>
-                                    Especificaciones
-                                </TableCell>
-                                <TableCell sx={{
-                                    backgroundColor: theme.palette.mode === 'dark'
-                                        ? theme.palette.surface?.main
-                                        : '#fafafa',
-                                    fontWeight: 600,
-                                    color: theme.palette.text.primary,
-                                }}>
-                                    Usuario Asignado
-                                </TableCell>
-                                <TableCell
-                                    align="center"
-                                    sx={{
-                                        backgroundColor: theme.palette.mode === 'dark'
-                                            ? theme.palette.surface?.main
-                                            : '#fafafa',
-                                        fontWeight: 600,
-                                        color: theme.palette.text.primary,
-                                        width: 80,
-                                    }}
-                                >
+                                <TableCell>Tipo</TableCell>
+                                <TableCell>Marca / Modelo</TableCell>
+                                <TableCell>Serie</TableCell>
+                                <TableCell>Hostname</TableCell>
+                                <TableCell>Estado</TableCell>
+                                <TableCell>Especificaciones</TableCell>
+                                <TableCell>Usuario Asignado</TableCell>
+                                <TableCell align="center" sx={{ width: 60 }}>
                                     Acciones
                                 </TableCell>
                             </TableRow>
@@ -579,23 +496,10 @@ const EquiposPage = () => {
                                 </TableRow>
                             ) : displayedEquipos.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={8} align="center" sx={{ py: 8, color: theme.palette.text.secondary }}>
-                                        {isSearching ? (
-                                            <>
-                                                <Typography variant="body1" sx={{ mb: 1 }}>
-                                                    No se encontraron resultados para "{searchTerm}"
-                                                </Typography>
-                                                <Button
-                                                    size="small"
-                                                    onClick={handleClearSearch}
-                                                    sx={{ textTransform: 'none' }}
-                                                >
-                                                    Limpiar búsqueda
-                                                </Button>
-                                            </>
-                                        ) : (
-                                            'No se encontraron equipos'
-                                        )}
+                                    <TableCell colSpan={8} align="center" sx={{ py: 8 }}>
+                                        <Typography color="text.secondary">
+                                            {isSearching ? `No se encontraron resultados para "${searchTerm}"` : 'No se encontraron equipos'}
+                                        </Typography>
                                     </TableCell>
                                 </TableRow>
                             ) : (
@@ -611,7 +515,9 @@ const EquiposPage = () => {
                                         <TableCell>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                 {getTipoIcon(equipo.tipo)}
-                                                <Typography variant="body2">{equipo.tipo}</Typography>
+                                                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                                    {equipo.tipo}
+                                                </Typography>
                                             </Box>
                                         </TableCell>
                                         <TableCell>
@@ -623,12 +529,12 @@ const EquiposPage = () => {
                                             </Typography>
                                         </TableCell>
                                         <TableCell>
-                                            <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.813rem' }}>
+                                            <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
                                                 {equipo.serie}
                                             </Typography>
                                         </TableCell>
                                         <TableCell>
-                                            <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.813rem' }}>
+                                            <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
                                                 {equipo.host || '-'}
                                             </Typography>
                                         </TableCell>
@@ -637,17 +543,12 @@ const EquiposPage = () => {
                                                 label={equipo.estado}
                                                 color={getEstadoColor(equipo.estado)}
                                                 size="small"
-                                                sx={{
-                                                    fontWeight: 400,
-                                                    fontSize: '0.75rem',
-                                                    height: 24,
-                                                }}
                                             />
                                         </TableCell>
                                         <TableCell>
                                             {equipo.procesador ? (
                                                 <>
-                                                    <Typography variant="caption" sx={{ display: 'block', color: theme.palette.text.primary }}>
+                                                    <Typography variant="caption" sx={{ display: 'block', fontWeight: 500 }}>
                                                         {equipo.procesador}
                                                     </Typography>
                                                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
@@ -658,7 +559,7 @@ const EquiposPage = () => {
                                         </TableCell>
                                         <TableCell>
                                             {equipo.asignacionActual ? (
-                                                <Typography variant="body2">
+                                                <Typography variant="body2" sx={{ fontWeight: 500 }}>
                                                     {equipo.asignacionActual.usuario?.nombreCompleto ||
                                                         `${equipo.asignacionActual.usuario?.nombre} ${equipo.asignacionActual.usuario?.apellido}`}
                                                 </Typography>
@@ -693,13 +594,11 @@ const EquiposPage = () => {
                     rowsPerPage={rowsPerPage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                     rowsPerPageOptions={[5, 10, 25, 50]}
-                    labelRowsPerPage="Filas por página:"
-                    labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
+                    labelRowsPerPage="Filas:"
+                    labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count}`}
                     sx={{
                         borderTop: `1px solid ${theme.palette.divider}`,
-                        backgroundColor: theme.palette.mode === 'dark'
-                            ? theme.palette.surface?.main
-                            : '#fafafa',
+                        backgroundColor: theme.palette.surface.light,
                     }}
                 />
             </Paper>
@@ -713,9 +612,6 @@ const EquiposPage = () => {
                     elevation: 3,
                     sx: {
                         minWidth: 180,
-                        '& .MuiMenuItem-root': {
-                            fontSize: '0.875rem',
-                        },
                     },
                 }}
             >
@@ -723,7 +619,7 @@ const EquiposPage = () => {
                     <EditIcon sx={{ mr: 1.5, fontSize: 18, color: theme.palette.text.secondary }} />
                     Editar
                 </MenuItem>
-                <MenuItem onClick={() => handleDeleteClick(selectedEquipo)} sx={{ color: 'error.main' }}>
+                <MenuItem onClick={() => handleDeleteClick(selectedEquipo)} sx={{ color: theme.palette.error.main }}>
                     <DeleteIcon sx={{ mr: 1.5, fontSize: 18 }} />
                     Eliminar
                 </MenuItem>
