@@ -839,7 +839,7 @@ const EquipoDetailPage = () => {
                                         Fecha de Compra
                                     </Typography>
                                     <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
-                                        {equipo.fechaCompra ? moment(equipo.fechaCompra).format('DD/MM/YYYY') : 'No especificado'}
+                                        {equipo.fechaCompra ? moment.utc(equipo.fechaCompra).format('DD/MM/YYYY') : 'No especificado'}
                                     </Typography>
                                 </Grid>
 
