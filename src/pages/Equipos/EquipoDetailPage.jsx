@@ -842,16 +842,6 @@ const EquipoDetailPage = () => {
                                         {equipo.fechaCompra ? moment.utc(equipo.fechaCompra).format('DD/MM/YYYY') : 'No especificado'}
                                     </Typography>
                                 </Grid>
-
-                                <Grid size={{ xs: 12, md: 6 }}>
-                                    <Typography variant="caption" color="text.secondary">
-                                        Primer Uso
-                                    </Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
-                                        {equipo.primerUso ? moment(equipo.primerUso).format('DD/MM/YYYY') : 'No especificado'}
-                                    </Typography>
-                                </Grid>
-
                                 <Grid size={{ xs: 12, md: 6 }}>
                                     <Typography variant="caption" color="text.secondary"> Antigüedad </Typography>
                                     <Typography variant="body1" sx={{ fontWeight: 500 }}>

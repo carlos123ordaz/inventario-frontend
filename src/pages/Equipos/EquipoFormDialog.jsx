@@ -67,8 +67,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
             serie: '',
             host: '',
             estado: 'Disponible',
-            fechaCompra: moment().format('YYYY-MM-DD'),
-            primerUso: moment().format('YYYY-MM-DD'),
+            fechaCompra: moment.utc().format('YYYY-MM-DD'),
             procesador: '',
             almacenamiento: '',
             memoria: '',
@@ -122,8 +121,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                 serie: equipoData.serie,
                 host: equipoData.host || '',
                 estado: equipoData.estado,
-                fechaCompra: moment(equipoData.fechaCompra).format('YYYY-MM-DD'),
-                primerUso: moment(equipoData.primerUso).format('YYYY-MM-DD'),
+                fechaCompra: moment.utc(equipoData.fechaCompra).format('YYYY-MM-DD'),
                 procesador: equipoData.procesador || '',
                 almacenamiento: equipoData.almacenamiento || '',
                 memoria: equipoData.memoria || '',
@@ -168,8 +166,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                 serie: '',
                 host: '',
                 estado: 'Disponible',
-                fechaCompra: moment().format('YYYY-MM-DD'),
-                primerUso: moment().format('YYYY-MM-DD'),
+                fechaCompra: moment.utc().format('YYYY-MM-DD'),
                 procesador: '',
                 almacenamiento: '',
                 memoria: '',
@@ -568,35 +565,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                             />
                         </Grid>
 
-                        <Grid size={{ xs: 12 }} sm={6}>
-                            <Controller
-                                name="primerUso"
-                                control={control}
-                                rules={{
-                                    validate: (value) => {
-                                        if (!value) return true;
-                                        const fecha = new Date(value);
-                                        const hoy = new Date();
-                                        if (fecha > hoy) {
-                                            return 'La fecha no puede ser futura';
-                                        }
-                                        return true;
-                                    },
-                                }}
-                                render={({ field }) => (
-                                    <TextField
-                                        {...field}
-                                        label="Primer Uso"
-                                        type="date"
-                                        fullWidth
-                                        size="small"
-                                        InputLabelProps={{ shrink: true }}
-                                        error={!!errors.primerUso}
-                                        helperText={errors.primerUso?.message}
-                                    />
-                                )}
-                            />
-                        </Grid>
+
 
 
                         {!esAccesorio && (
