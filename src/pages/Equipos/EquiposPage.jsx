@@ -72,68 +72,31 @@ const EquiposPage = () => {
     const [editMode, setEditMode] = useState(false);
     const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' });
     const [showFilters, setShowFilters] = useState(false);
-    const [isSearching, setIsSearching] = useState(false);
 
+    // Cargar equipos cuando cambien los filtros, búsqueda o paginación
     useEffect(() => {
-        if (!isSearching) {
-            loadEquipos();
-        }
-    }, [page, rowsPerPage, filterEstado, filterTipo, isSearching]);
-
-    useEffect(() => {
-        if (searchTerm.trim()) {
-            const delayDebounce = setTimeout(() => {
-                handleSearch();
-            }, 500);
-
-            return () => clearTimeout(delayDebounce);
-        } else {
-            setIsSearching(false);
-            setPage(0);
-        }
-    }, [searchTerm]);
+        loadEquipos();
+    }, [page, rowsPerPage, searchTerm, filterEstado, filterTipo]);
 
     const loadEquipos = async () => {
         try {
-            const response = await equiposService.filter({
+            setLoading(true);
+            const response = await equiposService.getAll({
+                termino: searchTerm.trim(),
                 estado: filterEstado,
                 tipo: filterTipo,
                 page: page + 1,
                 limit: rowsPerPage,
             });
+
             setEquipos(response.data);
             setTotalCount(response.pagination?.total || 0);
         } catch (error) {
             showNotification(error.message || 'Error al cargar equipos', 'error');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleSearch = async () => {
-        const term = searchTerm.trim();
-        if (!term) {
-            setIsSearching(false);
-            loadEquipos();
-            return;
-        }
-        try {
-            setIsSearching(true);
-            const response = await equiposService.search(term);
-            let filteredData = response.data;
-            if (filterEstado) {
-                filteredData = filteredData.filter(e => e.estado === filterEstado);
-            }
-            if (filterTipo) {
-                filteredData = filteredData.filter(e => e.equipo === filterTipo);
-            }
-            setEquipos(filteredData);
-            setTotalCount(filteredData.length);
-            setPage(0);
-        } catch (error) {
-            showNotification(error.message || 'Error en la búsqueda', 'error');
             setEquipos([]);
             setTotalCount(0);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -141,13 +104,6 @@ const EquiposPage = () => {
         setSearchTerm('');
         setFilterEstado('');
         setFilterTipo('');
-        setPage(0);
-        setIsSearching(false);
-    };
-
-    const handleClearSearch = () => {
-        setSearchTerm('');
-        setIsSearching(false);
         setPage(0);
     };
 
@@ -174,12 +130,7 @@ const EquiposPage = () => {
         try {
             await equiposService.delete(selectedEquipo._id);
             showNotification('Equipo eliminado correctamente', 'success');
-
-            if (isSearching && searchTerm.trim()) {
-                handleSearch();
-            } else {
-                loadEquipos();
-            }
+            loadEquipos();
         } catch (error) {
             const message = error.response?.data?.message || 'Error al eliminar equipo';
             showNotification(message, 'error');
@@ -195,12 +146,7 @@ const EquiposPage = () => {
             editMode ? 'Equipo actualizado correctamente' : 'Equipo creado correctamente',
             'success'
         );
-
-        if (isSearching && searchTerm.trim()) {
-            handleSearch();
-        } else {
-            loadEquipos();
-        }
+        loadEquipos();
     };
 
     const handleMenuOpen = (event, equipo) => {
@@ -266,10 +212,6 @@ const EquiposPage = () => {
         return <LoadingSpinner />;
     }
 
-    const displayedEquipos = isSearching
-        ? equipos.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-        : equipos;
-
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
             {/* Título y botón principal */}
@@ -327,7 +269,10 @@ const EquiposPage = () => {
                     <TextField
                         placeholder="Buscar..."
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setPage(0); // Reiniciar paginación al buscar
+                        }}
                         size="small"
                         sx={{
                             width: 300,
@@ -340,7 +285,13 @@ const EquiposPage = () => {
                             ),
                             endAdornment: searchTerm && (
                                 <InputAdornment position="end">
-                                    <IconButton size="small" onClick={handleClearSearch}>
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => {
+                                            setSearchTerm('');
+                                            setPage(0);
+                                        }}
+                                    >
                                         <ClearIcon fontSize="small" />
                                     </IconButton>
                                 </InputAdornment>
@@ -376,13 +327,7 @@ const EquiposPage = () => {
                         <Tooltip title="Actualizar">
                             <IconButton
                                 size="small"
-                                onClick={() => {
-                                    if (isSearching && searchTerm.trim()) {
-                                        handleSearch();
-                                    } else {
-                                        loadEquipos();
-                                    }
-                                }}
+                                onClick={loadEquipos}
                                 sx={{
                                     border: `1px solid ${theme.palette.divider}`,
                                     borderRadius: 1,
@@ -444,7 +389,7 @@ const EquiposPage = () => {
                             ))}
                         </TextField>
 
-                        {(filterEstado || filterTipo) && (
+                        {(filterEstado || filterTipo || searchTerm) && (
                             <Button
                                 variant="text"
                                 size="small"
@@ -494,16 +439,16 @@ const EquiposPage = () => {
                                         <Typography color="text.secondary">Cargando...</Typography>
                                     </TableCell>
                                 </TableRow>
-                            ) : displayedEquipos.length === 0 ? (
+                            ) : equipos.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={8} align="center" sx={{ py: 8 }}>
                                         <Typography color="text.secondary">
-                                            {isSearching ? `No se encontraron resultados para "${searchTerm}"` : 'No se encontraron equipos'}
+                                            {searchTerm ? `No se encontraron resultados para "${searchTerm}"` : 'No se encontraron equipos'}
                                         </Typography>
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                displayedEquipos.map((equipo) => (
+                                equipos.map((equipo) => (
                                     <TableRow
                                         key={equipo._id}
                                         hover
@@ -593,7 +538,7 @@ const EquiposPage = () => {
                     onPageChange={handleChangePage}
                     rowsPerPage={rowsPerPage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
-                    rowsPerPageOptions={[5, 10, 25, 50]}
+                    rowsPerPageOptions={[5, 10, 25, 50, 100]}
                     labelRowsPerPage="Filas:"
                     labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count}`}
                     sx={{

@@ -1,10 +1,26 @@
 import axiosInstance from './axios.config';
 
 const equiposService = {
+    /**
+     * Obtiene equipos con filtros, búsqueda y paginación unificados
+     * @param {Object} params - Parámetros opcionales
+     * @param {string} params.termino - Búsqueda por término (marca, modelo, serie, host, procesador)
+     * @param {string} params.estado - Filtro por estado (Disponible, En Uso, Mantenimiento, etc)
+     * @param {string} params.tipo - Filtro por tipo (LAPTOP, DESKTOP, CELULAR, etc)
+     * @param {string} params.marca - Filtro por marca
+     * @param {number} params.page - Página (default: 1)
+     * @param {number} params.limit - Límite por página (default: 10)
+     * @returns {Promise} Respuesta con data y pagination
+     */
     getAll: async (params = {}) => {
         try {
+            const cleanParams = {
+                ...params,
+                page: params.page || 1,
+                limit: params.limit || 10
+            };
 
-            const response = await axiosInstance.get('/equipos', { params });
+            const response = await axiosInstance.get('/equipos', { params: cleanParams });
             return response.data;
         } catch (error) {
             throw error;
@@ -14,17 +30,6 @@ const equiposService = {
     getById: async (id) => {
         try {
             const response = await axiosInstance.get(`/equipos/${id}`);
-            return response.data;
-        } catch (error) {
-            throw error;
-        }
-    },
-
-    search: async (termino) => {
-        try {
-            const response = await axiosInstance.get('/equipos/buscar', {
-                params: { termino }
-            });
             return response.data;
         } catch (error) {
             throw error;
@@ -61,55 +66,6 @@ const equiposService = {
     delete: async (id) => {
         try {
             const response = await axiosInstance.delete(`/equipos/${id}`);
-            return response.data;
-        } catch (error) {
-            throw error;
-        }
-    },
-    filter: async (filters) => {
-        try {
-            const response = await axiosInstance.get('/equipos', {
-                params: {
-                    estado: filters.estado,
-                    tipo: filters.tipo,
-                    marca: filters.marca,
-                    page: filters.page || 1,
-                    limit: filters.limit || 10
-                }
-            });
-            return response.data;
-        } catch (error) {
-            throw error;
-        }
-    },
-
-    getDisponibles: async () => {
-        try {
-            const response = await axiosInstance.get('/equipos', {
-                params: { estado: 'Disponible' }
-            });
-            return response.data;
-        } catch (error) {
-            throw error;
-        }
-    },
-
-    getEnUso: async () => {
-        try {
-            const response = await axiosInstance.get('/equipos', {
-                params: { estado: 'En Uso' }
-            });
-            return response.data;
-        } catch (error) {
-            throw error;
-        }
-    },
-
-    getByTipo: async (tipo) => {
-        try {
-            const response = await axiosInstance.get('/equipos', {
-                params: { equipo: tipo }
-            });
             return response.data;
         } catch (error) {
             throw error;

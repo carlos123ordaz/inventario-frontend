@@ -346,7 +346,7 @@ const HistorialPage = () => {
                     onPageChange={handleChangePage}
                     rowsPerPage={rowsPerPage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
-                    rowsPerPageOptions={[5, 10, 25, 50]}
+                    rowsPerPageOptions={[5, 10, 25, 50, 100]}
                     labelRowsPerPage="Filas por página:"
                     labelDisplayedRows={({ from, to, count }) =>
                         `${from}-${to} de ${count !== -1 ? count : `más de ${to}`}`
