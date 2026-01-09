@@ -73,7 +73,6 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
             almacenamiento: '',
             memoria: '',
             pantalla: '',
-            hostname: '',
             tarjetaGrafica: '',
             puertoRed: false,
             puertosUSB: true,
@@ -122,7 +121,6 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                 modelo: equipoData.modelo,
                 serie: equipoData.serie,
                 host: equipoData.host || '',
-                hostname: equipoData.hostname || '',
                 estado: equipoData.estado,
                 fechaCompra: moment(equipoData.fechaCompra).format('YYYY-MM-DD'),
                 primerUso: moment(equipoData.primerUso).format('YYYY-MM-DD'),
@@ -169,7 +167,6 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                 modelo: '',
                 serie: '',
                 host: '',
-                hostname: '',
                 estado: 'Disponible',
                 fechaCompra: moment().format('YYYY-MM-DD'),
                 primerUso: moment().format('YYYY-MM-DD'),
@@ -498,33 +495,13 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                         {!esAccesorio && (
                             <Grid size={{ xs: 12 }} sm={6}>
                                 <Controller
-                                    name="hostname"
+                                    name="host"
                                     control={control}
                                     rules={{ required: 'El nombre del host es requerido' }}
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Host"
-                                            fullWidth
-                                            size="small"
-                                            required
-                                            error={!!errors.hostname}
-                                            helperText={errors.hostname?.message}
-                                        />
-                                    )}
-                                />
-                            </Grid>
-                        )}
-                        {!esAccesorio && (
-                            <Grid size={{ xs: 12 }} sm={6}>
-                                <Controller
-                                    name="host"
-                                    control={control}
-                                    rules={{ required: 'El nombre del hostname es requerido' }}
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label="Hostname"
+                                            label="Nombre del Host"
                                             fullWidth
                                             size="small"
                                             required
@@ -619,6 +596,149 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                     />
                                 )}
                             />
+                        </Grid>
+
+                        {/* ========== NUEVA SECCIÓN: PROVEEDOR ========== */}
+                        <Grid size={{ xs: 12 }}>
+                            <Divider sx={{ my: 1 }} />
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, mb: 1.5 }}>
+                                <ShoppingCartIcon sx={{ color: theme.palette.primary.main, fontSize: 20 }} />
+                                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                    Información del Proveedor
+                                </Typography>
+                            </Box>
+                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>
+                                Datos de la compra y el proveedor
+                            </Typography>
+                        </Grid>
+
+                        <Grid size={{ xs: 12 }}>
+                            <Paper sx={{
+                                p: 2,
+                                backgroundColor: darkMode ? theme.palette.background.default : '#f9fafb',
+                                border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`
+                            }}>
+                                <Grid container spacing={1.5}>
+                                    <Grid size={{ xs: 12 }}>
+                                        <Controller
+                                            name="proveedor.razonSocial"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <TextField
+                                                    {...field}
+                                                    label="Razón Social del Proveedor"
+                                                    fullWidth
+                                                    size="small"
+                                                    placeholder="Ej: Empresa XYZ S.A."
+                                                    error={!!errors.proveedor?.razonSocial}
+                                                    helperText={errors.proveedor?.razonSocial?.message}
+                                                />
+                                            )}
+                                        />
+                                    </Grid>
+
+                                    <Grid size={{ xs: 12 }} sm={6}>
+                                        <Controller
+                                            name="proveedor.ruc"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <TextField
+                                                    {...field}
+                                                    label="RUC"
+                                                    fullWidth
+                                                    size="small"
+                                                    placeholder="Ej: 20123456789"
+                                                    error={!!errors.proveedor?.ruc}
+                                                    helperText={errors.proveedor?.ruc?.message}
+                                                />
+                                            )}
+                                        />
+                                    </Grid>
+
+                                    <Grid size={{ xs: 12 }} sm={6}>
+                                        <Controller
+                                            name="proveedor.nroFactura"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <TextField
+                                                    {...field}
+                                                    label="Número de Factura"
+                                                    fullWidth
+                                                    size="small"
+                                                    placeholder="Ej: 001-0001234"
+                                                    error={!!errors.proveedor?.nroFactura}
+                                                    helperText={errors.proveedor?.nroFactura?.message}
+                                                />
+                                            )}
+                                        />
+                                    </Grid>
+
+                                    <Grid size={{ xs: 12 }} sm={6}>
+                                        <Controller
+                                            name="proveedor.precioUnitario"
+                                            control={control}
+                                            rules={{
+                                                min: {
+                                                    value: 0,
+                                                    message: 'El precio debe ser mayor o igual a 0'
+                                                }
+                                            }}
+                                            render={({ field }) => (
+                                                <TextField
+                                                    {...field}
+                                                    label="Precio Unitario"
+                                                    fullWidth
+                                                    size="small"
+                                                    type="number"
+                                                    placeholder="0.00"
+                                                    inputProps={{ step: "0.01", min: "0" }}
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <Controller
+                                                                    name="proveedor.moneda"
+                                                                    control={control}
+                                                                    render={({ field: monedaField }) => (
+                                                                        <TextField
+                                                                            {...monedaField}
+                                                                            select
+                                                                            size="small"
+                                                                            variant="standard"
+                                                                            sx={{
+                                                                                width: 70,
+                                                                                '& .MuiInput-underline:before': {
+                                                                                    borderBottom: 'none'
+                                                                                },
+                                                                                '& .MuiInput-underline:hover:before': {
+                                                                                    borderBottom: 'none'
+                                                                                },
+                                                                                '& .MuiInput-underline:after': {
+                                                                                    borderBottom: 'none'
+                                                                                }
+                                                                            }}
+                                                                        >
+                                                                            <MenuItem value="PEN">PEN (S/.)</MenuItem>
+                                                                            <MenuItem value="USD">USD ($)</MenuItem>
+                                                                            <MenuItem value="EUR">EUR (€)</MenuItem>
+                                                                            <MenuItem value="GBP">GBP (£)</MenuItem>
+                                                                            <MenuItem value="JPY">JPY (¥)</MenuItem>
+                                                                            <MenuItem value="AUD">AUD (A$)</MenuItem>
+                                                                            <MenuItem value="CAD">CAD (C$)</MenuItem>
+                                                                            <MenuItem value="CHF">CHF (Fr)</MenuItem>
+                                                                        </TextField>
+                                                                    )}
+                                                                />
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
+                                                    error={!!errors.proveedor?.precioUnitario}
+                                                    helperText={errors.proveedor?.precioUnitario?.message}
+                                                />
+                                            )}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </Paper>
                         </Grid>
 
 
@@ -795,144 +915,6 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                             />
                                         )}
                                     />
-                                </Grid>
-                                {/* ========== NUEVA SECCIÓN: PROVEEDOR ========== */}
-                                <Grid size={{ xs: 12 }}>
-                                    <Divider sx={{ my: 1 }} />
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, mb: 1.5 }}>
-                                        <ShoppingCartIcon sx={{ color: theme.palette.primary.main, fontSize: 20 }} />
-                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
-                                            Información del Proveedor
-                                        </Typography>
-                                    </Box>
-                                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>
-                                        Datos de la compra y el proveedor
-                                    </Typography>
-                                </Grid>
-
-                                <Grid size={{ xs: 12 }}>
-                                    <Paper sx={{
-                                        p: 2,
-                                        backgroundColor: darkMode ? theme.palette.background.default : '#f9fafb',
-                                        border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`
-                                    }}>
-                                        <Grid container spacing={1.5}>
-                                            <Grid size={{ xs: 12 }}>
-                                                <Controller
-                                                    name="proveedor.razonSocial"
-                                                    control={control}
-                                                    render={({ field }) => (
-                                                        <TextField
-                                                            {...field}
-                                                            label="Razón Social del Proveedor"
-                                                            fullWidth
-                                                            size="small"
-                                                            placeholder="Ej: Empresa XYZ S.A."
-                                                            error={!!errors.proveedor?.razonSocial}
-                                                            helperText={errors.proveedor?.razonSocial?.message}
-                                                        />
-                                                    )}
-                                                />
-                                            </Grid>
-
-                                            <Grid size={{ xs: 12 }} sm={6}>
-                                                <Controller
-                                                    name="proveedor.ruc"
-                                                    control={control}
-                                                    render={({ field }) => (
-                                                        <TextField
-                                                            {...field}
-                                                            label="RUC"
-                                                            fullWidth
-                                                            size="small"
-                                                            placeholder="Ej: 20123456789"
-                                                            error={!!errors.proveedor?.ruc}
-                                                            helperText={errors.proveedor?.ruc?.message}
-                                                        />
-                                                    )}
-                                                />
-                                            </Grid>
-
-                                            <Grid size={{ xs: 12 }} sm={6}>
-                                                <Controller
-                                                    name="proveedor.nroFactura"
-                                                    control={control}
-                                                    render={({ field }) => (
-                                                        <TextField
-                                                            {...field}
-                                                            label="Número de Factura"
-                                                            fullWidth
-                                                            size="small"
-                                                            placeholder="Ej: 001-0001234"
-                                                            error={!!errors.proveedor?.nroFactura}
-                                                            helperText={errors.proveedor?.nroFactura?.message}
-                                                        />
-                                                    )}
-                                                />
-                                            </Grid>
-
-                                            <Grid size={{ xs: 12 }} sm={6}>
-                                                <Controller
-                                                    name="proveedor.precioUnitario"
-                                                    control={control}
-                                                    rules={{
-                                                        min: {
-                                                            value: 0,
-                                                            message: 'El precio debe ser mayor o igual a 0'
-                                                        }
-                                                    }}
-                                                    render={({ field }) => (
-                                                        <TextField
-                                                            {...field}
-                                                            label="Precio Unitario"
-                                                            fullWidth
-                                                            size="small"
-                                                            type="number"
-                                                            placeholder="0.00"
-                                                            inputProps={{ step: "0.01", min: "0" }}
-                                                            InputProps={{
-                                                                startAdornment: (
-                                                                    <InputAdornment position="start">
-                                                                        <Controller
-                                                                            name="proveedor.moneda"
-                                                                            control={control}
-                                                                            render={({ field: monedaField }) => (
-                                                                                <TextField
-                                                                                    {...monedaField}
-                                                                                    select
-                                                                                    size="small"
-                                                                                    variant="standard"
-                                                                                    sx={{
-                                                                                        width: 70,
-                                                                                        '& .MuiInput-underline:before': {
-                                                                                            borderBottom: 'none'
-                                                                                        },
-                                                                                        '& .MuiInput-underline:hover:before': {
-                                                                                            borderBottom: 'none'
-                                                                                        },
-                                                                                        '& .MuiInput-underline:after': {
-                                                                                            borderBottom: 'none'
-                                                                                        }
-                                                                                    }}
-                                                                                >
-                                                                                    <MenuItem value="PEN">PEN (S/.)</MenuItem>
-                                                                                    <MenuItem value="USD">USD ($)</MenuItem>
-                                                                                    <MenuItem value="EUR">EUR (€)</MenuItem>
-
-                                                                                </TextField>
-                                                                            )}
-                                                                        />
-                                                                    </InputAdornment>
-                                                                ),
-                                                            }}
-                                                            error={!!errors.proveedor?.precioUnitario}
-                                                            helperText={errors.proveedor?.precioUnitario?.message}
-                                                        />
-                                                    )}
-                                                />
-                                            </Grid>
-                                        </Grid>
-                                    </Paper>
                                 </Grid>
 
                                 {/* ========== SECCIÓN DE CLAVES DE SEGURIDAD ========== */}
