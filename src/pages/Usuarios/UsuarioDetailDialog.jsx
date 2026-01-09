@@ -18,6 +18,7 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    Tooltip,
     useTheme,
 } from '@mui/material';
 import {
@@ -31,6 +32,9 @@ import {
     Badge as BadgeIcon,
     Person as PersonIcon,
     Computer as ComputerIcon,
+    Cloud as CloudIcon,
+    Check as CheckIcon,
+    Close as CloseIconX,
 } from '@mui/icons-material';
 import { usuariosService } from '../../api';
 import moment from 'moment';
@@ -108,7 +112,7 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
                 </IconButton>
             </DialogTitle>
 
-            <DialogContent sx={{ pt: 3 }}>
+            <DialogContent sx={{ pt: 3, maxHeight: '70vh', overflow: 'auto' }}>
                 {loading ? (
                     <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
                         <Typography color="text.secondary">Cargando...</Typography>
@@ -146,7 +150,7 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
                             <Divider />
                         </Grid>
 
-                        {/* Información Personal */}
+                        {/* Información de Sistema */}
                         <Grid size={{ xs: 12 }}>
                             <Typography
                                 variant="subtitle2"
@@ -154,6 +158,50 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
                                     fontWeight: 600,
                                     color: theme.palette.text.primary,
                                     mb: 2
+                                }}
+                            >
+                                Información de Sistema
+                            </Typography>
+                        </Grid>
+
+                        <Grid size={{ xs: 12 }} sm={6}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                <PersonIcon sx={{ color: theme.palette.text.secondary, fontSize: 20 }} />
+                                <Box>
+                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary, display: 'block' }}>
+                                        Usuario
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                        {usuario.usuario}
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        </Grid>
+
+                        <Grid size={{ xs: 12 }} sm={6}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                <BadgeIcon sx={{ color: theme.palette.text.secondary, fontSize: 20 }} />
+                                <Box>
+                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary, display: 'block' }}>
+                                        Iniciales
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ fontWeight: 500, fontFamily: 'monospace' }}>
+                                        {usuario.iniciales}
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        </Grid>
+
+                        {/* Información Personal */}
+                        <Grid size={{ xs: 12 }}>
+                            <Divider sx={{ my: 1 }} />
+                            <Typography
+                                variant="subtitle2"
+                                sx={{
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                    mb: 2,
+                                    mt: 2
                                 }}
                             >
                                 Información Personal
@@ -169,20 +217,6 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
                                     </Typography>
                                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
                                         {usuario.dni}
-                                    </Typography>
-                                </Box>
-                            </Box>
-                        </Grid>
-
-                        <Grid size={{ xs: 12 }} sm={6}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                <PersonIcon sx={{ color: theme.palette.text.secondary, fontSize: 20 }} />
-                                <Box>
-                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary, display: 'block' }}>
-                                        Iniciales
-                                    </Typography>
-                                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                        {usuario.iniciales}
                                     </Typography>
                                 </Box>
                             </Box>
@@ -270,11 +304,100 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
                                         Teléfono
                                     </Typography>
                                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                        {usuario.telefono}
+                                        {usuario.telefono?.prefijo} {usuario.telefono?.numero}
                                     </Typography>
                                 </Box>
                             </Box>
                         </Grid>
+
+                        {/* Cuentas de Sistemas */}
+                        <Grid size={{ xs: 12 }}>
+                            <Divider sx={{ my: 1 }} />
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, mb: 2 }}>
+                                <CloudIcon sx={{ color: theme.palette.primary.main, fontSize: 20 }} />
+                                <Typography
+                                    variant="subtitle2"
+                                    sx={{
+                                        fontWeight: 600,
+                                        color: theme.palette.text.primary
+                                    }}
+                                >
+                                    Cuentas de Sistemas
+                                </Typography>
+                            </Box>
+                        </Grid>
+
+                        {/* Bitrix24 */}
+                        <Grid size={{ xs: 12 }} sm={6}>
+                            <Box sx={{
+                                p: 2,
+                                border: `1px solid ${theme.palette.divider}`,
+                                borderRadius: 1,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                                backgroundColor: usuario.cuentas?.bitrix24
+                                    ? theme.palette.mode === 'dark'
+                                        ? 'rgba(76, 175, 80, 0.1)'
+                                        : 'rgba(76, 175, 80, 0.05)'
+                                    : 'transparent'
+                            }}>
+                                {usuario.cuentas?.bitrix24 ? (
+                                    <CheckIcon sx={{ color: theme.palette.success.main }} />
+                                ) : (
+                                    <CloseIconX sx={{ color: theme.palette.text.secondary }} />
+                                )}
+                                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                    Bitrix24
+                                </Typography>
+                            </Box>
+                        </Grid>
+
+                        {/* NAS */}
+                        <Grid size={{ xs: 12 }} sm={6}>
+                            <Box sx={{
+                                p: 2,
+                                border: `1px solid ${theme.palette.divider}`,
+                                borderRadius: 1,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                                backgroundColor: usuario.cuentas?.nas
+                                    ? theme.palette.mode === 'dark'
+                                        ? 'rgba(76, 175, 80, 0.1)'
+                                        : 'rgba(76, 175, 80, 0.05)'
+                                    : 'transparent'
+                            }}>
+                                {usuario.cuentas?.nas ? (
+                                    <CheckIcon sx={{ color: theme.palette.success.main }} />
+                                ) : (
+                                    <CloseIconX sx={{ color: theme.palette.text.secondary }} />
+                                )}
+                                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                    NAS
+                                </Typography>
+                            </Box>
+                        </Grid>
+
+                        {/* Microsoft Accounts */}
+                        {usuario.cuentas?.microsoft && usuario.cuentas.microsoft.length > 0 && (
+                            <Grid size={{ xs: 12 }}>
+                                <Typography variant="caption" sx={{ color: theme.palette.text.secondary, display: 'block', mb: 1 }}>
+                                    Cuentas Microsoft:
+                                </Typography>
+                                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                                    {usuario.cuentas.microsoft.map((account) => (
+                                        <Chip
+                                            key={account}
+                                            label={account}
+                                            size="small"
+                                            color="primary"
+                                            variant="outlined"
+                                        />
+                                    ))}
+                                </Box>
+                            </Grid>
+                        )}
 
                         {/* Observaciones */}
                         {usuario.observacion && (

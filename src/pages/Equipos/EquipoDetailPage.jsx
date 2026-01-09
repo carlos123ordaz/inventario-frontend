@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     Box,
@@ -627,7 +628,73 @@ const EquipoDetailPage = () => {
                         </Paper>
                     )}
                 </Grid>
+                {/* INFORMACIÓN DEL PROVEEDOR */}
+                {equipo.proveedor && (equipo.proveedor.razonSocial || equipo.proveedor.ruc || equipo.proveedor.nroFactura || equipo.proveedor.precioUnitario > 0) && (
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: 3,
+                            mt: 2,
+                            border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
+                            borderRadius: '0.5rem',
+                            backgroundColor: darkMode ? 'rgba(76, 175, 80, 0.05)' : '#f1f8f4',
+                        }}
+                    >
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                            <ShoppingCartIcon sx={{ mr: 1, color: theme.palette.success.main, fontSize: 24 }} />
+                            <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                Información del Proveedor
+                            </Typography>
+                        </Box>
+                        <Divider sx={{ mb: 2 }} />
 
+                        <Grid container spacing={2}>
+                            {equipo.proveedor.razonSocial && (
+                                <Grid size={{ xs: 12 }} sm={6}>
+                                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                        Razón Social
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
+                                        {equipo.proveedor.razonSocial}
+                                    </Typography>
+                                </Grid>
+                            )}
+
+                            {equipo.proveedor.ruc && (
+                                <Grid size={{ xs: 12 }} sm={6}>
+                                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                        RUC
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 500, fontFamily: 'monospace', color: theme.palette.text.primary }}>
+                                        {equipo.proveedor.ruc}
+                                    </Typography>
+                                </Grid>
+                            )}
+
+                            {equipo.proveedor.nroFactura && (
+                                <Grid size={{ xs: 12 }} sm={6}>
+                                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                        Número de Factura
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 500, fontFamily: 'monospace', color: theme.palette.text.primary }}>
+                                        {equipo.proveedor.nroFactura}
+                                    </Typography>
+                                </Grid>
+                            )}
+
+                            {equipo.proveedor.precioUnitario > 0 && (
+                                <Grid size={{ xs: 12 }} sm={6}>
+                                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                        Precio Unitario
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 600, color: theme.palette.success.main }}>
+                                        {equipo.proveedor.moneda} {equipo.proveedor.precioUnitario.toFixed(2)}
+                                    </Typography>
+                                </Grid>
+                            )}
+                        </Grid>
+                    </Paper>
+                )}
                 {/* ESPECIFICACIONES TÉCNICAS */}
                 {equipo.procesador && (
                     <Grid size={{ xs: 12, md: 8 }}>
@@ -758,7 +825,7 @@ const EquipoDetailPage = () => {
                                         Fecha de Registro
                                     </Typography>
                                     <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
-                                        {moment(equipo.fechaRegistro).format('DD/MM/YYYY')}
+                                        {equipo.createdAt ? moment(equipo.createdAt).format('DD/MM/YYYY') : 'No especificado'}
                                     </Typography>
                                 </Grid>
 
@@ -767,7 +834,7 @@ const EquipoDetailPage = () => {
                                         Fecha de Compra
                                     </Typography>
                                     <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
-                                        {moment(equipo.fechaCompra).format('DD/MM/YYYY')}
+                                        {equipo.fechaCompra ? moment(equipo.fechaCompra).format('DD/MM/YYYY') : 'No especificado'}
                                     </Typography>
                                 </Grid>
 
@@ -776,16 +843,16 @@ const EquipoDetailPage = () => {
                                         Primer Uso
                                     </Typography>
                                     <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
-                                        {moment(equipo.primerUso).format('DD/MM/YYYY')}
+                                        {equipo.primerUso ? moment(equipo.primerUso).format('DD/MM/YYYY') : 'No especificado'}
                                     </Typography>
                                 </Grid>
 
                                 <Grid size={{ xs: 12, md: 6 }}>
-                                    <Typography variant="caption" color="text.secondary">
-                                        Antigüedad
-                                    </Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
-                                        {equipo.antiguedad} {equipo.antiguedad === 1 ? 'año' : 'años'}
+                                    <Typography variant="caption" color="text.secondary"> Antigüedad </Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                        {equipo.fechaCompra
+                                            ? `${moment().diff(moment(equipo.fechaCompra), 'years')} años`
+                                            : 'No especificado'}
                                     </Typography>
                                 </Grid>
 

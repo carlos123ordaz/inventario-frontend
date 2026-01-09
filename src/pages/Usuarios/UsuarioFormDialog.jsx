@@ -15,6 +15,10 @@ import {
     Alert,
     Collapse,
     Box,
+    FormGroup,
+    FormControlLabel,
+    Checkbox,
+    InputAdornment,
     useTheme,
 } from '@mui/material';
 import {
@@ -24,6 +28,17 @@ import {
 } from '@mui/icons-material';
 import { usuariosService } from '../../api';
 import { AREAS } from '../../constants';
+
+// Cuentas disponibles de Microsoft
+const MICROSOFT_ACCOUNTS = [
+    'Power BI',
+    'Outlook Exchange 1',
+    'Microsoft Business Basic',
+    'Microsoft Business Standard',
+    'Teams Premium',
+    'Power Apps',
+    'Power Automate'
+];
 
 const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuarioData = null }) => {
     const theme = useTheme();
@@ -44,13 +59,19 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
             dni: '',
             nombre: '',
             apellido: '',
+            usuario: '',
+            iniciales: '',
             cargo: '',
             area: '',
             correo: '',
-            telefono: '',
-            usuario: '',
-            iniciales: '',
+            telefonoPrefijo: '+51',
+            telefonoNumero: '',
             estado: 'Activo',
+            cuentas: {
+                bitrix24: false,
+                nas: false,
+                microsoft: [],
+            },
             observacion: '',
         },
     });
@@ -77,13 +98,19 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
                 dni: usuarioData.dni,
                 nombre: usuarioData.nombre,
                 apellido: usuarioData.apellido,
+                usuario: usuarioData.usuario,
+                iniciales: usuarioData.iniciales,
                 cargo: usuarioData.cargo,
                 area: usuarioData.area,
                 correo: usuarioData.correo,
-                telefono: usuarioData.telefono,
-                usuario: usuarioData.usuario,
-                iniciales: usuarioData.iniciales,
+                telefonoPrefijo: usuarioData.telefono?.prefijo || '+51',
+                telefonoNumero: usuarioData.telefono?.numero || '',
                 estado: usuarioData.estado,
+                cuentas: {
+                    bitrix24: usuarioData.cuentas?.bitrix24 || false,
+                    nas: usuarioData.cuentas?.nas || false,
+                    microsoft: usuarioData.cuentas?.microsoft || [],
+                },
                 observacion: usuarioData.observacion || '',
             });
         } else {
@@ -91,13 +118,19 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
                 dni: '',
                 nombre: '',
                 apellido: '',
+                usuario: '',
+                iniciales: '',
                 cargo: '',
                 area: '',
                 correo: '',
-                telefono: '',
-                usuario: '',
-                iniciales: '',
+                telefonoPrefijo: '+51',
+                telefonoNumero: '',
                 estado: 'Activo',
+                cuentas: {
+                    bitrix24: false,
+                    nas: false,
+                    microsoft: [],
+                },
                 observacion: '',
             });
         }
@@ -111,10 +144,23 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
             setError(null);
             setValidationErrors([]);
 
+            // Transformar datos al formato esperado
+            const dataFormato = {
+                ...data,
+                telefono: {
+                    prefijo: data.telefonoPrefijo,
+                    numero: data.telefonoNumero,
+                },
+            };
+
+            // Eliminar los campos temporales
+            delete dataFormato.telefonoPrefijo;
+            delete dataFormato.telefonoNumero;
+
             if (editMode) {
-                await usuariosService.update(usuarioData._id, data);
+                await usuariosService.update(usuarioData._id, dataFormato);
             } else {
-                await usuariosService.create(data);
+                await usuariosService.create(dataFormato);
             }
             onSuccess();
         } catch (error) {
@@ -223,7 +269,7 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
             </DialogTitle>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-                <DialogContent sx={{ pt: 3 }}>
+                <DialogContent sx={{ pt: 3, maxHeight: '70vh', overflow: 'auto' }}>
                     {/* Alerta de Error General */}
                     <Collapse in={!!error}>
                         <Alert
@@ -257,13 +303,91 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
                     </Collapse>
 
                     <Grid container spacing={2.5}>
-                        {/* Información Personal */}
+                        {/* Información de Sistema */}
                         <Grid size={{ xs: 12 }}>
                             <Typography
                                 variant="subtitle2"
                                 sx={{
                                     fontWeight: 600,
                                     color: theme.palette.text.primary,
+                                    mb: 1.5
+                                }}
+                            >
+                                Información de Sistema
+                            </Typography>
+                        </Grid>
+
+                        <Grid size={{ xs: 12 }} sm={6}>
+                            <Controller
+                                name="usuario"
+                                control={control}
+                                rules={{
+                                    required: 'El nombre de usuario es requerido',
+                                    minLength: {
+                                        value: 3,
+                                        message: 'Debe tener al menos 3 caracteres',
+                                    },
+                                    pattern: {
+                                        value: /^[a-z0-9._]+$/,
+                                        message: 'Solo letras minúsculas, números, puntos y guiones bajos',
+                                    },
+                                }}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Usuario"
+                                        fullWidth
+                                        size="small"
+                                        required
+                                        error={!!errors.usuario}
+                                        helperText={errors.usuario?.message || (!editMode && 'Se genera automáticamente')}
+                                    />
+                                )}
+                            />
+                        </Grid>
+
+                        <Grid size={{ xs: 12 }} sm={6}>
+                            <Controller
+                                name="iniciales"
+                                control={control}
+                                rules={{
+                                    required: 'Las iniciales son requeridas',
+                                    minLength: {
+                                        value: 2,
+                                        message: 'Debe tener al menos 2 caracteres',
+                                    },
+                                    maxLength: {
+                                        value: 4,
+                                        message: 'No puede tener más de 4 caracteres',
+                                    },
+                                }}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Iniciales"
+                                        fullWidth
+                                        size="small"
+                                        required
+                                        error={!!errors.iniciales}
+                                        helperText={errors.iniciales?.message || (!editMode && 'Se generan automáticamente')}
+                                        inputProps={{ maxLength: 4, style: { textTransform: 'uppercase' } }}
+                                        onChange={(e) => {
+                                            field.onChange(e.target.value.toUpperCase());
+                                        }}
+                                    />
+                                )}
+                            />
+                        </Grid>
+
+                        {/* Información Personal */}
+                        <Grid size={{ xs: 12 }}>
+                            <Divider sx={{ my: 1 }} />
+                            <Typography
+                                variant="subtitle2"
+                                sx={{
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                    mt: 2,
                                     mb: 1.5
                                 }}
                             >
@@ -451,32 +575,43 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
                         </Grid>
 
                         <Grid size={{ xs: 12 }} sm={6}>
-                            <Controller
-                                name="telefono"
-                                control={control}
-                                rules={{
-                                    required: 'El teléfono es requerido',
-                                    pattern: {
-                                        value: /^[0-9]{9}$/,
-                                        message: 'El teléfono debe tener exactamente 9 dígitos',
-                                    },
-                                }}
-                                render={({ field }) => (
-                                    <TextField
-                                        {...field}
-                                        label="Teléfono"
-                                        fullWidth
-                                        size="small"
-                                        required
-                                        error={!!errors.telefono}
-                                        helperText={errors.telefono?.message}
-                                        inputProps={{ maxLength: 9 }}
-                                    />
-                                )}
-                            />
+                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                <Controller
+                                    name="telefonoPrefijo"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Prefijo"
+                                            size="small"
+                                            sx={{ width: 100 }}
+                                            inputProps={{ maxLength: 4 }}
+                                        />
+                                    )}
+                                />
+                                <Controller
+                                    name="telefonoNumero"
+                                    control={control}
+                                    rules={{
+                                        required: 'El número de teléfono es requerido'
+                                    }}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Teléfono"
+                                            fullWidth
+                                            size="small"
+                                            required
+                                            error={!!errors.telefonoNumero}
+                                            helperText={errors.telefonoNumero?.message}
+
+                                        />
+                                    )}
+                                />
+                            </Box>
                         </Grid>
 
-                        {/* Credenciales */}
+                        {/* Cuentas de Sistemas */}
                         <Grid size={{ xs: 12 }}>
                             <Divider sx={{ my: 1 }} />
                             <Typography
@@ -488,73 +623,95 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
                                     mb: 1.5
                                 }}
                             >
-                                Credenciales de Sistema
+                                Cuentas de Sistemas
                             </Typography>
                         </Grid>
 
-                        <Grid size={{ xs: 12 }} sm={4}>
+                        {/* Bitrix24 y NAS */}
+                        <Grid size={{ xs: 12 }} sm={6}>
                             <Controller
-                                name="usuario"
+                                name="cuentas.bitrix24"
                                 control={control}
-                                rules={{
-                                    required: 'El nombre de usuario es requerido',
-                                    minLength: {
-                                        value: 3,
-                                        message: 'Debe tener al menos 3 caracteres',
-                                    },
-                                    pattern: {
-                                        value: /^[a-z0-9._]+$/,
-                                        message: 'Solo letras minúsculas, números, puntos y guiones bajos',
-                                    },
-                                }}
                                 render={({ field }) => (
-                                    <TextField
-                                        {...field}
-                                        label="Usuario"
-                                        fullWidth
-                                        size="small"
-                                        required
-                                        error={!!errors.usuario}
-                                        helperText={errors.usuario?.message || (!editMode && 'Se genera automáticamente')}
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                {...field}
+                                                checked={field.value}
+                                            />
+                                        }
+                                        label="Cuenta Bitrix24"
                                     />
                                 )}
                             />
                         </Grid>
 
-                        <Grid size={{ xs: 12 }} sm={4}>
+                        <Grid size={{ xs: 12 }} sm={6}>
                             <Controller
-                                name="iniciales"
+                                name="cuentas.nas"
                                 control={control}
-                                rules={{
-                                    required: 'Las iniciales son requeridas',
-                                    minLength: {
-                                        value: 2,
-                                        message: 'Debe tener al menos 2 caracteres',
-                                    },
-                                    maxLength: {
-                                        value: 4,
-                                        message: 'No puede tener más de 4 caracteres',
-                                    },
-                                }}
                                 render={({ field }) => (
-                                    <TextField
-                                        {...field}
-                                        label="Iniciales"
-                                        fullWidth
-                                        size="small"
-                                        required
-                                        error={!!errors.iniciales}
-                                        helperText={errors.iniciales?.message || (!editMode && 'Se generan automáticamente')}
-                                        inputProps={{ maxLength: 4, style: { textTransform: 'uppercase' } }}
-                                        onChange={(e) => {
-                                            field.onChange(e.target.value.toUpperCase());
-                                        }}
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                {...field}
+                                                checked={field.value}
+                                            />
+                                        }
+                                        label="Cuenta NAS"
                                     />
                                 )}
                             />
                         </Grid>
 
-                        <Grid size={{ xs: 12 }} sm={4}>
+                        {/* Microsoft Accounts */}
+                        <Grid size={{ xs: 12 }}>
+                            <Typography
+                                variant="body2"
+                                sx={{
+                                    fontWeight: 500,
+                                    color: theme.palette.text.primary,
+                                    mb: 1
+                                }}
+                            >
+                                Cuentas Microsoft (Selecciona las que apliquen)
+                            </Typography>
+                            <Controller
+                                name="cuentas.microsoft"
+                                control={control}
+                                render={({ field }) => (
+                                    <FormGroup row>
+                                        {MICROSOFT_ACCOUNTS.map((account) => (
+                                            <Grid size={{ xs: 12, sm: 6 }} key={account} sx={{ mb: 1 }}>
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            checked={field.value.includes(account)}
+                                                            onChange={(e) => {
+                                                                if (e.target.checked) {
+                                                                    field.onChange([...field.value, account]);
+                                                                } else {
+                                                                    field.onChange(field.value.filter(a => a !== account));
+                                                                }
+                                                            }}
+                                                        />
+                                                    }
+                                                    label={account}
+                                                    sx={{
+                                                        '& .MuiFormControlLabel-label': {
+                                                            fontSize: '0.875rem',
+                                                        },
+                                                    }}
+                                                />
+                                            </Grid>
+                                        ))}
+                                    </FormGroup>
+                                )}
+                            />
+                        </Grid>
+
+                        {/* Estado */}
+                        <Grid size={{ xs: 12 }} sm={6}>
                             <Controller
                                 name="estado"
                                 control={control}

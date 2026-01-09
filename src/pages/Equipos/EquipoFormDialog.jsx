@@ -29,6 +29,7 @@ import {
     Visibility as VisibilityIcon,
     VisibilityOff as VisibilityOffIcon,
     Lock as LockIcon,
+    ShoppingCart as ShoppingCartIcon,
 } from '@mui/icons-material';
 import { equiposService } from '../../api';
 import moment from 'moment';
@@ -78,7 +79,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
             puertoSerial: false,
             puertoHDMI: false,
             puertoC: false,
-            // NUEVOS CAMPOS: Claves de seguridad
+            // CLAVES DE SEGURIDAD
             clavesBIOS: {
                 contrasena: '',
                 notas: '',
@@ -92,6 +93,14 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                 usuario: '',
                 contrasena: '',
                 notas: '',
+            },
+            // NUEVA SECCIÓN: PROVEEDOR
+            proveedor: {
+                razonSocial: '',
+                ruc: '',
+                nroFactura: '',
+                precioUnitario: 0,
+                moneda: 'PEN',
             },
             observaciones: '',
         },
@@ -140,7 +149,14 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                     contrasena: equipoData.clavesEquipo?.contrasena || '',
                     notas: equipoData.clavesEquipo?.notas || '',
                 },
-
+                // Proveedor
+                proveedor: {
+                    razonSocial: equipoData.proveedor?.razonSocial || '',
+                    ruc: equipoData.proveedor?.ruc || '',
+                    nroFactura: equipoData.proveedor?.nroFactura || '',
+                    precioUnitario: equipoData.proveedor?.precioUnitario || 0,
+                    moneda: equipoData.proveedor?.moneda || 'PEN',
+                },
                 observaciones: equipoData.observaciones || '',
             });
             setTipoSeleccionado(equipoData.tipo);
@@ -178,7 +194,13 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                     contrasena: '',
                     notas: '',
                 },
-
+                proveedor: {
+                    razonSocial: '',
+                    ruc: '',
+                    nroFactura: '',
+                    precioUnitario: 0,
+                    moneda: 'PEN',
+                },
                 observaciones: '',
             });
             setTipoSeleccionado('LAPTOP');
@@ -574,6 +596,145 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                     />
                                 )}
                             />
+                        </Grid>
+
+                        {/* ========== NUEVA SECCIÓN: PROVEEDOR ========== */}
+                        <Grid size={{ xs: 12 }}>
+                            <Divider sx={{ my: 1 }} />
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, mb: 1.5 }}>
+                                <ShoppingCartIcon sx={{ color: theme.palette.primary.main, fontSize: 20 }} />
+                                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                    Información del Proveedor
+                                </Typography>
+                            </Box>
+                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>
+                                Datos de la compra y el proveedor
+                            </Typography>
+                        </Grid>
+
+                        <Grid size={{ xs: 12 }}>
+                            <Paper sx={{
+                                p: 2,
+                                backgroundColor: darkMode ? theme.palette.background.default : '#f9fafb',
+                                border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`
+                            }}>
+                                <Grid container spacing={1.5}>
+                                    <Grid size={{ xs: 12 }}>
+                                        <Controller
+                                            name="proveedor.razonSocial"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <TextField
+                                                    {...field}
+                                                    label="Razón Social del Proveedor"
+                                                    fullWidth
+                                                    size="small"
+                                                    placeholder="Ej: Empresa XYZ S.A."
+                                                    error={!!errors.proveedor?.razonSocial}
+                                                    helperText={errors.proveedor?.razonSocial?.message}
+                                                />
+                                            )}
+                                        />
+                                    </Grid>
+
+                                    <Grid size={{ xs: 12 }} sm={6}>
+                                        <Controller
+                                            name="proveedor.ruc"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <TextField
+                                                    {...field}
+                                                    label="RUC"
+                                                    fullWidth
+                                                    size="small"
+                                                    placeholder="Ej: 20123456789"
+                                                    error={!!errors.proveedor?.ruc}
+                                                    helperText={errors.proveedor?.ruc?.message}
+                                                />
+                                            )}
+                                        />
+                                    </Grid>
+
+                                    <Grid size={{ xs: 12 }} sm={6}>
+                                        <Controller
+                                            name="proveedor.nroFactura"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <TextField
+                                                    {...field}
+                                                    label="Número de Factura"
+                                                    fullWidth
+                                                    size="small"
+                                                    placeholder="Ej: 001-0001234"
+                                                    error={!!errors.proveedor?.nroFactura}
+                                                    helperText={errors.proveedor?.nroFactura?.message}
+                                                />
+                                            )}
+                                        />
+                                    </Grid>
+
+                                    <Grid size={{ xs: 12 }} sm={6}>
+                                        <Controller
+                                            name="proveedor.precioUnitario"
+                                            control={control}
+                                            rules={{
+                                                min: {
+                                                    value: 0,
+                                                    message: 'El precio debe ser mayor o igual a 0'
+                                                }
+                                            }}
+                                            render={({ field }) => (
+                                                <TextField
+                                                    {...field}
+                                                    label="Precio Unitario"
+                                                    fullWidth
+                                                    size="small"
+                                                    type="number"
+                                                    placeholder="0.00"
+                                                    inputProps={{ step: "0.01", min: "0" }}
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <Controller
+                                                                    name="proveedor.moneda"
+                                                                    control={control}
+                                                                    render={({ field: monedaField }) => (
+                                                                        <TextField
+                                                                            {...monedaField}
+                                                                            select
+                                                                            size="small"
+                                                                            variant="standard"
+                                                                            sx={{
+                                                                                width: 70,
+                                                                                '& .MuiInput-underline:before': {
+                                                                                    borderBottom: 'none'
+                                                                                },
+                                                                                '& .MuiInput-underline:hover:before': {
+                                                                                    borderBottom: 'none'
+                                                                                },
+                                                                                '& .MuiInput-underline:after': {
+                                                                                    borderBottom: 'none'
+                                                                                }
+                                                                            }}
+                                                                        >
+                                                                            <MenuItem value="PEN">PEN (S/.)</MenuItem>
+                                                                            <MenuItem value="USD">USD ($)</MenuItem>
+                                                                            <MenuItem value="EUR">EUR (€)</MenuItem>
+
+                                                                        </TextField>
+                                                                    )}
+                                                                />
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
+                                                    error={!!errors.proveedor?.precioUnitario}
+                                                    helperText={errors.proveedor?.precioUnitario?.message}
+                                                />
+                                            )}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </Paper>
                         </Grid>
 
                         {/* Especificaciones Técnicas - Solo para LAPTOP y DESKTOP */}

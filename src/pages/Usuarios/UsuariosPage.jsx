@@ -88,6 +88,8 @@ const UsuariosPage = () => {
     // Buscar usuarios con debounce
     const handleSearch = useCallback(async (term) => {
         if (!term.trim()) {
+            // Si se borra la búsqueda, volver a filtros
+            setPage(0);
             loadUsuarios();
             return;
         }
@@ -102,7 +104,7 @@ const UsuariosPage = () => {
         } finally {
             setLoading(false);
         }
-    }, [filterEstado, filterArea, page, rowsPerPage]);
+    }, [filterEstado, filterArea]);
 
     // Effect para debounce en la búsqueda
     useEffect(() => {
@@ -189,7 +191,14 @@ const UsuariosPage = () => {
             editMode ? 'Usuario actualizado correctamente' : 'Usuario creado correctamente',
             'success'
         );
-        loadUsuarios();
+
+        // Si hay búsqueda activa, recargar con búsqueda
+        if (searchTerm.trim()) {
+            handleSearch(searchTerm);
+        } else {
+            // Si hay filtros activos, mantenerlos
+            loadUsuarios();
+        }
     };
 
     // Menú de acciones
@@ -430,7 +439,7 @@ const UsuariosPage = () => {
                     overflow: 'hidden',
                 }}
             >
-                <TableContainer sx={{ flexGrow: 1 }}>
+                <TableContainer sx={{ flexGrow: 1, overflowX: 'auto' }}>
                     <Table stickyHeader>
                         <TableHead>
                             <TableRow>
@@ -442,6 +451,15 @@ const UsuariosPage = () => {
                                     color: theme.palette.text.primary,
                                 }}>
                                     Usuario
+                                </TableCell>
+                                <TableCell sx={{
+                                    backgroundColor: theme.palette.mode === 'dark'
+                                        ? theme.palette.surface?.main
+                                        : '#fafafa',
+                                    fontWeight: 600,
+                                    color: theme.palette.text.primary,
+                                }}>
+                                    Iniciales
                                 </TableCell>
                                 <TableCell sx={{
                                     backgroundColor: theme.palette.mode === 'dark'
@@ -515,7 +533,7 @@ const UsuariosPage = () => {
                         <TableBody>
                             {usuarios.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={8} align="center" sx={{ py: 8, color: theme.palette.text.secondary }}>
+                                    <TableCell colSpan={9} align="center" sx={{ py: 8, color: theme.palette.text.secondary }}>
                                         No se encontraron usuarios
                                     </TableCell>
                                 </TableRow>
@@ -553,6 +571,11 @@ const UsuariosPage = () => {
                                             </Box>
                                         </TableCell>
                                         <TableCell>
+                                            <Typography variant="body2" sx={{ fontWeight: 600, fontFamily: 'monospace' }}>
+                                                {usuario.iniciales}
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
                                             <Typography variant="body2">{usuario.dni}</Typography>
                                         </TableCell>
                                         <TableCell>
@@ -567,7 +590,9 @@ const UsuariosPage = () => {
                                             </Typography>
                                         </TableCell>
                                         <TableCell>
-                                            <Typography variant="body2">{usuario.telefono}</Typography>
+                                            <Typography variant="body2">
+                                                {usuario.telefono?.prefijo} {usuario.telefono?.numero}
+                                            </Typography>
                                         </TableCell>
                                         <TableCell>
                                             <Chip
