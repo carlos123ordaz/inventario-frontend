@@ -581,7 +581,12 @@ const EquipoDetailPage = () => {
                         </Typography>
                         {equipo.host && (
                             <Typography variant="body2" color="text.secondary">
-                                Host: {equipo.host}
+                                Host: {equipo.hostname}
+                            </Typography>
+                        )}
+                        {equipo.host && (
+                            <Typography variant="body2" color="text.secondary">
+                                Hostname: {equipo.host}
                             </Typography>
                         )}
                     </Paper>
