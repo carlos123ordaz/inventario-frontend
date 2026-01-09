@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Dialog,
     DialogTitle,
@@ -35,6 +36,7 @@ import {
     Cloud as CloudIcon,
     Check as CheckIcon,
     Close as CloseIconX,
+    OpenInNew as OpenInNewIcon,
 } from '@mui/icons-material';
 import { usuariosService } from '../../api';
 import moment from 'moment';
@@ -44,6 +46,7 @@ moment.locale('es');
 
 const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDelete }) => {
     const theme = useTheme();
+    const navigate = useNavigate();
     const [usuario, setUsuario] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -76,6 +79,11 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
 
     const getInitials = (nombre, apellido) => {
         return `${nombre?.charAt(0) || ''}${apellido?.charAt(0) || ''}`.toUpperCase();
+    };
+
+    const handleEquipoClick = (equipoId) => {
+        onClose(); // Cerrar el diálogo
+        navigate(`/equipos/${equipoId}`); // Navegar a detalle del equipo
     };
 
     if (!usuario && !loading) return null;
@@ -451,11 +459,14 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
                                                     <TableCell sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
                                                         Fecha Asignación
                                                     </TableCell>
+                                                    <TableCell align="center" sx={{ fontWeight: 600, color: theme.palette.text.primary, width: 50 }}>
+                                                        Acción
+                                                    </TableCell>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
                                                 {usuario.equiposAsignados.map((asignacion) => (
-                                                    <TableRow key={asignacion._id}>
+                                                    <TableRow key={asignacion._id} hover>
                                                         <TableCell>{asignacion.equipo?.tipo}</TableCell>
                                                         <TableCell>
                                                             {asignacion.equipo?.marca} {asignacion.equipo?.modelo}
@@ -465,6 +476,22 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
                                                         </TableCell>
                                                         <TableCell>
                                                             {moment(asignacion.fechaAsignacion).format('DD/MM/YYYY')}
+                                                        </TableCell>
+                                                        <TableCell align="center">
+                                                            <Tooltip title="Ver detalle del equipo">
+                                                                <IconButton
+                                                                    size="small"
+                                                                    onClick={() => handleEquipoClick(asignacion.equipo._id)}
+                                                                    sx={{
+                                                                        color: theme.palette.primary.main,
+                                                                        '&:hover': {
+                                                                            backgroundColor: theme.palette.action.hover,
+                                                                        },
+                                                                    }}
+                                                                >
+                                                                    <OpenInNewIcon fontSize="small" />
+                                                                </IconButton>
+                                                            </Tooltip>
                                                         </TableCell>
                                                     </TableRow>
                                                 ))}
