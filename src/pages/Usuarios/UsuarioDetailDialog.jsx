@@ -65,7 +65,7 @@ const UsuarioDetailDialog = ({ open, onClose, usuario: usuarioProp, onEdit, onDe
         const colors = {
             'Activo': 'success',
             'Inactivo': 'default',
-            'Suspendido': 'error',
+            'Baja': 'error',
         };
         return colors[estado] || 'default';
     };

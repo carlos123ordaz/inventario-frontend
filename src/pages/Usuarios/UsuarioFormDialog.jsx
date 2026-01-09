@@ -568,7 +568,7 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
                                     >
                                         <MenuItem value="Activo">Activo</MenuItem>
                                         <MenuItem value="Inactivo">Inactivo</MenuItem>
-                                        <MenuItem value="Suspendido">Baja</MenuItem>
+                                        <MenuItem value="Baja">Baja</MenuItem>
                                     </TextField>
                                 )}
                             />

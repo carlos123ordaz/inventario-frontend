@@ -222,7 +222,6 @@ const UsuariosPage = () => {
         const colors = {
             'Activo': 'success',
             'Inactivo': 'default',
-            'Suspendido': 'error',
             'Baja': 'error',
         };
         return colors[estado] || 'default';
@@ -385,7 +384,6 @@ const UsuariosPage = () => {
                             <MenuItem value="">Todos</MenuItem>
                             <MenuItem value="Activo">Activo</MenuItem>
                             <MenuItem value="Inactivo">Inactivo</MenuItem>
-                            <MenuItem value="Suspendido">Suspendido</MenuItem>
                             <MenuItem value="Baja">Baja</MenuItem>
                         </TextField>
 
