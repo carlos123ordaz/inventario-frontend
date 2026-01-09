@@ -392,8 +392,8 @@ const UsuariosPage = () => {
                         >
                             <MenuItem value="">Todos</MenuItem>
                             <MenuItem value="Activo">Activo</MenuItem>
-                            <MenuItem value="Inactivo">Inactivo</MenuItem>
-                            <MenuItem value="Baja">Baja</MenuItem>
+                            <MenuItem value="Inactivo">Licencia</MenuItem>
+                            <MenuItem value="Baja">Cesado</MenuItem>
                         </TextField>
 
                         <TextField
