@@ -8,6 +8,7 @@ import Dashboard from '../pages/Dashboard';
 import ActasPage from '../pages/actas/ActasPage';
 import { LoginPage } from '../pages/auth/LoginPage';
 import { RegisterPage } from '../pages/auth/RegisterPage';
+import ImportarEquiposPage from '../pages/Equipos/ImportarEquiposPage';
 const AppRoutes = () => {
     return (
         <Routes>
@@ -17,6 +18,7 @@ const AppRoutes = () => {
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/usuarios" element={<UsuariosPage />} />
+                <Route path="/equipos/importar" element={<ImportarEquiposPage />} />
                 <Route path="/equipos/:id" element={<EquipoDetailPage />} />
                 <Route path="/equipos" element={<EquiposPage />} />
                 <Route path="/actas" element={<ActasPage />} />

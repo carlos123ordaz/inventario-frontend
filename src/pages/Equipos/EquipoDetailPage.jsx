@@ -27,13 +27,11 @@ import {
     Autocomplete,
     Card,
     CardContent,
-    InputAdornment,
     Tooltip,
     useTheme,
 } from '@mui/material';
 import {
     ArrowBack as ArrowBackIcon,
-    Edit as EditIcon,
     Delete as DeleteIcon,
     Computer as ComputerIcon,
     Laptop as LaptopIcon,
@@ -41,9 +39,6 @@ import {
     Storage as StorageIcon,
     Visibility as VisibilityIcon,
     VisibilityOff as VisibilityOffIcon,
-    Usb as UsbIcon,
-    Wifi as WifiIcon,
-    Cable as CableIcon,
     Videocam as VideocamIcon,
     Check as CheckIcon,
     Close as CloseIcon,
@@ -73,7 +68,6 @@ const EquipoDetailPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const theme = useTheme();
-    const { darkMode } = useContext(MainContext);
 
     // ========== ESTADOS PRINCIPALES ==========
     const [equipo, setEquipo] = useState(null);
@@ -151,38 +145,25 @@ const EquipoDetailPage = () => {
 
     const getEstadoColor = (estado) => {
         switch (estado) {
-            case 'Disponible':
-                return 'success';
-            case 'En Uso':
-                return 'info';
-            case 'Mantenimiento':
-                return 'warning';
-            case 'Dado de Baja':
-                return 'default';
-            case 'Extraviado':
-                return 'error';
-            default:
-                return 'default';
+            case 'Disponible': return 'success';
+            case 'En Uso': return 'info';
+            case 'Mantenimiento': return 'warning';
+            case 'Dado de Baja': return 'default';
+            case 'Extraviado': return 'error';
+            default: return 'default';
         }
     };
 
     const getTipoIcon = (tipo) => {
-        const iconColor = darkMode ? '#64B5F6' : '#0854a0';
+        const iconColor = '#a29bfe';
         switch (tipo) {
-            case 'LAPTOP':
-                return <LaptopIcon sx={{ fontSize: 80, color: iconColor }} />;
-            case 'DESKTOP':
-                return <ComputerIcon sx={{ fontSize: 80, color: iconColor }} />;
-            case 'MOUSE':
-                return <MouseOutlined sx={{ fontSize: 80, color: iconColor }} />;
-            case 'MONITOR':
-                return <MonitorHeartOutlined sx={{ fontSize: 80, color: iconColor }} />;
-            case 'COOLER':
-                return <ColorLensRounded sx={{ fontSize: 80, color: iconColor }} />;
-            case 'TECLADO':
-                return <Keyboard sx={{ fontSize: 80, color: iconColor }} />;
-            default:
-                return <ComputerIcon sx={{ fontSize: 80, color: iconColor }} />;
+            case 'LAPTOP': return <LaptopIcon sx={{ fontSize: 80, color: iconColor }} />;
+            case 'DESKTOP': return <ComputerIcon sx={{ fontSize: 80, color: iconColor }} />;
+            case 'MOUSE': return <MouseOutlined sx={{ fontSize: 80, color: iconColor }} />;
+            case 'MONITOR': return <MonitorHeartOutlined sx={{ fontSize: 80, color: iconColor }} />;
+            case 'COOLER': return <ColorLensRounded sx={{ fontSize: 80, color: iconColor }} />;
+            case 'TECLADO': return <Keyboard sx={{ fontSize: 80, color: iconColor }} />;
+            default: return <ComputerIcon sx={{ fontSize: 80, color: iconColor }} />;
         }
     };
 
@@ -215,7 +196,6 @@ const EquipoDetailPage = () => {
             alert('Por favor selecciona un usuario');
             return;
         }
-
         try {
             setSubmitting(true);
             await historialService.asignar({
@@ -236,9 +216,7 @@ const EquipoDetailPage = () => {
     };
 
     // ========== FUNCIONES DE DEVOLUCIÓN ==========
-    const handleOpenReturn = () => {
-        setReturnDialogOpen(true);
-    };
+    const handleOpenReturn = () => setReturnDialogOpen(true);
 
     const handleCloseReturn = () => {
         setReturnDialogOpen(false);
@@ -277,7 +255,6 @@ const EquipoDetailPage = () => {
             alert('Por favor selecciona un usuario');
             return;
         }
-
         try {
             setSubmitting(true);
             await historialService.transferir({
@@ -296,44 +273,60 @@ const EquipoDetailPage = () => {
         }
     };
 
+    // ========== ESTILOS REUTILIZABLES ==========
+    const cardSx = {
+        border: '1px solid rgba(108, 92, 231, 0.12)',
+        borderRadius: '0.5rem',
+        backgroundColor: '#13131a',
+    };
+
+    const dialogHeaderSx = {
+        backgroundColor: '#0a0a0f',
+        borderBottom: '1px solid rgba(108, 92, 231, 0.12)',
+    };
+
+    const dialogFooterSx = {
+        px: 3,
+        py: 2,
+        backgroundColor: '#0a0a0f',
+        borderTop: '1px solid rgba(108, 92, 231, 0.12)',
+    };
+
+    const monoFieldSx = {
+        fontFamily: '"JetBrains Mono", monospace',
+        backgroundColor: '#0a0a0f',
+        p: 1,
+        borderRadius: 1,
+        flex: 1,
+        border: '1px solid rgba(108, 92, 231, 0.12)',
+        color: '#e2e2e8',
+    };
+
     // ========== COMPONENTE REUTILIZABLE PARA CLAVES ==========
     const ClaveSeguridad = ({ titulo, icono, usuario, contrasena, notas, campo }) => (
         <Card sx={{
-            border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
-            backgroundColor: darkMode ? theme.palette.background.paper : '#fafafa'
+            border: '1px solid rgba(108, 92, 231, 0.15)',
+            backgroundColor: '#1a1a24',
+            backgroundImage: 'none',
         }}>
             <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                    <Typography variant="body1" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                    <Typography variant="body1" sx={{ fontWeight: 600, color: '#e2e2e8' }}>
                         {icono} {titulo}
                     </Typography>
                 </Box>
                 <Grid container spacing={2}>
                     {usuario && (
                         <Grid size={{ xs: 12 }} sm={6}>
-                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                            <Typography variant="caption" sx={{ display: 'block', mb: 0.5, color: '#7c7c8a' }}>
                                 Usuario
                             </Typography>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <Typography
-                                    variant="body2"
-                                    sx={{
-                                        fontFamily: 'monospace',
-                                        backgroundColor: darkMode ? theme.palette.background.default : '#fff',
-                                        p: 1,
-                                        borderRadius: 1,
-                                        flex: 1,
-                                        border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
-                                        color: theme.palette.text.primary
-                                    }}
-                                >
+                                <Typography variant="body2" sx={monoFieldSx}>
                                     {usuario || '-'}
                                 </Typography>
                                 <Tooltip title={copiedField === `${campo}-user` ? '¡Copiado!' : 'Copiar'}>
-                                    <IconButton
-                                        size="small"
-                                        onClick={() => copyToClipboard(usuario, `${campo}-user`)}
-                                    >
+                                    <IconButton size="small" onClick={() => copyToClipboard(usuario, `${campo}-user`)}>
                                         <ContentCopyIcon fontSize="small" />
                                     </IconButton>
                                 </Tooltip>
@@ -342,46 +335,25 @@ const EquipoDetailPage = () => {
                     )}
                     {contrasena && (
                         <Grid size={{ xs: 12 }} sm={usuario ? 6 : 12}>
-                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                            <Typography variant="caption" sx={{ display: 'block', mb: 0.5, color: '#7c7c8a' }}>
                                 Contraseña
                             </Typography>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <Typography
-                                    variant="body2"
-                                    sx={{
-                                        fontFamily: 'monospace',
-                                        backgroundColor: darkMode ? theme.palette.background.default : '#fff',
-                                        p: 1,
-                                        borderRadius: 1,
-                                        flex: 1,
-                                        border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
-                                        color: theme.palette.text.primary
-                                    }}
-                                >
+                                <Typography variant="body2" sx={monoFieldSx}>
                                     {showPasswords[campo] ? contrasena : '••••••••'}
                                 </Typography>
                                 <Tooltip title={showPasswords[campo] ? 'Ocultar' : 'Mostrar'}>
                                     <IconButton
                                         size="small"
                                         onClick={() =>
-                                            setShowPasswords(prev => ({
-                                                ...prev,
-                                                [campo]: !prev[campo],
-                                            }))
+                                            setShowPasswords(prev => ({ ...prev, [campo]: !prev[campo] }))
                                         }
                                     >
-                                        {showPasswords[campo] ? (
-                                            <VisibilityOffIcon fontSize="small" />
-                                        ) : (
-                                            <VisibilityIcon fontSize="small" />
-                                        )}
+                                        {showPasswords[campo] ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
                                     </IconButton>
                                 </Tooltip>
                                 <Tooltip title={copiedField === `${campo}-pass` ? '¡Copiado!' : 'Copiar'}>
-                                    <IconButton
-                                        size="small"
-                                        onClick={() => copyToClipboard(contrasena, `${campo}-pass`)}
-                                    >
+                                    <IconButton size="small" onClick={() => copyToClipboard(contrasena, `${campo}-pass`)}>
                                         <ContentCopyIcon fontSize="small" />
                                     </IconButton>
                                 </Tooltip>
@@ -390,19 +362,10 @@ const EquipoDetailPage = () => {
                     )}
                     {notas && (
                         <Grid size={{ xs: 12 }}>
-                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                            <Typography variant="caption" sx={{ display: 'block', mb: 0.5, color: '#7c7c8a' }}>
                                 Notas
                             </Typography>
-                            <Typography
-                                variant="body2"
-                                sx={{
-                                    backgroundColor: darkMode ? theme.palette.background.default : '#fff',
-                                    p: 1,
-                                    borderRadius: 1,
-                                    border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
-                                    color: theme.palette.text.secondary,
-                                }}
-                            >
+                            <Typography variant="body2" sx={{ ...monoFieldSx, fontFamily: 'inherit', color: '#7c7c8a' }}>
                                 {notas || '-'}
                             </Typography>
                         </Grid>
@@ -424,19 +387,13 @@ const EquipoDetailPage = () => {
     );
 
     // ========== RENDERIZADO ==========
-    if (loading) {
-        return <LoadingSpinner />;
-    }
+    if (loading) return <LoadingSpinner />;
 
     if (error && !equipo) {
         return (
             <Box>
-                <Alert severity="error" sx={{ mb: 2 }}>
-                    {error}
-                </Alert>
-                <Button startIcon={<ArrowBackIcon />} onClick={() => navigate(ROUTES.EQUIPOS.LIST)}>
-                    Volver
-                </Button>
+                <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
+                <Button startIcon={<ArrowBackIcon />} onClick={() => navigate(ROUTES.EQUIPOS.LIST)}>Volver</Button>
             </Box>
         );
     }
@@ -458,94 +415,50 @@ const EquipoDetailPage = () => {
     return (
         <Box>
             {error && (
-                <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-                    {error}
-                </Alert>
+                <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>{error}</Alert>
             )}
 
-            {/* ========== HEADER ==========*/}
+            {/* ========== HEADER ========== */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <IconButton onClick={() => navigate(ROUTES.EQUIPOS.LIST)}>
                         <ArrowBackIcon />
                     </IconButton>
-                    <Typography variant="h4" sx={{ fontWeight: 400, fontSize: '1.75rem', color: theme.palette.text.primary }}>
+                    <Typography variant="h4" sx={{ fontWeight: 400, fontSize: '1.75rem', color: '#e2e2e8' }}>
                         Detalle del Equipo
                     </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', gap: 1 }}>
                     {!isAsignado ? (
-                        <Button
-                            variant="contained"
-                            startIcon={<AssignmentIndIcon />}
-                            onClick={handleOpenAssign}
-                            sx={{
-                                backgroundColor: theme.palette.primary.main,
-                                textTransform: 'none',
-                                boxShadow: 'none',
-                                '&:hover': {
-                                    backgroundColor: theme.palette.primary.dark,
-                                    boxShadow: 'none',
-                                },
-                            }}
-                        >
+                        <Button variant="contained" startIcon={<AssignmentIndIcon />} onClick={handleOpenAssign}>
                             Asignar
                         </Button>
                     ) : (
                         <>
-                            <Button
-                                variant="outlined"
-                                startIcon={<SwapHorizIcon />}
-                                onClick={handleOpenTransfer}
-                                sx={{
-                                    textTransform: 'none',
-                                    borderColor: theme.palette.primary.main,
-                                    color: theme.palette.primary.main,
-                                }}
-                            >
+                            <Button variant="outlined" startIcon={<SwapHorizIcon />} onClick={handleOpenTransfer}>
                                 Transferir
                             </Button>
-                            <Button
-                                variant="outlined"
-                                startIcon={<AssignmentReturnIcon />}
-                                onClick={handleOpenReturn}
-                                sx={{
-                                    textTransform: 'none',
-                                    borderColor: theme.palette.primary.main,
-                                    color: theme.palette.primary.main,
-                                }}
-                            >
+                            <Button variant="outlined" startIcon={<AssignmentReturnIcon />} onClick={handleOpenReturn}>
                                 Devolver
                             </Button>
                         </>
                     )}
-
                     <Button
                         variant="outlined"
                         color="error"
                         startIcon={<DeleteIcon />}
                         onClick={() => setDeleteDialogOpen(true)}
-                        sx={{ textTransform: 'none' }}
                     >
                         Eliminar
                     </Button>
                 </Box>
             </Box>
 
-            {/* ========== CONTENIDO PRINCIPAL ==========*/}
+            {/* ========== CONTENIDO PRINCIPAL ========== */}
             <Grid container spacing={3}>
                 {/* INFORMACIÓN PRINCIPAL */}
                 <Grid size={{ xs: 12, md: 6 }}>
-                    <Paper
-                        elevation={0}
-                        sx={{
-                            p: 3,
-                            border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
-                            borderRadius: '0.5rem',
-                            textAlign: 'center',
-                            backgroundColor: darkMode ? theme.palette.background.paper : 'white'
-                        }}
-                    >
+                    <Paper elevation={0} sx={{ ...cardSx, p: 3, textAlign: 'center' }}>
                         <Box
                             sx={{
                                 width: 120,
@@ -554,38 +467,32 @@ const EquipoDetailPage = () => {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                backgroundColor: darkMode ? 'rgba(100, 181, 246, 0.1)' : '#f0f7ff',
+                                backgroundColor: 'rgba(108, 92, 231, 0.08)',
                                 borderRadius: 2,
                             }}
                         >
                             {getTipoIcon(equipo.tipo)}
                         </Box>
-                        <Typography variant="h5" sx={{ fontWeight: 500, mb: 1, color: theme.palette.text.primary }}>
+                        <Typography variant="h5" sx={{ fontWeight: 500, mb: 1, color: '#e2e2e8' }}>
                             {equipo.marca}
                         </Typography>
-                        <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                        <Typography variant="body1" sx={{ mb: 2, color: '#7c7c8a' }}>
                             {equipo.modelo}
                         </Typography>
                         <Stack direction="row" spacing={1} justifyContent="center" sx={{ mb: 2 }}>
-                            <Chip
-                                label={equipo.estado}
-                                color={getEstadoColor(equipo.estado)}
-                            />
-                            <Chip
-                                label={equipo.tipo}
-                                variant="outlined"
-                            />
+                            <Chip label={equipo.estado} color={getEstadoColor(equipo.estado)} />
+                            <Chip label={equipo.tipo} variant="outlined" />
                         </Stack>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{ color: '#7c7c8a', fontFamily: '"JetBrains Mono", monospace' }}>
                             Serie: {equipo.serie}
                         </Typography>
                         {equipo.host && (
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="body2" sx={{ color: '#7c7c8a' }}>
                                 Host: {equipo.hostname}
                             </Typography>
                         )}
                         {equipo.host && (
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="body2" sx={{ color: '#7c7c8a' }}>
                                 Hostname: {equipo.host}
                             </Typography>
                         )}
@@ -598,41 +505,42 @@ const EquipoDetailPage = () => {
                             sx={{
                                 p: 2,
                                 mt: 2,
-                                border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
+                                border: '1px solid rgba(108, 92, 231, 0.15)',
                                 borderRadius: '0.5rem',
-                                backgroundColor: darkMode ? 'rgba(100, 181, 246, 0.05)' : '#f0f7ff',
+                                backgroundColor: 'rgba(108, 92, 231, 0.05)',
                             }}
                         >
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                <PersonIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
-                                <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                <PersonIcon sx={{ mr: 1, color: '#6c5ce7' }} />
+                                <Typography variant="h6" sx={{ fontWeight: 600, color: '#e2e2e8' }}>
                                     Usuario Asignado
                                 </Typography>
                             </Box>
                             <Divider sx={{ mb: 2 }} />
-                            <Typography variant="body1" sx={{ fontWeight: 500, mb: 0.5, color: theme.palette.text.primary }}>
+                            <Typography variant="body1" sx={{ fontWeight: 500, mb: 0.5, color: '#e2e2e8' }}>
                                 {equipo.asignacionActual.usuario?.nombreCompleto ||
                                     `${equipo.asignacionActual.usuario?.nombre} ${equipo.asignacionActual.usuario?.apellido}`}
                             </Typography>
-                            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                            <Typography variant="body2" sx={{ mb: 0.5, color: '#7c7c8a' }}>
                                 {equipo.asignacionActual.usuario?.cargo}
                             </Typography>
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="body2" sx={{ color: '#7c7c8a' }}>
                                 Área: {equipo.asignacionActual.usuario?.area}
                             </Typography>
                             <Divider sx={{ my: 1.5 }} />
-                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                            <Typography variant="caption" sx={{ display: 'block', color: '#7c7c8a' }}>
                                 Tipo: {equipo.asignacionActual.tipoUso}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                            <Typography variant="caption" sx={{ display: 'block', color: '#7c7c8a' }}>
                                 Desde: {moment(equipo.asignacionActual.fechaAsignacion).format('DD/MM/YYYY')}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                            <Typography variant="caption" sx={{ display: 'block', color: '#7c7c8a', fontFamily: '"JetBrains Mono", monospace' }}>
                                 Tiempo: {equipo.asignacionActual.tiempoUso} días
                             </Typography>
                         </Paper>
                     )}
                 </Grid>
+
                 {/* INFORMACIÓN DEL PROVEEDOR */}
                 {equipo.proveedor && (equipo.proveedor.razonSocial || equipo.proveedor.ruc || equipo.proveedor.nroFactura || equipo.proveedor.precioUnitario > 0) && (
                     <Paper
@@ -640,14 +548,14 @@ const EquipoDetailPage = () => {
                         sx={{
                             p: 3,
                             mt: 2,
-                            border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
+                            border: '1px solid rgba(0, 206, 201, 0.15)',
                             borderRadius: '0.5rem',
-                            backgroundColor: darkMode ? 'rgba(76, 175, 80, 0.05)' : '#f1f8f4',
+                            backgroundColor: 'rgba(0, 206, 201, 0.04)',
                         }}
                     >
                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                            <ShoppingCartIcon sx={{ mr: 1, color: theme.palette.success.main, fontSize: 24 }} />
-                            <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                            <ShoppingCartIcon sx={{ mr: 1, color: '#00cec9', fontSize: 24 }} />
+                            <Typography variant="h6" sx={{ fontWeight: 600, color: '#e2e2e8' }}>
                                 Información del Proveedor
                             </Typography>
                         </Box>
@@ -656,43 +564,40 @@ const EquipoDetailPage = () => {
                         <Grid container spacing={2}>
                             {equipo.proveedor.razonSocial && (
                                 <Grid size={{ xs: 12 }} sm={6}>
-                                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                    <Typography variant="caption" sx={{ display: 'block', mb: 0.5, color: '#7c7c8a' }}>
                                         Razón Social
                                     </Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
+                                    <Typography variant="body1" sx={{ fontWeight: 500, color: '#e2e2e8' }}>
                                         {equipo.proveedor.razonSocial}
                                     </Typography>
                                 </Grid>
                             )}
-
                             {equipo.proveedor.ruc && (
                                 <Grid size={{ xs: 12 }} sm={6}>
-                                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                    <Typography variant="caption" sx={{ display: 'block', mb: 0.5, color: '#7c7c8a' }}>
                                         RUC
                                     </Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 500, fontFamily: 'monospace', color: theme.palette.text.primary }}>
+                                    <Typography variant="body1" sx={{ fontWeight: 500, fontFamily: '"JetBrains Mono", monospace', color: '#e2e2e8' }}>
                                         {equipo.proveedor.ruc}
                                     </Typography>
                                 </Grid>
                             )}
-
                             {equipo.proveedor.nroFactura && (
                                 <Grid size={{ xs: 12 }} sm={6}>
-                                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                    <Typography variant="caption" sx={{ display: 'block', mb: 0.5, color: '#7c7c8a' }}>
                                         Número de Factura
                                     </Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 500, fontFamily: 'monospace', color: theme.palette.text.primary }}>
+                                    <Typography variant="body1" sx={{ fontWeight: 500, fontFamily: '"JetBrains Mono", monospace', color: '#e2e2e8' }}>
                                         {equipo.proveedor.nroFactura}
                                     </Typography>
                                 </Grid>
                             )}
-
                             {equipo.proveedor.precioUnitario > 0 && (
                                 <Grid size={{ xs: 12 }} sm={6}>
-                                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                    <Typography variant="caption" sx={{ display: 'block', mb: 0.5, color: '#7c7c8a' }}>
                                         Precio Unitario
                                     </Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 600, color: theme.palette.success.main }}>
+                                    <Typography variant="body1" sx={{ fontWeight: 600, color: '#00cec9', fontFamily: '"JetBrains Mono", monospace' }}>
                                         {equipo.proveedor.moneda} {equipo.proveedor.precioUnitario.toFixed(2)}
                                     </Typography>
                                 </Grid>
@@ -700,20 +605,12 @@ const EquipoDetailPage = () => {
                         </Grid>
                     </Paper>
                 )}
+
                 {/* ESPECIFICACIONES TÉCNICAS */}
                 {equipo.procesador && (
                     <Grid size={{ xs: 12, md: 8 }}>
-                        <Paper
-                            elevation={0}
-                            sx={{
-                                p: 3,
-                                border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
-                                borderRadius: '0.5rem',
-                                mb: 3,
-                                backgroundColor: darkMode ? theme.palette.background.paper : 'white'
-                            }}
-                        >
-                            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: theme.palette.text.primary }}>
+                        <Paper elevation={0} sx={{ ...cardSx, p: 3, mb: 3 }}>
+                            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#e2e2e8' }}>
                                 Especificaciones Técnicas
                             </Typography>
                             <Divider sx={{ mb: 2 }} />
@@ -721,12 +618,10 @@ const EquipoDetailPage = () => {
                             <Grid container spacing={3}>
                                 <Grid size={{ xs: 12, md: 6 }}>
                                     <Box sx={{ mb: 2 }}>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Procesador
-                                        </Typography>
+                                        <Typography variant="caption" sx={{ color: '#7c7c8a' }}>Procesador</Typography>
                                         <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                                            <MemoryIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
-                                            <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
+                                            <MemoryIcon sx={{ mr: 1, color: '#7c7c8a', fontSize: 20 }} />
+                                            <Typography variant="body1" sx={{ fontWeight: 500, color: '#e2e2e8' }}>
                                                 {equipo.procesador}
                                             </Typography>
                                         </Box>
@@ -735,12 +630,10 @@ const EquipoDetailPage = () => {
 
                                 <Grid size={{ xs: 12, md: 6 }}>
                                     <Box sx={{ mb: 2 }}>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Memoria RAM
-                                        </Typography>
+                                        <Typography variant="caption" sx={{ color: '#7c7c8a' }}>Memoria RAM</Typography>
                                         <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                                            <MemoryIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
-                                            <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
+                                            <MemoryIcon sx={{ mr: 1, color: '#7c7c8a', fontSize: 20 }} />
+                                            <Typography variant="body1" sx={{ fontWeight: 500, color: '#e2e2e8' }}>
                                                 {equipo.memoria}
                                             </Typography>
                                         </Box>
@@ -749,12 +642,10 @@ const EquipoDetailPage = () => {
 
                                 <Grid size={{ xs: 12, md: 6 }}>
                                     <Box sx={{ mb: 2 }}>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Almacenamiento
-                                        </Typography>
+                                        <Typography variant="caption" sx={{ color: '#7c7c8a' }}>Almacenamiento</Typography>
                                         <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                                            <StorageIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
-                                            <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
+                                            <StorageIcon sx={{ mr: 1, color: '#7c7c8a', fontSize: 20 }} />
+                                            <Typography variant="body1" sx={{ fontWeight: 500, color: '#e2e2e8' }}>
                                                 {equipo.almacenamiento}
                                             </Typography>
                                         </Box>
@@ -764,12 +655,10 @@ const EquipoDetailPage = () => {
                                 {equipo.pantalla && (
                                     <Grid size={{ xs: 12, md: 6 }}>
                                         <Box sx={{ mb: 2 }}>
-                                            <Typography variant="caption" color="text.secondary">
-                                                Pantalla
-                                            </Typography>
+                                            <Typography variant="caption" sx={{ color: '#7c7c8a' }}>Pantalla</Typography>
                                             <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                                                <VisibilityIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
-                                                <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
+                                                <VisibilityIcon sx={{ mr: 1, color: '#7c7c8a', fontSize: 20 }} />
+                                                <Typography variant="body1" sx={{ fontWeight: 500, color: '#e2e2e8' }}>
                                                     {equipo.pantalla}
                                                 </Typography>
                                             </Box>
@@ -780,12 +669,10 @@ const EquipoDetailPage = () => {
                                 {equipo.tarjetaGrafica && (
                                     <Grid size={{ xs: 12 }}>
                                         <Box sx={{ mb: 2 }}>
-                                            <Typography variant="caption" color="text.secondary">
-                                                Tarjeta Gráfica
-                                            </Typography>
+                                            <Typography variant="caption" sx={{ color: '#7c7c8a' }}>Tarjeta Gráfica</Typography>
                                             <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                                                <VideocamIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />
-                                                <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
+                                                <VideocamIcon sx={{ mr: 1, color: '#7c7c8a', fontSize: 20 }} />
+                                                <Typography variant="body1" sx={{ fontWeight: 500, color: '#e2e2e8' }}>
                                                     {equipo.tarjetaGrafica}
                                                 </Typography>
                                             </Box>
@@ -795,7 +682,7 @@ const EquipoDetailPage = () => {
 
                                 {/* PUERTOS */}
                                 <Grid size={{ xs: 12 }}>
-                                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                                    <Typography variant="caption" sx={{ display: 'block', mb: 1, color: '#7c7c8a' }}>
                                         Puertos y Conectividad
                                     </Typography>
                                     <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
@@ -810,53 +697,37 @@ const EquipoDetailPage = () => {
                         </Paper>
 
                         {/* INFORMACIÓN ADICIONAL */}
-                        <Paper
-                            elevation={0}
-                            sx={{
-                                p: 3,
-                                border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
-                                borderRadius: '0.5rem',
-                                backgroundColor: darkMode ? theme.palette.background.paper : 'white'
-                            }}
-                        >
-                            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: theme.palette.text.primary }}>
+                        <Paper elevation={0} sx={{ ...cardSx, p: 3 }}>
+                            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#e2e2e8' }}>
                                 Información Adicional
                             </Typography>
                             <Divider sx={{ mb: 2 }} />
 
                             <Grid container spacing={2}>
                                 <Grid size={{ xs: 12, md: 6 }}>
-                                    <Typography variant="caption" color="text.secondary">
-                                        Fecha de Registro
-                                    </Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
+                                    <Typography variant="caption" sx={{ color: '#7c7c8a' }}>Fecha de Registro</Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 500, color: '#e2e2e8' }}>
                                         {equipo.createdAt ? moment(equipo.createdAt).format('DD/MM/YYYY') : 'No especificado'}
                                     </Typography>
                                 </Grid>
-
                                 <Grid size={{ xs: 12, md: 6 }}>
-                                    <Typography variant="caption" color="text.secondary">
-                                        Fecha de Compra
-                                    </Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
+                                    <Typography variant="caption" sx={{ color: '#7c7c8a' }}>Fecha de Compra</Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 500, color: '#e2e2e8' }}>
                                         {equipo.fechaCompra ? moment.utc(equipo.fechaCompra).format('DD/MM/YYYY') : 'No especificado'}
                                     </Typography>
                                 </Grid>
                                 <Grid size={{ xs: 12, md: 6 }}>
-                                    <Typography variant="caption" color="text.secondary"> Antigüedad </Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                    <Typography variant="caption" sx={{ color: '#7c7c8a' }}>Antigüedad</Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 500, color: '#e2e2e8', fontFamily: '"JetBrains Mono", monospace' }}>
                                         {equipo.fechaCompra
                                             ? `${moment().diff(moment(equipo.fechaCompra), 'years')} años`
                                             : 'No especificado'}
                                     </Typography>
                                 </Grid>
-
                                 {equipo.observaciones && (
                                     <Grid size={{ xs: 12 }}>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Observaciones
-                                        </Typography>
-                                        <Typography variant="body1" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
+                                        <Typography variant="caption" sx={{ color: '#7c7c8a' }}>Observaciones</Typography>
+                                        <Typography variant="body1" sx={{ fontWeight: 500, color: '#e2e2e8' }}>
                                             {equipo.observaciones}
                                         </Typography>
                                     </Grid>
@@ -866,21 +737,21 @@ const EquipoDetailPage = () => {
                     </Grid>
                 )}
 
-                {/* ========== SECCIÓN DE CLAVES DE SEGURIDAD ==========*/}
+                {/* ========== SECCIÓN DE CLAVES DE SEGURIDAD ========== */}
                 {tieneClaves && (
                     <Grid size={{ xs: 12 }}>
                         <Paper
                             elevation={0}
                             sx={{
                                 p: 3,
-                                border: `2px solid ${theme.palette.primary.main}`,
+                                border: '2px solid rgba(108, 92, 231, 0.3)',
                                 borderRadius: '0.5rem',
-                                backgroundColor: darkMode ? 'rgba(100, 181, 246, 0.05)' : '#f0f7ff',
+                                backgroundColor: 'rgba(108, 92, 231, 0.04)',
                             }}
                         >
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-                                <LockIcon sx={{ fontSize: 24, color: theme.palette.primary.main }} />
-                                <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                <LockIcon sx={{ fontSize: 24, color: '#6c5ce7' }} />
+                                <Typography variant="h6" sx={{ fontWeight: 600, color: '#e2e2e8' }}>
                                     Claves de Seguridad
                                 </Typography>
                             </Box>
@@ -899,7 +770,6 @@ const EquipoDetailPage = () => {
                                         />
                                     </Grid>
                                 )}
-
                                 {equipo.clavesEquipo?.contrasena && (
                                     <Grid size={{ xs: 12, md: 6 }}>
                                         <ClaveSeguridad
@@ -932,18 +802,10 @@ const EquipoDetailPage = () => {
                 {/* HISTORIAL DE ASIGNACIONES */}
                 {equipo.historial && equipo.historial.length > 0 && (
                     <Grid size={{ xs: 12 }}>
-                        <Paper
-                            elevation={0}
-                            sx={{
-                                p: 3,
-                                border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
-                                borderRadius: '0.5rem',
-                                backgroundColor: darkMode ? theme.palette.background.paper : 'white'
-                            }}
-                        >
+                        <Paper elevation={0} sx={{ ...cardSx, p: 3 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                <HistoryIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
-                                <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                <HistoryIcon sx={{ mr: 1, color: '#6c5ce7' }} />
+                                <Typography variant="h6" sx={{ fontWeight: 600, color: '#e2e2e8' }}>
                                     Historial de Asignaciones
                                 </Typography>
                             </Box>
@@ -953,79 +815,27 @@ const EquipoDetailPage = () => {
                                 <Table>
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell sx={{
-                                                backgroundColor: darkMode ? theme.palette.action.hover : '#fafafa',
-                                                fontWeight: 600,
-                                                color: theme.palette.text.primary
-                                            }}>
-                                                Usuario
-                                            </TableCell>
-                                            <TableCell sx={{
-                                                backgroundColor: darkMode ? theme.palette.action.hover : '#fafafa',
-                                                fontWeight: 600,
-                                                color: theme.palette.text.primary
-                                            }}>
-                                                Área
-                                            </TableCell>
-                                            <TableCell sx={{
-                                                backgroundColor: darkMode ? theme.palette.action.hover : '#fafafa',
-                                                fontWeight: 600,
-                                                color: theme.palette.text.primary
-                                            }}>
-                                                Tipo de Uso
-                                            </TableCell>
-                                            <TableCell sx={{
-                                                backgroundColor: darkMode ? theme.palette.action.hover : '#fafafa',
-                                                fontWeight: 600,
-                                                color: theme.palette.text.primary
-                                            }}>
-                                                Fecha Asignación
-                                            </TableCell>
-                                            <TableCell sx={{
-                                                backgroundColor: darkMode ? theme.palette.action.hover : '#fafafa',
-                                                fontWeight: 600,
-                                                color: theme.palette.text.primary
-                                            }}>
-                                                Fecha Devolución
-                                            </TableCell>
-                                            <TableCell sx={{
-                                                backgroundColor: darkMode ? theme.palette.action.hover : '#fafafa',
-                                                fontWeight: 600,
-                                                color: theme.palette.text.primary
-                                            }}>
-                                                Tiempo de Uso
-                                            </TableCell>
-                                            <TableCell sx={{
-                                                backgroundColor: darkMode ? theme.palette.action.hover : '#fafafa',
-                                                fontWeight: 600,
-                                                color: theme.palette.text.primary
-                                            }}>
-                                                Estado
-                                            </TableCell>
+                                            {['Usuario', 'Área', 'Tipo de Uso', 'Fecha Asignación', 'Fecha Devolución', 'Tiempo de Uso', 'Estado'].map((h) => (
+                                                <TableCell key={h}>{h}</TableCell>
+                                            ))}
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
                                         {equipo.historial.map((asignacion) => (
                                             <TableRow key={asignacion._id} hover>
-                                                <TableCell sx={{ color: theme.palette.text.primary }}>
+                                                <TableCell>
                                                     {asignacion.usuario?.nombreCompleto ||
                                                         `${asignacion.usuario?.nombre} ${asignacion.usuario?.apellido}`}
                                                 </TableCell>
-                                                <TableCell sx={{ color: theme.palette.text.primary }}>
-                                                    {asignacion.usuario?.area}
-                                                </TableCell>
-                                                <TableCell sx={{ color: theme.palette.text.primary }}>
-                                                    {asignacion.tipoUso}
-                                                </TableCell>
-                                                <TableCell sx={{ color: theme.palette.text.primary }}>
-                                                    {moment(asignacion.fechaAsignacion).format('DD/MM/YYYY')}
-                                                </TableCell>
-                                                <TableCell sx={{ color: theme.palette.text.primary }}>
+                                                <TableCell>{asignacion.usuario?.area}</TableCell>
+                                                <TableCell>{asignacion.tipoUso}</TableCell>
+                                                <TableCell>{moment(asignacion.fechaAsignacion).format('DD/MM/YYYY')}</TableCell>
+                                                <TableCell>
                                                     {asignacion.fechaDevolucion
                                                         ? moment(asignacion.fechaDevolucion).format('DD/MM/YYYY')
                                                         : '-'}
                                                 </TableCell>
-                                                <TableCell sx={{ color: theme.palette.text.primary }}>
+                                                <TableCell sx={{ fontFamily: '"JetBrains Mono", monospace' }}>
                                                     {asignacion.tiempoUso} días
                                                 </TableCell>
                                                 <TableCell>
@@ -1045,36 +855,21 @@ const EquipoDetailPage = () => {
                 )}
             </Grid>
 
-            {/* ========== DIÁLOGOS ==========*/}
+            {/* ========== DIÁLOGOS ========== */}
 
             {/* DIÁLOGO DE ASIGNACIÓN */}
-            <Dialog
-                open={assignDialogOpen}
-                onClose={handleCloseAssign}
-                maxWidth="sm"
-                fullWidth
-                PaperProps={{
-                    sx: {
-                        borderRadius: '0.5rem',
-                    },
-                }}
+            <Dialog open={assignDialogOpen} onClose={handleCloseAssign} maxWidth="sm" fullWidth
+                PaperProps={{ sx: { borderRadius: '0.5rem', border: '1px solid rgba(108, 92, 231, 0.12)' } }}
             >
-                <DialogTitle
-                    sx={{
-                        backgroundColor: darkMode ? theme.palette.background.default : '#fafafa',
-                        borderBottom: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
-                    }}
-                >
+                <DialogTitle sx={dialogHeaderSx}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <AssignmentIndIcon sx={{ color: theme.palette.primary.main }} />
-                        <Typography variant="h6" sx={{ fontWeight: 400, color: theme.palette.text.primary }}>
-                            Asignar Equipo
-                        </Typography>
+                        <AssignmentIndIcon sx={{ color: '#6c5ce7' }} />
+                        <Typography variant="h6" sx={{ fontWeight: 400, color: '#e2e2e8' }}>Asignar Equipo</Typography>
                     </Box>
                 </DialogTitle>
                 <DialogContent sx={{ pt: 3 }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                        Selecciona el usuario al que deseas asignar el equipo <strong>{equipo.marca} {equipo.modelo}</strong>
+                    <Typography variant="body2" sx={{ mb: 3, color: '#7c7c8a' }}>
+                        Selecciona el usuario al que deseas asignar el equipo <strong style={{ color: '#e2e2e8' }}>{equipo.marca} {equipo.modelo}</strong>
                     </Typography>
 
                     <Autocomplete
@@ -1086,22 +881,15 @@ const EquipoDetailPage = () => {
                         onChange={(event, newValue) => setSelectedUsuario(newValue)}
                         loading={loadingUsuarios}
                         renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                label="Usuario"
-                                placeholder="Buscar usuario..."
-                                required
-                                fullWidth
-                                sx={{ mb: 2 }}
-                            />
+                            <TextField {...params} label="Usuario" placeholder="Buscar usuario..." required fullWidth sx={{ mb: 2 }} />
                         )}
                         renderOption={(props, option) => (
                             <li {...props}>
                                 <Box>
-                                    <Typography variant="body2">
+                                    <Typography variant="body2" sx={{ color: '#e2e2e8' }}>
                                         {option.nombreCompleto || `${option.nombre} ${option.apellido}`}
                                     </Typography>
-                                    <Typography variant="caption" color="text.secondary">
+                                    <Typography variant="caption" sx={{ color: '#7c7c8a' }}>
                                         {option.cargo} - {option.area}
                                     </Typography>
                                 </Box>
@@ -1109,14 +897,7 @@ const EquipoDetailPage = () => {
                         )}
                     />
 
-                    <TextField
-                        select
-                        label="Tipo de Uso"
-                        value={tipoUso}
-                        onChange={(e) => setTipoUso(e.target.value)}
-                        fullWidth
-                        sx={{ mb: 2 }}
-                    >
+                    <TextField select label="Tipo de Uso" value={tipoUso} onChange={(e) => setTipoUso(e.target.value)} fullWidth sx={{ mb: 2 }}>
                         <MenuItem value="Asignación Definitiva">Asignación Definitiva</MenuItem>
                         <MenuItem value="Préstamo Temporal">Préstamo Temporal</MenuItem>
                         <MenuItem value="Uso en Proyecto">Uso en Proyecto</MenuItem>
@@ -1124,158 +905,73 @@ const EquipoDetailPage = () => {
                     </TextField>
 
                     <TextField
-                        label="Observaciones"
-                        value={observaciones}
+                        label="Observaciones" value={observaciones}
                         onChange={(e) => setObservaciones(e.target.value)}
-                        multiline
-                        rows={3}
-                        fullWidth
-                        placeholder="Notas adicionales sobre la asignación..."
+                        multiline rows={3} fullWidth placeholder="Notas adicionales sobre la asignación..."
                     />
                 </DialogContent>
-                <DialogActions
-                    sx={{
-                        px: 3,
-                        py: 2,
-                        backgroundColor: darkMode ? theme.palette.background.default : '#fafafa',
-                        borderTop: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
-                    }}
-                >
-                    <Button onClick={handleCloseAssign} disabled={submitting} sx={{ textTransform: 'none' }}>
-                        Cancelar
-                    </Button>
-                    <Button
-                        onClick={handleAssign}
-                        variant="contained"
-                        disabled={submitting || !selectedUsuario}
-                        sx={{
-                            backgroundColor: theme.palette.primary.main,
-                            textTransform: 'none',
-                            boxShadow: 'none',
-                            '&:hover': {
-                                backgroundColor: theme.palette.primary.dark,
-                                boxShadow: 'none',
-                            },
-                        }}
-                    >
+                <DialogActions sx={dialogFooterSx}>
+                    <Button onClick={handleCloseAssign} disabled={submitting}>Cancelar</Button>
+                    <Button onClick={handleAssign} variant="contained" disabled={submitting || !selectedUsuario}>
                         {submitting ? 'Asignando...' : 'Asignar Equipo'}
                     </Button>
                 </DialogActions>
             </Dialog>
 
             {/* DIÁLOGO DE DEVOLUCIÓN */}
-            <Dialog
-                open={returnDialogOpen}
-                onClose={handleCloseReturn}
-                maxWidth="sm"
-                fullWidth
-                PaperProps={{
-                    sx: {
-                        borderRadius: '0.5rem',
-                    },
-                }}
+            <Dialog open={returnDialogOpen} onClose={handleCloseReturn} maxWidth="sm" fullWidth
+                PaperProps={{ sx: { borderRadius: '0.5rem', border: '1px solid rgba(108, 92, 231, 0.12)' } }}
             >
-                <DialogTitle
-                    sx={{
-                        backgroundColor: darkMode ? theme.palette.background.default : '#fafafa',
-                        borderBottom: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
-                    }}
-                >
+                <DialogTitle sx={dialogHeaderSx}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <AssignmentReturnIcon sx={{ color: theme.palette.primary.main }} />
-                        <Typography variant="h6" sx={{ fontWeight: 400, color: theme.palette.text.primary }}>
-                            Devolver Equipo
-                        </Typography>
+                        <AssignmentReturnIcon sx={{ color: '#6c5ce7' }} />
+                        <Typography variant="h6" sx={{ fontWeight: 400, color: '#e2e2e8' }}>Devolver Equipo</Typography>
                     </Box>
                 </DialogTitle>
                 <DialogContent sx={{ pt: 3 }}>
                     <Alert severity="info" sx={{ mb: 3 }}>
                         El equipo será devuelto y quedará disponible para una nueva asignación.
                     </Alert>
-
-                    <Typography variant="body2" sx={{ mb: 2, color: theme.palette.text.primary }}>
+                    <Typography variant="body2" sx={{ mb: 2, color: '#e2e2e8' }}>
                         <strong>Equipo:</strong> {equipo.marca} {equipo.modelo}
                     </Typography>
-                    <Typography variant="body2" sx={{ mb: 3, color: theme.palette.text.primary }}>
+                    <Typography variant="body2" sx={{ mb: 3, color: '#e2e2e8' }}>
                         <strong>Usuario actual:</strong>{' '}
                         {equipo.asignacionActual?.usuario?.nombreCompleto ||
                             `${equipo.asignacionActual?.usuario?.nombre} ${equipo.asignacionActual?.usuario?.apellido}`}
                     </Typography>
-
                     <TextField
-                        label="Observaciones de devolución"
-                        value={observacionesDevolucion}
+                        label="Observaciones de devolución" value={observacionesDevolucion}
                         onChange={(e) => setObservacionesDevolucion(e.target.value)}
-                        multiline
-                        rows={3}
-                        fullWidth
-                        placeholder="Estado del equipo, razón de devolución, etc..."
+                        multiline rows={3} fullWidth placeholder="Estado del equipo, razón de devolución, etc..."
                     />
                 </DialogContent>
-                <DialogActions
-                    sx={{
-                        px: 3,
-                        py: 2,
-                        backgroundColor: darkMode ? theme.palette.background.default : '#fafafa',
-                        borderTop: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
-                    }}
-                >
-                    <Button onClick={handleCloseReturn} disabled={submitting} sx={{ textTransform: 'none' }}>
-                        Cancelar
-                    </Button>
-                    <Button
-                        onClick={handleReturn}
-                        variant="contained"
-                        disabled={submitting}
-                        sx={{
-                            backgroundColor: theme.palette.primary.main,
-                            textTransform: 'none',
-                            boxShadow: 'none',
-                            '&:hover': {
-                                backgroundColor: theme.palette.primary.dark,
-                                boxShadow: 'none',
-                            },
-                        }}
-                    >
+                <DialogActions sx={dialogFooterSx}>
+                    <Button onClick={handleCloseReturn} disabled={submitting}>Cancelar</Button>
+                    <Button onClick={handleReturn} variant="contained" disabled={submitting}>
                         {submitting ? 'Procesando...' : 'Confirmar Devolución'}
                     </Button>
                 </DialogActions>
             </Dialog>
 
             {/* DIÁLOGO DE TRANSFERENCIA */}
-            <Dialog
-                open={transferDialogOpen}
-                onClose={handleCloseTransfer}
-                maxWidth="sm"
-                fullWidth
-                PaperProps={{
-                    sx: {
-                        borderRadius: '0.5rem',
-                    },
-                }}
+            <Dialog open={transferDialogOpen} onClose={handleCloseTransfer} maxWidth="sm" fullWidth
+                PaperProps={{ sx: { borderRadius: '0.5rem', border: '1px solid rgba(108, 92, 231, 0.12)' } }}
             >
-                <DialogTitle
-                    sx={{
-                        backgroundColor: darkMode ? theme.palette.background.default : '#fafafa',
-                        borderBottom: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
-                    }}
-                >
+                <DialogTitle sx={dialogHeaderSx}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <SwapHorizIcon sx={{ color: theme.palette.primary.main }} />
-                        <Typography variant="h6" sx={{ fontWeight: 400, color: theme.palette.text.primary }}>
-                            Transferir Equipo
-                        </Typography>
+                        <SwapHorizIcon sx={{ color: '#6c5ce7' }} />
+                        <Typography variant="h6" sx={{ fontWeight: 400, color: '#e2e2e8' }}>Transferir Equipo</Typography>
                     </Box>
                 </DialogTitle>
                 <DialogContent sx={{ pt: 3 }}>
                     <Alert severity="warning" sx={{ mb: 3 }}>
                         El equipo será transferido del usuario actual al nuevo usuario seleccionado.
                     </Alert>
-
-                    <Typography variant="body2" sx={{ mb: 2, color: theme.palette.text.primary }}>
+                    <Typography variant="body2" sx={{ mb: 2, color: '#e2e2e8' }}>
                         <strong>Equipo:</strong> {equipo.marca} {equipo.modelo}
                     </Typography>
-                    <Typography variant="body2" sx={{ mb: 3, color: theme.palette.text.primary }}>
+                    <Typography variant="body2" sx={{ mb: 3, color: '#e2e2e8' }}>
                         <strong>Usuario actual:</strong>{' '}
                         {equipo.asignacionActual?.usuario?.nombreCompleto ||
                             `${equipo.asignacionActual?.usuario?.nombre} ${equipo.asignacionActual?.usuario?.apellido}`}
@@ -1290,22 +986,15 @@ const EquipoDetailPage = () => {
                         onChange={(event, newValue) => setNuevoUsuario(newValue)}
                         loading={loadingUsuarios}
                         renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                label="Nuevo Usuario"
-                                placeholder="Buscar usuario..."
-                                required
-                                fullWidth
-                                sx={{ mb: 2 }}
-                            />
+                            <TextField {...params} label="Nuevo Usuario" placeholder="Buscar usuario..." required fullWidth sx={{ mb: 2 }} />
                         )}
                         renderOption={(props, option) => (
                             <li {...props}>
                                 <Box>
-                                    <Typography variant="body2">
+                                    <Typography variant="body2" sx={{ color: '#e2e2e8' }}>
                                         {option.nombreCompleto || `${option.nombre} ${option.apellido}`}
                                     </Typography>
-                                    <Typography variant="caption" color="text.secondary">
+                                    <Typography variant="caption" sx={{ color: '#7c7c8a' }}>
                                         {option.cargo} - {option.area}
                                     </Typography>
                                 </Box>
@@ -1314,40 +1003,14 @@ const EquipoDetailPage = () => {
                     />
 
                     <TextField
-                        label="Observaciones"
-                        value={observacionesTransferencia}
+                        label="Observaciones" value={observacionesTransferencia}
                         onChange={(e) => setObservacionesTransferencia(e.target.value)}
-                        multiline
-                        rows={3}
-                        fullWidth
-                        placeholder="Motivo de la transferencia..."
+                        multiline rows={3} fullWidth placeholder="Motivo de la transferencia..."
                     />
                 </DialogContent>
-                <DialogActions
-                    sx={{
-                        px: 3,
-                        py: 2,
-                        backgroundColor: darkMode ? theme.palette.background.default : '#fafafa',
-                        borderTop: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
-                    }}
-                >
-                    <Button onClick={handleCloseTransfer} disabled={submitting} sx={{ textTransform: 'none' }}>
-                        Cancelar
-                    </Button>
-                    <Button
-                        onClick={handleTransfer}
-                        variant="contained"
-                        disabled={submitting || !nuevoUsuario}
-                        sx={{
-                            backgroundColor: theme.palette.primary.main,
-                            textTransform: 'none',
-                            boxShadow: 'none',
-                            '&:hover': {
-                                backgroundColor: theme.palette.primary.dark,
-                                boxShadow: 'none',
-                            },
-                        }}
-                    >
+                <DialogActions sx={dialogFooterSx}>
+                    <Button onClick={handleCloseTransfer} disabled={submitting}>Cancelar</Button>
+                    <Button onClick={handleTransfer} variant="contained" disabled={submitting || !nuevoUsuario}>
                         {submitting ? 'Transfiriendo...' : 'Confirmar Transferencia'}
                     </Button>
                 </DialogActions>

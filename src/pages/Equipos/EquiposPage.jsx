@@ -40,6 +40,8 @@ import {
     MonitorHeartOutlined,
     ColorizeRounded,
     Keyboard,
+    FileUpload as FileUploadIcon,
+    FileDownload as FileDownloadIcon,
 } from '@mui/icons-material';
 import { equiposService } from '../../api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
@@ -73,6 +75,23 @@ const EquiposPage = () => {
     const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' });
     const [showFilters, setShowFilters] = useState(false);
 
+    const [exporting, setExporting] = useState(false);
+
+    const handleExport = async () => {
+        try {
+            setExporting(true);
+            await equiposService.exportar({
+                termino: searchTerm.trim(),
+                estado: filterEstado,
+                tipo: filterTipo,
+            });
+            showNotification('Archivo exportado correctamente', 'success');
+        } catch (error) {
+            showNotification('Error al exportar equipos', 'error');
+        } finally {
+            setExporting(false);
+        }
+    };
     // Cargar equipos cuando cambien los filtros, búsqueda o paginación
     useEffect(() => {
         loadEquipos();
@@ -215,35 +234,48 @@ const EquiposPage = () => {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
             {/* Título y botón principal */}
+            {/* Título y botones principales */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <Box>
-                    <Typography
-                        variant="h4"
-                        sx={{
-                            fontWeight: 500,
-                            color: theme.palette.text.primary,
-                            mb: 0.5,
-                        }}
-                    >
+                    <Typography variant="h4" sx={{ fontWeight: 500, color: theme.palette.text.primary, mb: 0.5 }}>
                         Equipos
                     </Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                         Gestión de inventario de equipos
                     </Typography>
                 </Box>
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={handleCreate}
-                    sx={{
-                        backgroundColor: theme.palette.primary.main,
-                        color: '#FFFFFF',
-                        textTransform: 'none',
-                        fontWeight: 500,
-                    }}
-                >
-                    Crear Equipo
-                </Button>
+                <Stack direction="row" spacing={1}>
+                    <Button
+                        variant="outlined"
+                        startIcon={<FileDownloadIcon />}
+                        onClick={handleExport}
+                        disabled={exporting}
+                        sx={{ textTransform: 'none', fontWeight: 500 }}
+                    >
+                        {exporting ? 'Exportando...' : 'Exportar Excel'}
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        startIcon={<FileUploadIcon />}
+                        onClick={() => navigate('/equipos/importar')}
+                        sx={{ textTransform: 'none', fontWeight: 500 }}
+                    >
+                        Importar CSV
+                    </Button>
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={handleCreate}
+                        sx={{
+                            backgroundColor: theme.palette.primary.main,
+                            color: '#FFFFFF',
+                            textTransform: 'none',
+                            fontWeight: 500,
+                        }}
+                    >
+                        Crear Equipo
+                    </Button>
+                </Stack>
             </Box>
 
             {/* Búsqueda y Filtros */}

@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-    // baseURL: 'http://localhost:4000/api',
-    baseURL: 'https://inventario-backend-production-b163.up.railway.app/api',
-    timeout: 10000,
+    baseURL: 'http://localhost:4000/api',
+    // baseURL: 'https://inventario-backend-production-b163.up.railway.app/api',
+    timeout: 100000,
     withCredentials: true,
     headers: {
         'Content-Type': 'application/json',

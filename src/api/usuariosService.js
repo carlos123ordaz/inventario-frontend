@@ -82,6 +82,16 @@ const usuariosService = {
             throw error;
         }
     },
+
+    // En usuariosService, agregar este método:
+    syncBitrix: async () => {
+        try {
+            const response = await axiosInstance.post('/usuarios/sync-bitrix');
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
 };
 
 export default usuariosService;

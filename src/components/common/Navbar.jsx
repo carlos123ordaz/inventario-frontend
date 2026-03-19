@@ -15,8 +15,6 @@ import {
 import {
     Menu as MenuIcon,
     AccountCircle,
-    Brightness4,
-    Brightness7,
     Logout,
 } from '@mui/icons-material';
 import { MainContext } from '../../context/MainContextProvider';
@@ -24,7 +22,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Navbar = ({ onMenuClick, showMenuIcon = true }) => {
     const [anchorElUser, setAnchorElUser] = useState(null);
-    const { user, setUser, darkMode, toggleDarkMode } = useContext(MainContext);
+    const { user, setUser } = useContext(MainContext);
     const navigate = useNavigate();
     const theme = useTheme();
 
@@ -52,14 +50,7 @@ const Navbar = ({ onMenuClick, showMenuIcon = true }) => {
                         aria-label="open drawer"
                         edge="start"
                         onClick={onMenuClick}
-                        sx={{
-                            mr: 2,
-                            '&:hover': {
-                                backgroundColor: darkMode
-                                    ? 'rgba(255,255,255,0.1)'
-                                    : 'rgba(0,0,0,0.04)',
-                            }
-                        }}
+                        sx={{ mr: 2 }}
                     >
                         <MenuIcon />
                     </IconButton>
@@ -73,6 +64,9 @@ const Navbar = ({ onMenuClick, showMenuIcon = true }) => {
                         sx={{
                             fontWeight: 600,
                             letterSpacing: 0.5,
+                            background: 'linear-gradient(135deg, #a29bfe, #6c5ce7)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
                         }}
                     >
                         Sistema de Inventario
@@ -80,32 +74,15 @@ const Navbar = ({ onMenuClick, showMenuIcon = true }) => {
                 </Box>
 
                 <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                    {/* Botón de modo oscuro/claro */}
-                    <Tooltip title={darkMode ? "Modo claro" : "Modo oscuro"}>
-                        <IconButton
-                            onClick={toggleDarkMode}
-                            color="inherit"
-                            sx={{
-                                '&:hover': {
-                                    backgroundColor: darkMode
-                                        ? 'rgba(255,255,255,0.1)'
-                                        : 'rgba(0,0,0,0.04)',
-                                }
-                            }}
-                        >
-                            {darkMode ? <Brightness7 /> : <Brightness4 />}
-                        </IconButton>
-                    </Tooltip>
-
-                    {/* Avatar y menú de usuario */}
                     <Tooltip title="Mi cuenta">
                         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0, ml: 2 }}>
                             <Avatar
                                 sx={{
-                                    width: 40,
-                                    height: 40,
-                                    background: theme.palette.primary.main,
+                                    width: 36,
+                                    height: 36,
+                                    background: 'linear-gradient(135deg, #6c5ce7, #a29bfe)',
                                     fontWeight: 600,
+                                    fontSize: '0.875rem',
                                 }}
                             >
                                 {user?.correo ? user.correo[0].toUpperCase() : <AccountCircle />}
@@ -133,15 +110,14 @@ const Navbar = ({ onMenuClick, showMenuIcon = true }) => {
                         sx: {
                             minWidth: 200,
                             mt: 1,
-                            boxShadow: theme.shadows[8],
                         }
                     }}
                 >
                     <Box sx={{ px: 2, py: 1.5 }}>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#e2e2e8' }}>
                             {user?.correo || 'Usuario'}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" sx={{ color: '#7c7c8a' }}>
                             Administrador
                         </Typography>
                     </Box>

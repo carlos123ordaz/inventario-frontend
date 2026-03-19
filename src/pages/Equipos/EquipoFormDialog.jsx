@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import {
     Dialog,
@@ -20,7 +20,6 @@ import {
     Paper,
     InputAdornment,
     Tooltip,
-    useTheme,
 } from '@mui/material';
 import {
     Close as CloseIcon,
@@ -34,12 +33,8 @@ import {
 import { equiposService } from '../../api';
 import moment from 'moment';
 import { TIPOS_EQUIPOS } from '../../constants';
-import { MainContext } from '../../context/MainContextProvider';
 
 const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoData = null }) => {
-    const theme = useTheme();
-    const { darkMode } = useContext(MainContext);
-
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [validationErrors, setValidationErrors] = useState([]);
@@ -78,34 +73,14 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
             puertoSerial: false,
             puertoHDMI: false,
             puertoC: false,
-            // CLAVES DE SEGURIDAD
-            clavesBIOS: {
-                contrasena: '',
-                notas: '',
-            },
-            clavesAdministrador: {
-                usuario: '',
-                contrasena: '',
-                notas: '',
-            },
-            clavesEquipo: {
-                usuario: '',
-                contrasena: '',
-                notas: '',
-            },
-            // NUEVA SECCIÓN: PROVEEDOR
-            proveedor: {
-                razonSocial: '',
-                ruc: '',
-                nroFactura: '',
-                precioUnitario: 0,
-                moneda: 'PEN',
-            },
+            clavesBIOS: { contrasena: '', notas: '' },
+            clavesAdministrador: { usuario: '', contrasena: '', notas: '' },
+            clavesEquipo: { usuario: '', contrasena: '', notas: '' },
+            proveedor: { razonSocial: '', ruc: '', nroFactura: '', precioUnitario: 0, moneda: 'PEN' },
             observaciones: '',
         },
     });
 
-    // Observar cambios en el tipo de equipo
     const tipoWatched = watch('tipo');
 
     useEffect(() => {
@@ -132,7 +107,6 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                 puertoSerial: equipoData.puertoSerial || false,
                 puertoHDMI: equipoData.puertoHDMI || false,
                 puertoC: equipoData.puertoC || false,
-                // Claves de seguridad
                 clavesBIOS: {
                     contrasena: equipoData.clavesBIOS?.contrasena || '',
                     notas: equipoData.clavesBIOS?.notas || '',
@@ -147,7 +121,6 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                     contrasena: equipoData.clavesEquipo?.contrasena || '',
                     notas: equipoData.clavesEquipo?.notas || '',
                 },
-                // Proveedor
                 proveedor: {
                     razonSocial: equipoData.proveedor?.razonSocial || '',
                     ruc: equipoData.proveedor?.ruc || '',
@@ -177,32 +150,14 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                 puertoSerial: false,
                 puertoHDMI: false,
                 puertoC: false,
-                clavesBIOS: {
-                    contrasena: '',
-                    notas: '',
-                },
-                clavesAdministrador: {
-                    usuario: '',
-                    contrasena: '',
-                    notas: '',
-                },
-                clavesEquipo: {
-                    usuario: '',
-                    contrasena: '',
-                    notas: '',
-                },
-                proveedor: {
-                    razonSocial: '',
-                    ruc: '',
-                    nroFactura: '',
-                    precioUnitario: 0,
-                    moneda: 'PEN',
-                },
+                clavesBIOS: { contrasena: '', notas: '' },
+                clavesAdministrador: { usuario: '', contrasena: '', notas: '' },
+                clavesEquipo: { usuario: '', contrasena: '', notas: '' },
+                proveedor: { razonSocial: '', ruc: '', nroFactura: '', precioUnitario: 0, moneda: 'PEN' },
                 observaciones: '',
             });
             setTipoSeleccionado('LAPTOP');
         }
-        // Limpiar errores al abrir/cerrar
         setError(null);
         setValidationErrors([]);
     }, [editMode, equipoData, reset, open]);
@@ -221,65 +176,39 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
         } catch (error) {
             console.error('Error al guardar equipo:', error);
 
-            // Manejar diferentes tipos de errores
             if (error.response) {
                 const { status, data } = error.response;
 
-                // Error 400 - Validación o datos duplicados
                 if (status === 400) {
                     if (data.message) {
-                        // Error específico (ej: serie duplicada)
                         if (data.message.includes('serie')) {
-                            setFieldError('serie', {
-                                type: 'manual',
-                                message: data.message,
-                            });
+                            setFieldError('serie', { type: 'manual', message: data.message });
                             setError(data.message);
                         } else if (data.message.includes('asignación activa')) {
-                            // Error de cambio de estado con asignación activa
-                            setFieldError('estado', {
-                                type: 'manual',
-                                message: data.message,
-                            });
+                            setFieldError('estado', { type: 'manual', message: data.message });
                             setError(data.message);
                         } else {
                             setError(data.message);
                         }
                     }
-
-                    // Errores de validación múltiples
                     if (data.errors && Array.isArray(data.errors)) {
                         setValidationErrors(data.errors);
-                        // Marcar campos con errores
                         data.errors.forEach((err) => {
                             if (err.param) {
-                                setFieldError(err.param, {
-                                    type: 'manual',
-                                    message: err.msg,
-                                });
+                                setFieldError(err.param, { type: 'manual', message: err.msg });
                             }
                         });
                     }
-                }
-                // Error 404 - No encontrado (solo en edición)
-                else if (status === 404) {
+                } else if (status === 404) {
                     setError('El equipo no fue encontrado. Es posible que haya sido eliminado.');
-                }
-                // Error 500 - Error del servidor
-                else if (status === 500) {
+                } else if (status === 500) {
                     setError('Error en el servidor. Por favor, intenta nuevamente más tarde.');
-                }
-                // Otros errores
-                else {
+                } else {
                     setError(data.message || 'Ocurrió un error al guardar el equipo.');
                 }
-            }
-            // Error de red
-            else if (error.request) {
+            } else if (error.request) {
                 setError('No se pudo conectar con el servidor. Verifica tu conexión a internet.');
-            }
-            // Otros errores
-            else {
+            } else {
                 setError('Ocurrió un error inesperado. Por favor, intenta nuevamente.');
             }
         } finally {
@@ -296,10 +225,31 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
     };
 
     const togglePasswordVisibility = (field) => {
-        setShowPasswords(prev => ({
-            ...prev,
-            [field]: !prev[field]
-        }));
+        setShowPasswords(prev => ({ ...prev, [field]: !prev[field] }));
+    };
+
+    // ========== ESTILOS REUTILIZABLES ==========
+    const sectionPaperSx = {
+        p: 2,
+        backgroundColor: '#0a0a0f',
+        border: '1px solid rgba(108, 92, 231, 0.12)',
+        backgroundImage: 'none',
+    };
+
+    const dialogHeaderSx = {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        pb: 2,
+        backgroundColor: '#0a0a0f',
+        borderBottom: '1px solid rgba(108, 92, 231, 0.12)',
+    };
+
+    const dialogFooterSx = {
+        px: 3,
+        py: 2,
+        backgroundColor: '#0a0a0f',
+        borderTop: '1px solid rgba(108, 92, 231, 0.12)',
     };
 
     return (
@@ -311,21 +261,12 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
             PaperProps={{
                 sx: {
                     borderRadius: '0.5rem',
+                    border: '1px solid rgba(108, 92, 231, 0.12)',
                 },
             }}
         >
-            <DialogTitle
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    pb: 2,
-                    backgroundColor: darkMode ? theme.palette.background.default : '#fafafa',
-                    borderBottom: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
-                    color: theme.palette.text.primary,
-                }}
-            >
-                <Typography variant="h6" sx={{ fontWeight: 400, color: theme.palette.text.primary }}>
+            <DialogTitle sx={dialogHeaderSx}>
+                <Typography variant="h6" sx={{ fontWeight: 400, color: '#e2e2e8' }}>
                     {editMode ? 'Editar Equipo' : 'Nuevo Equipo'}
                 </Typography>
                 <IconButton onClick={handleClose} disabled={loading} size="small">
@@ -370,7 +311,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                     <Grid container spacing={2.5}>
                         {/* Información Básica */}
                         <Grid size={{ xs: 12 }}>
-                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: theme.palette.text.primary, mb: 1.5 }}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#e2e2e8', mb: 1.5 }}>
                                 Información Básica
                             </Typography>
                         </Grid>
@@ -391,13 +332,9 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                         error={!!errors.tipo}
                                         helperText={errors.tipo?.message}
                                     >
-                                        {
-                                            TIPOS_EQUIPOS.map((tipo) => (
-                                                <MenuItem key={tipo} value={tipo}>
-                                                    {tipo}
-                                                </MenuItem>
-                                            ))
-                                        }
+                                        {TIPOS_EQUIPOS.map((tipo) => (
+                                            <MenuItem key={tipo} value={tipo}>{tipo}</MenuItem>
+                                        ))}
                                     </TextField>
                                 )}
                             />
@@ -470,10 +407,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                 control={control}
                                 rules={{
                                     required: 'El número de serie es requerido',
-                                    minLength: {
-                                        value: 3,
-                                        message: 'Debe tener al menos 3 caracteres',
-                                    },
+                                    minLength: { value: 3, message: 'Debe tener al menos 3 caracteres' },
                                 }}
                                 render={({ field }) => (
                                     <TextField
@@ -543,9 +477,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                     validate: (value) => {
                                         const fecha = new Date(value);
                                         const hoy = new Date();
-                                        if (fecha > hoy) {
-                                            return 'La fecha no puede ser futura';
-                                        }
+                                        if (fecha > hoy) return 'La fecha no puede ser futura';
                                         return true;
                                     },
                                 }}
@@ -565,14 +497,11 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                             />
                         </Grid>
 
-
-
-
                         {!esAccesorio && (
                             <>
                                 <Grid size={{ xs: 12 }}>
                                     <Divider sx={{ my: 1 }} />
-                                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: theme.palette.text.primary, mt: 2, mb: 1.5 }}>
+                                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#e2e2e8', mt: 2, mb: 1.5 }}>
                                         Especificaciones Técnicas
                                     </Typography>
                                 </Grid>
@@ -673,95 +602,86 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                     />
                                 </Grid>
 
-                                {/* Puertos - Solo para LAPTOP y DESKTOP */}
+                                {/* Puertos */}
                                 <Grid size={{ xs: 12 }}>
                                     <Divider sx={{ my: 1 }} />
-                                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: theme.palette.text.primary, mt: 2, mb: 1.5 }}>
+                                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#e2e2e8', mt: 2, mb: 1.5 }}>
                                         Conectividad
                                     </Typography>
                                 </Grid>
+
                                 <Grid size={{ xs: 12 }} sm={6} md={4}>
-                                    <Controller
-                                        name="puertoRed"
-                                        control={control}
+                                    <Controller name="puertoRed" control={control}
                                         render={({ field }) => (
                                             <FormControlLabel
-                                                control={<Switch {...field} checked={field.value} size="small" />}
+                                                control={<Switch {...field} checked={field.value} size="small" color="secondary" />}
                                                 label="Puerto Red"
+                                                sx={{ color: '#e2e2e8' }}
                                             />
                                         )}
                                     />
                                 </Grid>
                                 <Grid size={{ xs: 12 }} sm={6} md={4}>
-                                    <Controller
-                                        name="puertosUSB"
-                                        control={control}
+                                    <Controller name="puertosUSB" control={control}
                                         render={({ field }) => (
                                             <FormControlLabel
-                                                control={<Switch {...field} checked={field.value} size="small" />}
+                                                control={<Switch {...field} checked={field.value} size="small" color="secondary" />}
                                                 label="Puerto USB"
+                                                sx={{ color: '#e2e2e8' }}
                                             />
                                         )}
                                     />
                                 </Grid>
                                 <Grid size={{ xs: 12 }} sm={6} md={4}>
-                                    <Controller
-                                        name="puertoSerial"
-                                        control={control}
+                                    <Controller name="puertoSerial" control={control}
                                         render={({ field }) => (
                                             <FormControlLabel
-                                                control={<Switch {...field} checked={field.value} size="small" />}
+                                                control={<Switch {...field} checked={field.value} size="small" color="secondary" />}
                                                 label="Puerto Serial"
+                                                sx={{ color: '#e2e2e8' }}
                                             />
                                         )}
                                     />
                                 </Grid>
-
                                 <Grid size={{ xs: 12 }} sm={6} md={4}>
-                                    <Controller
-                                        name="puertoHDMI"
-                                        control={control}
+                                    <Controller name="puertoHDMI" control={control}
                                         render={({ field }) => (
                                             <FormControlLabel
-                                                control={<Switch {...field} checked={field.value} size="small" />}
+                                                control={<Switch {...field} checked={field.value} size="small" color="secondary" />}
                                                 label="Puerto HDMI"
+                                                sx={{ color: '#e2e2e8' }}
                                             />
                                         )}
                                     />
                                 </Grid>
                                 <Grid size={{ xs: 12 }} sm={6} md={4}>
-                                    <Controller
-                                        name="puertoC"
-                                        control={control}
+                                    <Controller name="puertoC" control={control}
                                         render={({ field }) => (
                                             <FormControlLabel
-                                                control={<Switch {...field} checked={field.value} size="small" />}
+                                                control={<Switch {...field} checked={field.value} size="small" color="secondary" />}
                                                 label="Puerto C"
+                                                sx={{ color: '#e2e2e8' }}
                                             />
                                         )}
                                     />
                                 </Grid>
 
-                                {/* ========== NUEVA SECCIÓN: PROVEEDOR ========== */}
+                                {/* ========== PROVEEDOR ========== */}
                                 <Grid size={{ xs: 12 }}>
                                     <Divider sx={{ my: 1 }} />
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, mb: 1.5 }}>
-                                        <ShoppingCartIcon sx={{ color: theme.palette.primary.main, fontSize: 20 }} />
-                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                        <ShoppingCartIcon sx={{ color: '#00cec9', fontSize: 20 }} />
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#e2e2e8' }}>
                                             Información del Proveedor
                                         </Typography>
                                     </Box>
-                                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>
+                                    <Typography variant="caption" sx={{ display: 'block', mb: 2, color: '#7c7c8a' }}>
                                         Datos de la compra y el proveedor
                                     </Typography>
                                 </Grid>
 
                                 <Grid size={{ xs: 12 }}>
-                                    <Paper sx={{
-                                        p: 2,
-                                        backgroundColor: darkMode ? theme.palette.background.default : '#f9fafb',
-                                        border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`
-                                    }}>
+                                    <Paper sx={sectionPaperSx}>
                                         <Grid container spacing={1.5}>
                                             <Grid size={{ xs: 12 }}>
                                                 <Controller
@@ -821,12 +741,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                 <Controller
                                                     name="proveedor.precioUnitario"
                                                     control={control}
-                                                    rules={{
-                                                        min: {
-                                                            value: 0,
-                                                            message: 'El precio debe ser mayor o igual a 0'
-                                                        }
-                                                    }}
+                                                    rules={{ min: { value: 0, message: 'El precio debe ser mayor o igual a 0' } }}
                                                     render={({ field }) => (
                                                         <TextField
                                                             {...field}
@@ -849,16 +764,10 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                                                     size="small"
                                                                                     variant="standard"
                                                                                     sx={{
-                                                                                        width: 70,
-                                                                                        '& .MuiInput-underline:before': {
-                                                                                            borderBottom: 'none'
-                                                                                        },
-                                                                                        '& .MuiInput-underline:hover:before': {
-                                                                                            borderBottom: 'none'
-                                                                                        },
-                                                                                        '& .MuiInput-underline:after': {
-                                                                                            borderBottom: 'none'
-                                                                                        }
+                                                                                        width: 110,
+                                                                                        '& .MuiInput-underline:before': { borderBottom: 'none' },
+                                                                                        '& .MuiInput-underline:hover:before': { borderBottom: 'none' },
+                                                                                        '& .MuiInput-underline:after': { borderBottom: 'none' },
                                                                                     }}
                                                                                 >
                                                                                     <MenuItem value="PEN">PEN (S/.)</MenuItem>
@@ -885,28 +794,24 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                     </Paper>
                                 </Grid>
 
-                                {/* ========== SECCIÓN DE CLAVES DE SEGURIDAD ========== */}
+                                {/* ========== CLAVES DE SEGURIDAD ========== */}
                                 <Grid size={{ xs: 12 }}>
                                     <Divider sx={{ my: 1 }} />
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, mb: 1.5 }}>
-                                        <LockIcon sx={{ color: theme.palette.primary.main, fontSize: 20 }} />
-                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                                        <LockIcon sx={{ color: '#6c5ce7', fontSize: 20 }} />
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#e2e2e8' }}>
                                             Claves de Seguridad
                                         </Typography>
                                     </Box>
-                                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>
+                                    <Typography variant="caption" sx={{ display: 'block', mb: 2, color: '#7c7c8a' }}>
                                         Almacena las credenciales de acceso de este equipo de forma segura
                                     </Typography>
                                 </Grid>
 
                                 {/* BIOS */}
                                 <Grid size={{ xs: 12 }}>
-                                    <Paper sx={{
-                                        p: 2,
-                                        backgroundColor: darkMode ? theme.palette.background.default : '#f9fafb',
-                                        border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`
-                                    }}>
-                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: theme.palette.text.primary }}>
+                                    <Paper sx={sectionPaperSx}>
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: '#e2e2e8' }}>
                                             🔐 Contraseña BIOS
                                         </Typography>
                                         <Grid container spacing={1.5}>
@@ -926,10 +831,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                                 endAdornment: (
                                                                     <InputAdornment position="end">
                                                                         <Tooltip title={showPasswords.biosPass ? 'Ocultar' : 'Mostrar'}>
-                                                                            <IconButton
-                                                                                size="small"
-                                                                                onClick={() => togglePasswordVisibility('biosPass')}
-                                                                            >
+                                                                            <IconButton size="small" onClick={() => togglePasswordVisibility('biosPass')}>
                                                                                 {showPasswords.biosPass ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
                                                                             </IconButton>
                                                                         </Tooltip>
@@ -945,15 +847,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                     name="clavesBIOS.notas"
                                                     control={control}
                                                     render={({ field }) => (
-                                                        <TextField
-                                                            {...field}
-                                                            label="Notas"
-                                                            fullWidth
-                                                            size="small"
-                                                            multiline
-                                                            rows={2}
-                                                            placeholder="Información adicional..."
-                                                        />
+                                                        <TextField {...field} label="Notas" fullWidth size="small" multiline rows={2} placeholder="Información adicional..." />
                                                     )}
                                                 />
                                             </Grid>
@@ -963,12 +857,8 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
 
                                 {/* ADMINISTRADOR */}
                                 <Grid size={{ xs: 12 }}>
-                                    <Paper sx={{
-                                        p: 2,
-                                        backgroundColor: darkMode ? theme.palette.background.default : '#f9fafb',
-                                        border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`
-                                    }}>
-                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: theme.palette.text.primary }}>
+                                    <Paper sx={sectionPaperSx}>
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: '#e2e2e8' }}>
                                             👤 Contraseña Administrador
                                         </Typography>
                                         <Grid container spacing={1.5}>
@@ -977,13 +867,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                     name="clavesAdministrador.usuario"
                                                     control={control}
                                                     render={({ field }) => (
-                                                        <TextField
-                                                            {...field}
-                                                            label="Usuario Administrador"
-                                                            fullWidth
-                                                            size="small"
-                                                            placeholder="Ej: Administrator"
-                                                        />
+                                                        <TextField {...field} label="Usuario Administrador" fullWidth size="small" placeholder="Ej: Administrator" />
                                                     )}
                                                 />
                                             </Grid>
@@ -1003,10 +887,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                                 endAdornment: (
                                                                     <InputAdornment position="end">
                                                                         <Tooltip title={showPasswords.adminPass ? 'Ocultar' : 'Mostrar'}>
-                                                                            <IconButton
-                                                                                size="small"
-                                                                                onClick={() => togglePasswordVisibility('adminPass')}
-                                                                            >
+                                                                            <IconButton size="small" onClick={() => togglePasswordVisibility('adminPass')}>
                                                                                 {showPasswords.adminPass ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
                                                                             </IconButton>
                                                                         </Tooltip>
@@ -1022,15 +903,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                     name="clavesAdministrador.notas"
                                                     control={control}
                                                     render={({ field }) => (
-                                                        <TextField
-                                                            {...field}
-                                                            label="Notas"
-                                                            fullWidth
-                                                            size="small"
-                                                            multiline
-                                                            rows={2}
-                                                            placeholder="Información adicional..."
-                                                        />
+                                                        <TextField {...field} label="Notas" fullWidth size="small" multiline rows={2} placeholder="Información adicional..." />
                                                     )}
                                                 />
                                             </Grid>
@@ -1040,12 +913,8 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
 
                                 {/* EQUIPO / USUARIO */}
                                 <Grid size={{ xs: 12 }}>
-                                    <Paper sx={{
-                                        p: 2,
-                                        backgroundColor: darkMode ? theme.palette.background.default : '#f9fafb',
-                                        border: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`
-                                    }}>
-                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: theme.palette.text.primary }}>
+                                    <Paper sx={sectionPaperSx}>
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: '#e2e2e8' }}>
                                             🖥️ Contraseña Usuario Equipo
                                         </Typography>
                                         <Grid container spacing={1.5}>
@@ -1054,13 +923,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                     name="clavesEquipo.usuario"
                                                     control={control}
                                                     render={({ field }) => (
-                                                        <TextField
-                                                            {...field}
-                                                            label="Usuario Equipo"
-                                                            fullWidth
-                                                            size="small"
-                                                            placeholder="Ej: usuario"
-                                                        />
+                                                        <TextField {...field} label="Usuario Equipo" fullWidth size="small" placeholder="Ej: usuario" />
                                                     )}
                                                 />
                                             </Grid>
@@ -1080,10 +943,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                                 endAdornment: (
                                                                     <InputAdornment position="end">
                                                                         <Tooltip title={showPasswords.equipoPass ? 'Ocultar' : 'Mostrar'}>
-                                                                            <IconButton
-                                                                                size="small"
-                                                                                onClick={() => togglePasswordVisibility('equipoPass')}
-                                                                            >
+                                                                            <IconButton size="small" onClick={() => togglePasswordVisibility('equipoPass')}>
                                                                                 {showPasswords.equipoPass ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
                                                                             </IconButton>
                                                                         </Tooltip>
@@ -1099,15 +959,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                     name="clavesEquipo.notas"
                                                     control={control}
                                                     render={({ field }) => (
-                                                        <TextField
-                                                            {...field}
-                                                            label="Notas"
-                                                            fullWidth
-                                                            size="small"
-                                                            multiline
-                                                            rows={2}
-                                                            placeholder="Información adicional..."
-                                                        />
+                                                        <TextField {...field} label="Notas" fullWidth size="small" multiline rows={2} placeholder="Información adicional..." />
                                                     )}
                                                 />
                                             </Grid>
@@ -1141,39 +993,11 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                     </Grid>
                 </DialogContent>
 
-                <DialogActions
-                    sx={{
-                        px: 3,
-                        py: 2,
-                        backgroundColor: darkMode ? theme.palette.background.default : '#fafafa',
-                        borderTop: `1px solid ${darkMode ? theme.palette.divider : '#e5e5e5'}`,
-                    }}
-                >
-                    <Button
-                        onClick={handleClose}
-                        disabled={loading}
-                        sx={{
-                            textTransform: 'none',
-                            color: theme.palette.text.primary,
-                        }}
-                    >
+                <DialogActions sx={dialogFooterSx}>
+                    <Button onClick={handleClose} disabled={loading} sx={{ color: '#7c7c8a' }}>
                         Cancelar
                     </Button>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        disabled={loading}
-                        startIcon={<SaveIcon />}
-                        sx={{
-                            backgroundColor: theme.palette.primary.main,
-                            textTransform: 'none',
-                            boxShadow: 'none',
-                            '&:hover': {
-                                backgroundColor: theme.palette.primary.dark,
-                                boxShadow: 'none',
-                            },
-                        }}
-                    >
+                    <Button type="submit" variant="contained" disabled={loading} startIcon={<SaveIcon />}>
                         {loading ? 'Guardando...' : editMode ? 'Actualizar' : 'Crear'}
                     </Button>
                 </DialogActions>

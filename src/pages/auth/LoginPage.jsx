@@ -35,6 +35,7 @@ export const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -78,21 +79,21 @@ export const LoginPage = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: '#0a0a0f',
                 position: 'relative',
                 overflow: 'hidden',
             }}
         >
-            {/* Animated background shapes */}
+            {/* Glow orbs */}
             <Box
                 sx={{
                     position: 'absolute',
-                    width: '300px',
-                    height: '300px',
-                    background: 'rgba(255, 255, 255, 0.1)',
+                    width: '400px',
+                    height: '400px',
+                    background: 'radial-gradient(circle, rgba(108, 92, 231, 0.15) 0%, transparent 70%)',
                     borderRadius: '50%',
-                    top: '-50px',
-                    right: '-50px',
+                    top: '-100px',
+                    right: '-100px',
                     animation: 'float 6s ease-in-out infinite',
                     '@keyframes float': {
                         '0%': { transform: 'translateY(0px)' },
@@ -104,24 +105,37 @@ export const LoginPage = () => {
             <Box
                 sx={{
                     position: 'absolute',
+                    width: '300px',
+                    height: '300px',
+                    background: 'radial-gradient(circle, rgba(0, 206, 201, 0.1) 0%, transparent 70%)',
+                    borderRadius: '50%',
+                    bottom: '-80px',
+                    left: '-80px',
+                    animation: 'float 8s ease-in-out infinite',
+                }}
+            />
+            <Box
+                sx={{
+                    position: 'absolute',
                     width: '200px',
                     height: '200px',
-                    background: 'rgba(255, 255, 255, 0.1)',
+                    background: 'radial-gradient(circle, rgba(108, 92, 231, 0.08) 0%, transparent 70%)',
                     borderRadius: '50%',
-                    bottom: '-100px',
-                    left: '-50px',
-                    animation: 'float 8s ease-in-out infinite',
+                    top: '50%',
+                    left: '60%',
+                    animation: 'float 10s ease-in-out infinite',
                 }}
             />
 
             <Container maxWidth="sm">
                 <Paper
-                    elevation={24}
+                    elevation={0}
                     sx={{
                         p: { xs: 3, md: 5 },
                         borderRadius: 3,
-                        backdropFilter: 'blur(10px)',
-                        background: 'rgba(255, 255, 255, 0.98)',
+                        background: '#13131a',
+                        border: '1px solid rgba(108, 92, 231, 0.12)',
+                        boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(108, 92, 231, 0.05)',
                     }}
                 >
                     <Box
@@ -137,12 +151,12 @@ export const LoginPage = () => {
                                 width: 80,
                                 height: 80,
                                 borderRadius: '50%',
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                background: 'linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 mb: 2,
-                                boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+                                boxShadow: '0 8px 32px rgba(108, 92, 231, 0.3)',
                             }}
                         >
                             <Computer sx={{ fontSize: 40, color: 'white' }} />
@@ -152,7 +166,7 @@ export const LoginPage = () => {
                             variant="h4"
                             sx={{
                                 fontWeight: 700,
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                background: 'linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)',
                                 backgroundClip: 'text',
                                 WebkitBackgroundClip: 'text',
                                 color: 'transparent',
@@ -162,7 +176,7 @@ export const LoginPage = () => {
                             Inventario de Equipos
                         </Typography>
 
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{ color: '#7c7c8a' }}>
                             Ingresa tus credenciales para continuar
                         </Typography>
                     </Box>
@@ -170,7 +184,14 @@ export const LoginPage = () => {
                     {error && (
                         <Alert
                             severity="error"
-                            sx={{ mb: 3, borderRadius: 2 }}
+                            sx={{
+                                mb: 3,
+                                borderRadius: 2,
+                                backgroundColor: 'rgba(255, 118, 117, 0.1)',
+                                color: '#ff7675',
+                                border: '1px solid rgba(255, 118, 117, 0.2)',
+                                '& .MuiAlert-icon': { color: '#ff7675' },
+                            }}
                             onClose={() => setError('')}
                         >
                             {error}
@@ -193,18 +214,29 @@ export const LoginPage = () => {
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
-                                        <Email sx={{ color: 'action.active' }} />
+                                        <Email sx={{ color: '#7c7c8a' }} />
                                     </InputAdornment>
                                 ),
                             }}
                             sx={{
                                 '& .MuiOutlinedInput-root': {
                                     borderRadius: 2,
+                                    backgroundColor: '#1a1a24',
+                                    color: '#e2e2e8',
+                                    '& fieldset': {
+                                        borderColor: 'rgba(108, 92, 231, 0.15)',
+                                    },
                                     '&:hover fieldset': {
-                                        borderColor: '#667eea',
+                                        borderColor: 'rgba(108, 92, 231, 0.3)',
                                     },
                                     '&.Mui-focused fieldset': {
-                                        borderColor: '#667eea',
+                                        borderColor: '#6c5ce7',
+                                    },
+                                },
+                                '& .MuiInputLabel-root': {
+                                    color: '#7c7c8a',
+                                    '&.Mui-focused': {
+                                        color: '#a29bfe',
                                     },
                                 },
                             }}
@@ -224,7 +256,7 @@ export const LoginPage = () => {
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
-                                        <Lock sx={{ color: 'action.active' }} />
+                                        <Lock sx={{ color: '#7c7c8a' }} />
                                     </InputAdornment>
                                 ),
                                 endAdornment: (
@@ -233,6 +265,7 @@ export const LoginPage = () => {
                                             onClick={() => setShowPassword(!showPassword)}
                                             edge="end"
                                             disabled={loading}
+                                            sx={{ color: '#7c7c8a' }}
                                         >
                                             {showPassword ? <VisibilityOff /> : <Visibility />}
                                         </IconButton>
@@ -242,11 +275,22 @@ export const LoginPage = () => {
                             sx={{
                                 '& .MuiOutlinedInput-root': {
                                     borderRadius: 2,
+                                    backgroundColor: '#1a1a24',
+                                    color: '#e2e2e8',
+                                    '& fieldset': {
+                                        borderColor: 'rgba(108, 92, 231, 0.15)',
+                                    },
                                     '&:hover fieldset': {
-                                        borderColor: '#667eea',
+                                        borderColor: 'rgba(108, 92, 231, 0.3)',
                                     },
                                     '&.Mui-focused fieldset': {
-                                        borderColor: '#667eea',
+                                        borderColor: '#6c5ce7',
+                                    },
+                                },
+                                '& .MuiInputLabel-root': {
+                                    color: '#7c7c8a',
+                                    '&.Mui-focused': {
+                                        color: '#a29bfe',
                                     },
                                 },
                             }}
@@ -257,10 +301,11 @@ export const LoginPage = () => {
                                 href="#"
                                 variant="body2"
                                 sx={{
-                                    color: '#667eea',
+                                    color: '#a29bfe',
                                     textDecoration: 'none',
                                     '&:hover': {
                                         textDecoration: 'underline',
+                                        color: '#6c5ce7',
                                     },
                                 }}
                             >
@@ -279,17 +324,19 @@ export const LoginPage = () => {
                                 mb: 2,
                                 py: 1.5,
                                 borderRadius: 2,
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                boxShadow: '0 4px 20px rgba(102, 126, 234, 0.4)',
+                                background: 'linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%)',
+                                boxShadow: '0 4px 20px rgba(108, 92, 231, 0.35)',
                                 textTransform: 'none',
                                 fontSize: '1.1rem',
                                 fontWeight: 600,
+                                color: '#FFFFFF',
                                 '&:hover': {
-                                    background: 'linear-gradient(135deg, #5a67d8 0%, #6b4199 100%)',
-                                    boxShadow: '0 6px 25px rgba(102, 126, 234, 0.5)',
+                                    background: 'linear-gradient(135deg, #5a4bd1 0%, #8b80f0 100%)',
+                                    boxShadow: '0 6px 25px rgba(108, 92, 231, 0.5)',
                                 },
                                 '&:disabled': {
-                                    background: 'rgba(0, 0, 0, 0.12)',
+                                    background: 'rgba(108, 92, 231, 0.2)',
+                                    color: '#7c7c8a',
                                 },
                             }}
                         >
@@ -300,23 +347,24 @@ export const LoginPage = () => {
                             )}
                         </Button>
 
-                        <Divider sx={{ my: 3 }}>
-                            <Typography variant="body2" color="text.secondary">
+                        <Divider sx={{ my: 3, borderColor: 'rgba(108, 92, 231, 0.1)' }}>
+                            <Typography variant="body2" sx={{ color: '#7c7c8a' }}>
                                 O
                             </Typography>
                         </Divider>
 
                         <Box sx={{ textAlign: 'center' }}>
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="body2" sx={{ color: '#7c7c8a' }}>
                                 ¿No tienes una cuenta?{' '}
                                 <Link
                                     href="#"
                                     sx={{
-                                        color: '#667eea',
+                                        color: '#a29bfe',
                                         textDecoration: 'none',
                                         fontWeight: 600,
                                         '&:hover': {
                                             textDecoration: 'underline',
+                                            color: '#6c5ce7',
                                         },
                                     }}
                                 >
@@ -326,9 +374,17 @@ export const LoginPage = () => {
                         </Box>
                     </Box>
 
-                    <Box sx={{ mt: 4, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
-                        <Typography variant="caption" color="text.secondary" align="center" display="block">
-                            © 2025 Inventario de Equipos - v2.0.0
+                    <Box sx={{ mt: 4, pt: 2, borderTop: '1px solid rgba(108, 92, 231, 0.1)' }}>
+                        <Typography
+                            variant="caption"
+                            align="center"
+                            display="block"
+                            sx={{
+                                color: '#7c7c8a',
+                                fontFamily: '"JetBrains Mono", monospace',
+                            }}
+                        >
+                            © 2025 Inventario de Equipos — v2.0.0
                         </Typography>
                     </Box>
                 </Paper>

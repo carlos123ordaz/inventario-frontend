@@ -71,6 +71,68 @@ const equiposService = {
             throw error;
         }
     },
+    previsualizarCSV: async (file, delimitador = ',') => {
+        try {
+            const formData = new FormData();
+            formData.append('archivo', file);
+            formData.append('delimitador', delimitador);
+            const response = await axiosInstance.post('/equipos/previsualizar-csv', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    // Obtener campos disponibles para mapeo
+    getCamposMapeo: async () => {
+        try {
+            const response = await axiosInstance.get('/equipos/campos-mapeo');
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    // Importar equipos desde CSV con mapeo
+    importar: async (file, mapeo, actualizarExistentes = false, delimitador = ',') => {
+        try {
+            const formData = new FormData();
+            formData.append('archivo', file);
+            formData.append('mapeo', JSON.stringify(mapeo));
+            formData.append('actualizarExistentes', actualizarExistentes);
+            formData.append('delimitador', delimitador);
+            const response = await axiosInstance.post('/equipos/importar', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    // Exportar equipos a Excel
+    exportar: async (params = {}) => {
+        try {
+            const response = await axiosInstance.get('/equipos/exportar', {
+                params,
+                responseType: 'blob'
+            });
+            // Descargar archivo
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            const fecha = new Date().toISOString().split('T')[0];
+            link.setAttribute('download', `equipos_${fecha}.xlsx`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            throw error;
+        }
+    },
 };
 
 export default equiposService;

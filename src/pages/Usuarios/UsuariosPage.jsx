@@ -23,6 +23,7 @@ import {
     Alert,
     Snackbar,
     useTheme,
+
 } from '@mui/material';
 import {
     Add as AddIcon,
@@ -35,6 +36,7 @@ import {
     MoreVert as MoreVertIcon,
     Clear as ClearIcon,
     Description as DescriptionIcon,
+    Sync as SyncIcon,
 } from '@mui/icons-material';
 import { usuariosService } from '../../api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
@@ -65,7 +67,7 @@ const UsuariosPage = () => {
     const [editMode, setEditMode] = useState(false);
     const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' });
     const [showFilters, setShowFilters] = useState(false);
-
+    const [syncing, setSyncing] = useState(false);
     // Cargar usuarios
     const loadUsuarios = async () => {
         try {
@@ -84,7 +86,23 @@ const UsuariosPage = () => {
             setLoading(false);
         }
     };
-
+    const handleSyncBitrix = async () => {
+        try {
+            setSyncing(true);
+            const response = await usuariosService.syncBitrix();
+            const { nuevosInsertados, estadosActualizados, totalBitrix } = response.data;
+            showNotification(
+                `Sincronización completada: ${nuevosInsertados} nuevos, ${estadosActualizados} actualizados (de ${totalBitrix} en Bitrix)`,
+                'success'
+            );
+            loadUsuarios();
+        } catch (error) {
+            console.error('Error al sincronizar con Bitrix24:', error);
+            showNotification(error.response?.data?.message || 'Error al sincronizar con Bitrix24', 'error');
+        } finally {
+            setSyncing(false);
+        }
+    };
     // Buscar usuarios con debounce
     const handleSearch = useCallback(async (term) => {
         if (!term.trim()) {
@@ -349,7 +367,24 @@ const UsuariosPage = () => {
                                 <RefreshIcon fontSize="small" />
                             </IconButton>
                         </Tooltip>
-
+                        <Tooltip title="Sincronizar con Bitrix24">
+                            <IconButton
+                                onClick={handleSyncBitrix}
+                                disabled={syncing}
+                                sx={{
+                                    border: `1px solid ${theme.palette.divider}`,
+                                    color: theme.palette.warning.main,
+                                    '&:hover': { backgroundColor: theme.palette.action.hover },
+                                    animation: syncing ? 'spin 1s linear infinite' : 'none',
+                                    '@keyframes spin': {
+                                        '0%': { transform: 'rotate(0deg)' },
+                                        '100%': { transform: 'rotate(360deg)' },
+                                    },
+                                }}
+                            >
+                                <SyncIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
                         <Button
                             variant="contained"
                             startIcon={<AddIcon />}

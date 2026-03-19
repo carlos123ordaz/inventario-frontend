@@ -327,10 +327,6 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
                                         value: 3,
                                         message: 'Debe tener al menos 3 caracteres',
                                     },
-                                    pattern: {
-                                        value: /^[a-z0-9._]+$/,
-                                        message: 'Solo letras minúsculas, números, puntos y guiones bajos',
-                                    },
                                 }}
                                 render={({ field }) => (
                                     <TextField
@@ -592,16 +588,12 @@ const UsuarioFormDialog = ({ open, onClose, onSuccess, editMode = false, usuario
                                 <Controller
                                     name="telefonoNumero"
                                     control={control}
-                                    rules={{
-                                        required: 'El número de teléfono es requerido'
-                                    }}
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
                                             label="Teléfono"
                                             fullWidth
                                             size="small"
-                                            required
                                             error={!!errors.telefonoNumero}
                                             helperText={errors.telefonoNumero?.message}
 

@@ -6,7 +6,6 @@ import {
     ListItemButton,
     ListItemIcon,
     ListItemText,
-    Divider,
     Box,
     Toolbar,
     Typography,
@@ -18,10 +17,9 @@ import {
     People as PeopleIcon,
     Computer as ComputerIcon,
     History as HistoryIcon,
-    Assignment as AssignmentIcon,
+    NoteAltSharp,
     ExpandLess,
     ExpandMore,
-    NoteAltSharp,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -43,31 +41,11 @@ const Sidebar = ({ open, onClose, variant = 'permanent', collapsed = false, draw
     const isActive = (path) => location.pathname === path;
 
     const menuItems = [
-        {
-            title: 'Dashboard',
-            icon: <DashboardIcon />,
-            path: '/dashboard',
-        },
-        {
-            title: 'Usuarios',
-            icon: <PeopleIcon />,
-            path: '/usuarios'
-        },
-        {
-            title: 'Equipos',
-            icon: <ComputerIcon />,
-            path: '/equipos'
-        },
-        {
-            title: 'Historial',
-            icon: <HistoryIcon />,
-            path: '/historial',
-        },
-        {
-            title: 'Actas',
-            icon: <NoteAltSharp />,
-            path: '/actas',
-        },
+        { title: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+        { title: 'Usuarios', icon: <PeopleIcon />, path: '/usuarios' },
+        { title: 'Equipos', icon: <ComputerIcon />, path: '/equipos' },
+        { title: 'Historial', icon: <HistoryIcon />, path: '/historial' },
+        { title: 'Actas', icon: <NoteAltSharp />, path: '/actas' },
     ];
 
     const handleNavigation = (path) => {
@@ -88,17 +66,19 @@ const Sidebar = ({ open, onClose, variant = 'permanent', collapsed = false, draw
                     px: 2,
                     justifyContent: collapsed ? 'center' : 'initial',
                     backgroundColor: isItemActive
-                        ? 'rgba(91, 126, 255, 0.15)'
+                        ? 'rgba(108, 92, 231, 0.15)'
                         : 'transparent',
                     borderLeft: isItemActive
-                        ? `3px solid ${theme.palette.primary.main}`
+                        ? '3px solid #6c5ce7'
                         : '3px solid transparent',
                     transition: 'all 0.2s ease',
-                    color: isItemActive ? theme.palette.primary.main : '#A0AEC0',
+                    color: isItemActive ? '#a29bfe' : '#7c7c8a',
                     mb: 0.5,
+                    borderRadius: 0,
+                    margin: 0,
                     '&:hover': {
-                        backgroundColor: 'rgba(91, 126, 255, 0.08)',
-                        color: '#CBD5E0',
+                        backgroundColor: 'rgba(108, 92, 231, 0.08)',
+                        color: '#e2e2e8',
                     },
                 }}
             >
@@ -107,7 +87,7 @@ const Sidebar = ({ open, onClose, variant = 'permanent', collapsed = false, draw
                         minWidth: collapsed ? 0 : 40,
                         mr: collapsed ? 0 : 2,
                         justifyContent: 'center',
-                        color: isItemActive ? theme.palette.primary.main : '#A0AEC0',
+                        color: isItemActive ? '#a29bfe' : '#7c7c8a',
                         transition: 'color 0.2s ease',
                     }}
                 >
@@ -119,7 +99,7 @@ const Sidebar = ({ open, onClose, variant = 'permanent', collapsed = false, draw
                         primaryTypographyProps={{
                             fontSize: '0.875rem',
                             fontWeight: isItemActive ? 600 : 500,
-                            color: isItemActive ? theme.palette.primary.main : 'inherit',
+                            color: isItemActive ? '#a29bfe' : 'inherit',
                         }}
                     />
                 )}
@@ -160,20 +140,34 @@ const Sidebar = ({ open, onClose, variant = 'permanent', collapsed = false, draw
                     ))}
                 </List>
 
-                <Box sx={{ px: 2, pt: 2, borderTop: `1px solid rgba(255,255,255,0.1)` }}>
+                <Box sx={{ px: 2, pt: 2, borderTop: '1px solid rgba(108, 92, 231, 0.1)' }}>
                     {!collapsed ? (
                         <>
-                            <Typography variant="caption" sx={{ color: '#718096', display: 'block', mb: 1 }}>
-                                Versión 2.0.0
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                    color: '#7c7c8a',
+                                    display: 'block',
+                                    mb: 0.5,
+                                    fontFamily: '"JetBrains Mono", monospace',
+                                }}
+                            >
+                                v2.0.0
                             </Typography>
-                            <Typography variant="caption" sx={{ color: '#718096', display: 'block' }}>
+                            <Typography variant="caption" sx={{ color: '#7c7c8a', display: 'block' }}>
                                 © 2025 Inventario
                             </Typography>
                         </>
                     ) : (
-                        <Tooltip title="Versión 2.0.0" placement="right">
-                            <Typography variant="caption" sx={{ color: '#718096' }}>
-                                v2.0
+                        <Tooltip title="v2.0.0" placement="right">
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                    color: '#7c7c8a',
+                                    fontFamily: '"JetBrains Mono", monospace',
+                                }}
+                            >
+                                v2
                             </Typography>
                         </Tooltip>
                     )}
@@ -192,9 +186,9 @@ const Sidebar = ({ open, onClose, variant = 'permanent', collapsed = false, draw
                 '& .MuiDrawer-paper': {
                     width: drawerWidth,
                     boxSizing: 'border-box',
-                    backgroundColor: '#2D3748',
-                    color: '#FFFFFF',
-                    borderRight: 'none',
+                    backgroundColor: '#0f0f17',
+                    color: '#e2e2e8',
+                    borderRight: '1px solid rgba(108, 92, 231, 0.08)',
                     transition: theme.transitions.create('width', {
                         easing: theme.transitions.easing.sharp,
                         duration: theme.transitions.duration.standard,

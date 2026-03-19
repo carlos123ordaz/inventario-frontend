@@ -12,6 +12,7 @@ export const ROUTES = {
         NEW: '/equipos/nuevo',
         DETAIL: (id) => `/equipos/${id}`,
         EDIT: (id) => `/equipos/${id}/editar`,
+        IMPORTAR: '/equipos/importar',
     },
 
     HISTORIAL: {
