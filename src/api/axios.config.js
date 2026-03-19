@@ -2,7 +2,8 @@ import axios from 'axios';
 
 console.log(import.meta.env.API_URL)
 const axiosInstance = axios.create({
-    baseURL: import.meta.env.VITE_API_URL,
+    // baseURL: import.meta.env.VITE_API_URL,
+    baseURL: 'https://inventario-backend-production-bb08.up.railway.app/api',
     timeout: 100000,
     withCredentials: true,
     headers: {
