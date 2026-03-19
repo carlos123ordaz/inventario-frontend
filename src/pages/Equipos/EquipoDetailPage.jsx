@@ -53,6 +53,9 @@ import {
     MouseOutlined,
     MonitorHeartOutlined,
     ColorLensRounded,
+    PhoneAndroid as PhoneAndroidIcon,
+    SimCard as SimCardIcon,
+    Email as EmailIcon,
 } from '@mui/icons-material';
 import moment from 'moment';
 import 'moment/locale/es';
@@ -104,6 +107,7 @@ const EquipoDetailPage = () => {
         admin: false,
         equipo: false,
         pin: false,
+        celular: false,
     });
 
     // ========== EFECTOS ==========
@@ -163,6 +167,7 @@ const EquipoDetailPage = () => {
             case 'MONITOR': return <MonitorHeartOutlined sx={{ fontSize: 80, color: iconColor }} />;
             case 'COOLER': return <ColorLensRounded sx={{ fontSize: 80, color: iconColor }} />;
             case 'TECLADO': return <Keyboard sx={{ fontSize: 80, color: iconColor }} />;
+            case 'CELULAR': return <PhoneAndroidIcon sx={{ fontSize: 80, color: iconColor }} />;
             default: return <ComputerIcon sx={{ fontSize: 80, color: iconColor }} />;
         }
     };
@@ -317,7 +322,7 @@ const EquipoDetailPage = () => {
                 </Box>
                 <Grid container spacing={2}>
                     {usuario && (
-                        <Grid size={{ xs: 12 }} sm={6}>
+                        <Grid size={{ xs: 12, sm: 6 }}>
                             <Typography variant="caption" sx={{ display: 'block', mb: 0.5, color: '#7c7c8a' }}>
                                 Usuario
                             </Typography>
@@ -334,7 +339,7 @@ const EquipoDetailPage = () => {
                         </Grid>
                     )}
                     {contrasena && (
-                        <Grid size={{ xs: 12 }} sm={usuario ? 6 : 12}>
+                        <Grid size={{ xs: 12, sm: usuario ? 6 : 12 }}>
                             <Typography variant="caption" sx={{ display: 'block', mb: 0.5, color: '#7c7c8a' }}>
                                 Contraseña
                             </Typography>
@@ -361,7 +366,7 @@ const EquipoDetailPage = () => {
                         </Grid>
                     )}
                     {notas && (
-                        <Grid size={{ xs: 12 }}>
+                        <Grid size={12}>
                             <Typography variant="caption" sx={{ display: 'block', mb: 0.5, color: '#7c7c8a' }}>
                                 Notas
                             </Typography>
@@ -373,6 +378,34 @@ const EquipoDetailPage = () => {
                 </Grid>
             </CardContent>
         </Card>
+    );
+
+    // ========== COMPONENTE CAMPO COPIABLE ==========
+    const CampoCopiable = ({ label, value, icon, mono = true }) => (
+        <Box>
+            <Typography variant="caption" sx={{ display: 'block', mb: 0.5, color: '#7c7c8a' }}>
+                {label}
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                {icon && <Box sx={{ color: '#7c7c8a', display: 'flex', alignItems: 'center' }}>{icon}</Box>}
+                <Typography
+                    variant="body2"
+                    sx={{
+                        ...monoFieldSx,
+                        fontFamily: mono ? '"JetBrains Mono", monospace' : 'inherit',
+                    }}
+                >
+                    {value || '-'}
+                </Typography>
+                {value && (
+                    <Tooltip title={copiedField === `cel-${label}` ? '¡Copiado!' : 'Copiar'}>
+                        <IconButton size="small" onClick={() => copyToClipboard(value, `cel-${label}`)}>
+                            <ContentCopyIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                )}
+            </Box>
+        </Box>
     );
 
     // ========== COMPONENTE DE PUERTO ==========
@@ -407,6 +440,10 @@ const EquipoDetailPage = () => {
     }
 
     const isAsignado = equipo.asignacionActual && equipo.estado === 'En Uso';
+    const esCelular = equipo.tipo === 'CELULAR';
+    const tieneDatosCelular = esCelular && (
+        equipo.phoneNumber || equipo.imei || equipo.codeSIM || equipo.puk || equipo.email || equipo.password
+    );
     const tieneClaves = equipo.clavesBIOS?.contrasena ||
         equipo.clavesAdministrador?.contrasena ||
         equipo.clavesEquipo?.contrasena ||
@@ -563,7 +600,7 @@ const EquipoDetailPage = () => {
 
                         <Grid container spacing={2}>
                             {equipo.proveedor.razonSocial && (
-                                <Grid size={{ xs: 12 }} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <Typography variant="caption" sx={{ display: 'block', mb: 0.5, color: '#7c7c8a' }}>
                                         Razón Social
                                     </Typography>
@@ -573,7 +610,7 @@ const EquipoDetailPage = () => {
                                 </Grid>
                             )}
                             {equipo.proveedor.ruc && (
-                                <Grid size={{ xs: 12 }} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <Typography variant="caption" sx={{ display: 'block', mb: 0.5, color: '#7c7c8a' }}>
                                         RUC
                                     </Typography>
@@ -583,7 +620,7 @@ const EquipoDetailPage = () => {
                                 </Grid>
                             )}
                             {equipo.proveedor.nroFactura && (
-                                <Grid size={{ xs: 12 }} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <Typography variant="caption" sx={{ display: 'block', mb: 0.5, color: '#7c7c8a' }}>
                                         Número de Factura
                                     </Typography>
@@ -593,7 +630,7 @@ const EquipoDetailPage = () => {
                                 </Grid>
                             )}
                             {equipo.proveedor.precioUnitario > 0 && (
-                                <Grid size={{ xs: 12 }} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <Typography variant="caption" sx={{ display: 'block', mb: 0.5, color: '#7c7c8a' }}>
                                         Precio Unitario
                                     </Typography>
@@ -604,6 +641,105 @@ const EquipoDetailPage = () => {
                             )}
                         </Grid>
                     </Paper>
+                )}
+
+                {/* ========== INFORMACIÓN DEL CELULAR ========== */}
+                {tieneDatosCelular && (
+                    <Grid size={12}>
+                        <Paper
+                            elevation={0}
+                            sx={{
+                                p: 3,
+                                border: '1px solid rgba(0, 184, 148, 0.2)',
+                                borderRadius: '0.5rem',
+                                backgroundColor: 'rgba(0, 184, 148, 0.04)',
+                            }}
+                        >
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                                <PhoneAndroidIcon sx={{ fontSize: 24, color: '#00b894' }} />
+                                <Typography variant="h6" sx={{ fontWeight: 600, color: '#e2e2e8' }}>
+                                    Información del Celular
+                                </Typography>
+                            </Box>
+                            <Divider sx={{ mb: 3 }} />
+
+                            <Grid container spacing={2.5}>
+                                {equipo.phoneNumber && (
+                                    <Grid size={{ xs: 12, sm: 6 }}>
+                                        <CampoCopiable
+                                            label="Número de Teléfono"
+                                            value={equipo.phoneNumber}
+                                            icon={<PhoneAndroidIcon fontSize="small" />}
+                                        />
+                                    </Grid>
+                                )}
+                                {equipo.imei && (
+                                    <Grid size={{ xs: 12, sm: 6 }}>
+                                        <CampoCopiable
+                                            label="IMEI"
+                                            value={equipo.imei}
+                                        />
+                                    </Grid>
+                                )}
+                                {equipo.codeSIM && (
+                                    <Grid size={{ xs: 12, sm: 6 }}>
+                                        <CampoCopiable
+                                            label="Código SIM"
+                                            value={equipo.codeSIM}
+                                            icon={<SimCardIcon fontSize="small" />}
+                                        />
+                                    </Grid>
+                                )}
+                                {equipo.puk && (
+                                    <Grid size={{ xs: 12, sm: 6 }}>
+                                        <CampoCopiable
+                                            label="PUK"
+                                            value={equipo.puk}
+                                        />
+                                    </Grid>
+                                )}
+                                {equipo.email && (
+                                    <Grid size={{ xs: 12, sm: 6 }}>
+                                        <CampoCopiable
+                                            label="Email Asociado"
+                                            value={equipo.email}
+                                            icon={<EmailIcon fontSize="small" />}
+                                            mono={false}
+                                        />
+                                    </Grid>
+                                )}
+                                {equipo.password && (
+                                    <Grid size={{ xs: 12, sm: 6 }}>
+                                        <Box>
+                                            <Typography variant="caption" sx={{ display: 'block', mb: 0.5, color: '#7c7c8a' }}>
+                                                Contraseña
+                                            </Typography>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                <Typography variant="body2" sx={monoFieldSx}>
+                                                    {showPasswords.celular ? equipo.password : '••••••••'}
+                                                </Typography>
+                                                <Tooltip title={showPasswords.celular ? 'Ocultar' : 'Mostrar'}>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() =>
+                                                            setShowPasswords(prev => ({ ...prev, celular: !prev.celular }))
+                                                        }
+                                                    >
+                                                        {showPasswords.celular ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
+                                                    </IconButton>
+                                                </Tooltip>
+                                                <Tooltip title={copiedField === 'cel-password' ? '¡Copiado!' : 'Copiar'}>
+                                                    <IconButton size="small" onClick={() => copyToClipboard(equipo.password, 'cel-password')}>
+                                                        <ContentCopyIcon fontSize="small" />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </Box>
+                                        </Box>
+                                    </Grid>
+                                )}
+                            </Grid>
+                        </Paper>
+                    </Grid>
                 )}
 
                 {/* ESPECIFICACIONES TÉCNICAS */}
@@ -667,7 +803,7 @@ const EquipoDetailPage = () => {
                                 )}
 
                                 {equipo.tarjetaGrafica && (
-                                    <Grid size={{ xs: 12 }}>
+                                    <Grid size={12}>
                                         <Box sx={{ mb: 2 }}>
                                             <Typography variant="caption" sx={{ color: '#7c7c8a' }}>Tarjeta Gráfica</Typography>
                                             <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
@@ -681,7 +817,7 @@ const EquipoDetailPage = () => {
                                 )}
 
                                 {/* PUERTOS */}
-                                <Grid size={{ xs: 12 }}>
+                                <Grid size={12}>
                                     <Typography variant="caption" sx={{ display: 'block', mb: 1, color: '#7c7c8a' }}>
                                         Puertos y Conectividad
                                     </Typography>
@@ -725,7 +861,7 @@ const EquipoDetailPage = () => {
                                     </Typography>
                                 </Grid>
                                 {equipo.observaciones && (
-                                    <Grid size={{ xs: 12 }}>
+                                    <Grid size={12}>
                                         <Typography variant="caption" sx={{ color: '#7c7c8a' }}>Observaciones</Typography>
                                         <Typography variant="body1" sx={{ fontWeight: 500, color: '#e2e2e8' }}>
                                             {equipo.observaciones}
@@ -739,7 +875,7 @@ const EquipoDetailPage = () => {
 
                 {/* ========== SECCIÓN DE CLAVES DE SEGURIDAD ========== */}
                 {tieneClaves && (
-                    <Grid size={{ xs: 12 }}>
+                    <Grid size={12}>
                         <Paper
                             elevation={0}
                             sx={{
@@ -801,7 +937,7 @@ const EquipoDetailPage = () => {
 
                 {/* HISTORIAL DE ASIGNACIONES */}
                 {equipo.historial && equipo.historial.length > 0 && (
-                    <Grid size={{ xs: 12 }}>
+                    <Grid size={12}>
                         <Paper elevation={0} sx={{ ...cardSx, p: 3 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                 <HistoryIcon sx={{ mr: 1, color: '#6c5ce7' }} />

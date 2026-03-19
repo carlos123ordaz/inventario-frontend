@@ -29,6 +29,7 @@ import {
     VisibilityOff as VisibilityOffIcon,
     Lock as LockIcon,
     ShoppingCart as ShoppingCartIcon,
+    PhoneAndroid as PhoneAndroidIcon,
 } from '@mui/icons-material';
 import { equiposService } from '../../api';
 import moment from 'moment';
@@ -43,10 +44,12 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
         biosPass: false,
         adminPass: false,
         equipoPass: false,
-        pin: false,
+        celularPass: false,
     });
 
     const esAccesorio = ['MOUSE', 'MONITOR', 'TECLADO', 'COOLER', 'CELULAR'].includes(tipoSeleccionado);
+    const esCelular = tipoSeleccionado === 'CELULAR';
+
     const {
         control,
         handleSubmit,
@@ -78,6 +81,13 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
             clavesEquipo: { usuario: '', contrasena: '', notas: '' },
             proveedor: { razonSocial: '', ruc: '', nroFactura: '', precioUnitario: 0, moneda: 'PEN' },
             observaciones: '',
+            // Campos de celular
+            puk: '',
+            email: '',
+            password: '',
+            codeSIM: '',
+            imei: '',
+            phoneNumber: '',
         },
     });
 
@@ -129,6 +139,13 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                     moneda: equipoData.proveedor?.moneda || 'PEN',
                 },
                 observaciones: equipoData.observaciones || '',
+                // Campos de celular
+                puk: equipoData.puk || '',
+                email: equipoData.email || '',
+                password: equipoData.password || '',
+                codeSIM: equipoData.codeSIM || '',
+                imei: equipoData.imei || '',
+                phoneNumber: equipoData.phoneNumber || '',
             });
             setTipoSeleccionado(equipoData.tipo);
         } else {
@@ -155,6 +172,12 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                 clavesEquipo: { usuario: '', contrasena: '', notas: '' },
                 proveedor: { razonSocial: '', ruc: '', nroFactura: '', precioUnitario: 0, moneda: 'PEN' },
                 observaciones: '',
+                puk: '',
+                email: '',
+                password: '',
+                codeSIM: '',
+                imei: '',
+                phoneNumber: '',
             });
             setTipoSeleccionado('LAPTOP');
         }
@@ -225,7 +248,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
     };
 
     const togglePasswordVisibility = (field) => {
-        setShowPasswords(prev => ({ ...prev, [field]: !prev[field] }));
+        setShowPasswords((prev) => ({ ...prev, [field]: !prev[field] }));
     };
 
     // ========== ESTILOS REUTILIZABLES ==========
@@ -252,6 +275,20 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
         borderTop: '1px solid rgba(108, 92, 231, 0.12)',
     };
 
+    const sectionHeaderSx = {
+        fontWeight: 600,
+        color: '#e2e2e8',
+        mt: 2,
+        mb: 1.5,
+    };
+
+    // Props comunes para desactivar autocompletado
+    const noAutoComplete = {
+        autoComplete: 'off',
+        'data-lpignore': 'true',
+        'data-form-type': 'other',
+    };
+
     return (
         <Dialog
             open={open}
@@ -274,7 +311,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                 </IconButton>
             </DialogTitle>
 
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
                 <DialogContent sx={{ pt: 3, maxHeight: '70vh', overflow: 'auto' }}>
                     {/* Alerta de Error General */}
                     <Collapse in={!!error}>
@@ -309,14 +346,14 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                     </Collapse>
 
                     <Grid container spacing={2.5}>
-                        {/* Información Básica */}
-                        <Grid size={{ xs: 12 }}>
-                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#e2e2e8', mb: 1.5 }}>
+                        {/* ========== INFORMACIÓN BÁSICA ========== */}
+                        <Grid size={12}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#e2e2e8', mb: 0.5 }}>
                                 Información Básica
                             </Typography>
                         </Grid>
 
-                        <Grid size={{ xs: 12 }} sm={esAccesorio ? 6 : 4}>
+                        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                             <Controller
                                 name="tipo"
                                 control={control}
@@ -331,16 +368,19 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                         required
                                         error={!!errors.tipo}
                                         helperText={errors.tipo?.message}
+                                        {...noAutoComplete}
                                     >
                                         {TIPOS_EQUIPOS.map((tipo) => (
-                                            <MenuItem key={tipo} value={tipo}>{tipo}</MenuItem>
+                                            <MenuItem key={tipo} value={tipo}>
+                                                {tipo}
+                                            </MenuItem>
                                         ))}
                                     </TextField>
                                 )}
                             />
                         </Grid>
 
-                        <Grid size={{ xs: 12 }} sm={esAccesorio ? 6 : 4}>
+                        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                             <Controller
                                 name="marca"
                                 control={control}
@@ -354,54 +394,33 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                         required
                                         error={!!errors.marca}
                                         helperText={errors.marca?.message}
+                                        {...noAutoComplete}
                                     />
                                 )}
                             />
                         </Grid>
 
-                        {!esAccesorio && (
-                            <Grid size={{ xs: 12 }} sm={4}>
-                                <Controller
-                                    name="modelo"
-                                    control={control}
-                                    rules={{ required: 'El modelo es requerido' }}
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label="Modelo"
-                                            fullWidth
-                                            size="small"
-                                            required
-                                            error={!!errors.modelo}
-                                            helperText={errors.modelo?.message}
-                                        />
-                                    )}
-                                />
-                            </Grid>
-                        )}
+                        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+                            <Controller
+                                name="modelo"
+                                control={control}
+                                rules={{ required: 'El modelo es requerido' }}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Modelo"
+                                        fullWidth
+                                        size="small"
+                                        required
+                                        error={!!errors.modelo}
+                                        helperText={errors.modelo?.message}
+                                        {...noAutoComplete}
+                                    />
+                                )}
+                            />
+                        </Grid>
 
-                        {esAccesorio && (
-                            <Grid size={{ xs: 12 }} sm={6}>
-                                <Controller
-                                    name="modelo"
-                                    control={control}
-                                    rules={{ required: 'El modelo es requerido' }}
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label="Modelo"
-                                            fullWidth
-                                            size="small"
-                                            required
-                                            error={!!errors.modelo}
-                                            helperText={errors.modelo?.message}
-                                        />
-                                    )}
-                                />
-                            </Grid>
-                        )}
-
-                        <Grid size={{ xs: 12 }} sm={6}>
+                        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                             <Controller
                                 name="serie"
                                 control={control}
@@ -418,13 +437,14 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                         required
                                         error={!!errors.serie}
                                         helperText={errors.serie?.message}
+                                        {...noAutoComplete}
                                     />
                                 )}
                             />
                         </Grid>
 
                         {!esAccesorio && (
-                            <Grid size={{ xs: 12 }} sm={6}>
+                            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                                 <Controller
                                     name="host"
                                     control={control}
@@ -438,13 +458,14 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                             required
                                             error={!!errors.host}
                                             helperText={errors.host?.message}
+                                            {...noAutoComplete}
                                         />
                                     )}
                                 />
                             </Grid>
                         )}
 
-                        <Grid size={{ xs: 12 }} sm={6}>
+                        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                             <Controller
                                 name="estado"
                                 control={control}
@@ -457,6 +478,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                         size="small"
                                         error={!!errors.estado}
                                         helperText={errors.estado?.message}
+                                        {...noAutoComplete}
                                     >
                                         <MenuItem value="Disponible">Disponible</MenuItem>
                                         <MenuItem value="En Uso">En Uso</MenuItem>
@@ -468,7 +490,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                             />
                         </Grid>
 
-                        <Grid size={{ xs: 12 }} sm={6}>
+                        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                             <Controller
                                 name="fechaCompra"
                                 control={control}
@@ -492,21 +514,178 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                         InputLabelProps={{ shrink: true }}
                                         error={!!errors.fechaCompra}
                                         helperText={errors.fechaCompra?.message}
+                                        {...noAutoComplete}
                                     />
                                 )}
                             />
                         </Grid>
 
+                        {/* ========== CAMPOS DE CELULAR ========== */}
+                        {esCelular && (
+                            <>
+                                <Grid size={12}>
+                                    <Divider sx={{ my: 1 }} />
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, mb: 1.5 }}>
+                                        <PhoneAndroidIcon sx={{ color: '#00b894', fontSize: 20 }} />
+                                        <Typography variant="subtitle2" sx={sectionHeaderSx}>
+                                            Información del Celular
+                                        </Typography>
+                                    </Box>
+                                    <Typography variant="caption" sx={{ display: 'block', mb: 2, color: '#7c7c8a' }}>
+                                        Datos específicos del dispositivo móvil
+                                    </Typography>
+                                </Grid>
+
+                                <Grid size={12}>
+                                    <Paper sx={sectionPaperSx}>
+                                        <Grid container spacing={1.5}>
+                                            <Grid size={{ xs: 12, sm: 6 }}>
+                                                <Controller
+                                                    name="phoneNumber"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            {...field}
+                                                            label="Número de Teléfono"
+                                                            fullWidth
+                                                            size="small"
+                                                            placeholder="Ej: +51 999 888 777"
+                                                            error={!!errors.phoneNumber}
+                                                            helperText={errors.phoneNumber?.message}
+                                                            {...noAutoComplete}
+                                                        />
+                                                    )}
+                                                />
+                                            </Grid>
+
+                                            <Grid size={{ xs: 12, sm: 6 }}>
+                                                <Controller
+                                                    name="imei"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            {...field}
+                                                            label="IMEI"
+                                                            fullWidth
+                                                            size="small"
+                                                            placeholder="Ej: 356938035643809"
+                                                            error={!!errors.imei}
+                                                            helperText={errors.imei?.message}
+                                                            {...noAutoComplete}
+                                                        />
+                                                    )}
+                                                />
+                                            </Grid>
+
+                                            <Grid size={{ xs: 12, sm: 6 }}>
+                                                <Controller
+                                                    name="codeSIM"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            {...field}
+                                                            label="Código SIM"
+                                                            fullWidth
+                                                            size="small"
+                                                            placeholder="Ej: 8951100000000000000"
+                                                            error={!!errors.codeSIM}
+                                                            helperText={errors.codeSIM?.message}
+                                                            {...noAutoComplete}
+                                                        />
+                                                    )}
+                                                />
+                                            </Grid>
+
+                                            <Grid size={{ xs: 12, sm: 6 }}>
+                                                <Controller
+                                                    name="puk"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            {...field}
+                                                            label="PUK"
+                                                            fullWidth
+                                                            size="small"
+                                                            placeholder="Ej: 12345678"
+                                                            error={!!errors.puk}
+                                                            helperText={errors.puk?.message}
+                                                            {...noAutoComplete}
+                                                        />
+                                                    )}
+                                                />
+                                            </Grid>
+
+                                            <Grid size={{ xs: 12, sm: 6 }}>
+                                                <Controller
+                                                    name="email"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            {...field}
+                                                            label="Email Asociado"
+                                                            fullWidth
+                                                            size="small"
+                                                            placeholder="Ej: equipo@empresa.com"
+                                                            error={!!errors.email}
+                                                            helperText={errors.email?.message}
+                                                            {...noAutoComplete}
+                                                        />
+                                                    )}
+                                                />
+                                            </Grid>
+
+                                            <Grid size={{ xs: 12, sm: 6 }}>
+                                                <Controller
+                                                    name="password"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            {...field}
+                                                            label="Contraseña"
+                                                            fullWidth
+                                                            size="small"
+                                                            type={showPasswords.celularPass ? 'text' : 'password'}
+                                                            placeholder="••••••••"
+                                                            InputProps={{
+                                                                endAdornment: (
+                                                                    <InputAdornment position="end">
+                                                                        <Tooltip title={showPasswords.celularPass ? 'Ocultar' : 'Mostrar'}>
+                                                                            <IconButton
+                                                                                size="small"
+                                                                                onClick={() => togglePasswordVisibility('celularPass')}
+                                                                            >
+                                                                                {showPasswords.celularPass ? (
+                                                                                    <VisibilityOffIcon fontSize="small" />
+                                                                                ) : (
+                                                                                    <VisibilityIcon fontSize="small" />
+                                                                                )}
+                                                                            </IconButton>
+                                                                        </Tooltip>
+                                                                    </InputAdornment>
+                                                                ),
+                                                            }}
+                                                            {...noAutoComplete}
+                                                        />
+                                                    )}
+                                                />
+                                            </Grid>
+                                        </Grid>
+                                    </Paper>
+                                </Grid>
+                            </>
+                        )}
+
+                        {/* ========== ESPECIFICACIONES TÉCNICAS (solo laptop/desktop) ========== */}
                         {!esAccesorio && (
                             <>
-                                <Grid size={{ xs: 12 }}>
+                                <Grid size={12}>
                                     <Divider sx={{ my: 1 }} />
-                                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#e2e2e8', mt: 2, mb: 1.5 }}>
+                                    <Typography variant="subtitle2" sx={sectionHeaderSx}>
                                         Especificaciones Técnicas
                                     </Typography>
                                 </Grid>
 
-                                <Grid size={{ xs: 12 }}>
+                                <Grid size={12}>
                                     <Controller
                                         name="procesador"
                                         control={control}
@@ -521,12 +700,13 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                 placeholder="Ej: Intel Core i7-1165G7"
                                                 error={!!errors.procesador}
                                                 helperText={errors.procesador?.message}
+                                                {...noAutoComplete}
                                             />
                                         )}
                                     />
                                 </Grid>
 
-                                <Grid size={{ xs: 12 }} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <Controller
                                         name="memoria"
                                         control={control}
@@ -541,12 +721,13 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                 placeholder="Ej: 16GB DDR4"
                                                 error={!!errors.memoria}
                                                 helperText={errors.memoria?.message}
+                                                {...noAutoComplete}
                                             />
                                         )}
                                     />
                                 </Grid>
 
-                                <Grid size={{ xs: 12 }} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <Controller
                                         name="almacenamiento"
                                         control={control}
@@ -561,12 +742,13 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                 placeholder="Ej: 512GB SSD NVMe"
                                                 error={!!errors.almacenamiento}
                                                 helperText={errors.almacenamiento?.message}
+                                                {...noAutoComplete}
                                             />
                                         )}
                                     />
                                 </Grid>
 
-                                <Grid size={{ xs: 12 }} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <Controller
                                         name="pantalla"
                                         control={control}
@@ -579,12 +761,13 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                 placeholder="Ej: 14 pulgadas FHD"
                                                 error={!!errors.pantalla}
                                                 helperText={errors.pantalla?.message}
+                                                {...noAutoComplete}
                                             />
                                         )}
                                     />
                                 </Grid>
 
-                                <Grid size={{ xs: 12 }} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <Controller
                                         name="tarjetaGrafica"
                                         control={control}
@@ -597,21 +780,24 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                 placeholder="Ej: Intel Iris Xe"
                                                 error={!!errors.tarjetaGrafica}
                                                 helperText={errors.tarjetaGrafica?.message}
+                                                {...noAutoComplete}
                                             />
                                         )}
                                     />
                                 </Grid>
 
                                 {/* Puertos */}
-                                <Grid size={{ xs: 12 }}>
+                                <Grid size={12}>
                                     <Divider sx={{ my: 1 }} />
-                                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#e2e2e8', mt: 2, mb: 1.5 }}>
+                                    <Typography variant="subtitle2" sx={sectionHeaderSx}>
                                         Conectividad
                                     </Typography>
                                 </Grid>
 
-                                <Grid size={{ xs: 12 }} sm={6} md={4}>
-                                    <Controller name="puertoRed" control={control}
+                                <Grid size={{ xs: 6, sm: 4 }}>
+                                    <Controller
+                                        name="puertoRed"
+                                        control={control}
                                         render={({ field }) => (
                                             <FormControlLabel
                                                 control={<Switch {...field} checked={field.value} size="small" color="secondary" />}
@@ -621,8 +807,10 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                         )}
                                     />
                                 </Grid>
-                                <Grid size={{ xs: 12 }} sm={6} md={4}>
-                                    <Controller name="puertosUSB" control={control}
+                                <Grid size={{ xs: 6, sm: 4 }}>
+                                    <Controller
+                                        name="puertosUSB"
+                                        control={control}
                                         render={({ field }) => (
                                             <FormControlLabel
                                                 control={<Switch {...field} checked={field.value} size="small" color="secondary" />}
@@ -632,8 +820,10 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                         )}
                                     />
                                 </Grid>
-                                <Grid size={{ xs: 12 }} sm={6} md={4}>
-                                    <Controller name="puertoSerial" control={control}
+                                <Grid size={{ xs: 6, sm: 4 }}>
+                                    <Controller
+                                        name="puertoSerial"
+                                        control={control}
                                         render={({ field }) => (
                                             <FormControlLabel
                                                 control={<Switch {...field} checked={field.value} size="small" color="secondary" />}
@@ -643,8 +833,10 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                         )}
                                     />
                                 </Grid>
-                                <Grid size={{ xs: 12 }} sm={6} md={4}>
-                                    <Controller name="puertoHDMI" control={control}
+                                <Grid size={{ xs: 6, sm: 4 }}>
+                                    <Controller
+                                        name="puertoHDMI"
+                                        control={control}
                                         render={({ field }) => (
                                             <FormControlLabel
                                                 control={<Switch {...field} checked={field.value} size="small" color="secondary" />}
@@ -654,8 +846,10 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                         )}
                                     />
                                 </Grid>
-                                <Grid size={{ xs: 12 }} sm={6} md={4}>
-                                    <Controller name="puertoC" control={control}
+                                <Grid size={{ xs: 6, sm: 4 }}>
+                                    <Controller
+                                        name="puertoC"
+                                        control={control}
                                         render={({ field }) => (
                                             <FormControlLabel
                                                 control={<Switch {...field} checked={field.value} size="small" color="secondary" />}
@@ -667,7 +861,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                 </Grid>
 
                                 {/* ========== PROVEEDOR ========== */}
-                                <Grid size={{ xs: 12 }}>
+                                <Grid size={12}>
                                     <Divider sx={{ my: 1 }} />
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, mb: 1.5 }}>
                                         <ShoppingCartIcon sx={{ color: '#00cec9', fontSize: 20 }} />
@@ -680,10 +874,10 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                     </Typography>
                                 </Grid>
 
-                                <Grid size={{ xs: 12 }}>
+                                <Grid size={12}>
                                     <Paper sx={sectionPaperSx}>
                                         <Grid container spacing={1.5}>
-                                            <Grid size={{ xs: 12 }}>
+                                            <Grid size={{ xs: 12, sm: 6 }}>
                                                 <Controller
                                                     name="proveedor.razonSocial"
                                                     control={control}
@@ -696,12 +890,13 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                             placeholder="Ej: Empresa XYZ S.A."
                                                             error={!!errors.proveedor?.razonSocial}
                                                             helperText={errors.proveedor?.razonSocial?.message}
+                                                            {...noAutoComplete}
                                                         />
                                                     )}
                                                 />
                                             </Grid>
 
-                                            <Grid size={{ xs: 12 }} sm={6}>
+                                            <Grid size={{ xs: 12, sm: 6 }}>
                                                 <Controller
                                                     name="proveedor.ruc"
                                                     control={control}
@@ -714,12 +909,13 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                             placeholder="Ej: 20123456789"
                                                             error={!!errors.proveedor?.ruc}
                                                             helperText={errors.proveedor?.ruc?.message}
+                                                            {...noAutoComplete}
                                                         />
                                                     )}
                                                 />
                                             </Grid>
 
-                                            <Grid size={{ xs: 12 }} sm={6}>
+                                            <Grid size={{ xs: 12, sm: 6 }}>
                                                 <Controller
                                                     name="proveedor.nroFactura"
                                                     control={control}
@@ -732,12 +928,13 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                             placeholder="Ej: 001-0001234"
                                                             error={!!errors.proveedor?.nroFactura}
                                                             helperText={errors.proveedor?.nroFactura?.message}
+                                                            {...noAutoComplete}
                                                         />
                                                     )}
                                                 />
                                             </Grid>
 
-                                            <Grid size={{ xs: 12 }} sm={6}>
+                                            <Grid size={{ xs: 12, sm: 6 }}>
                                                 <Controller
                                                     name="proveedor.precioUnitario"
                                                     control={control}
@@ -750,7 +947,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                             size="small"
                                                             type="number"
                                                             placeholder="0.00"
-                                                            inputProps={{ step: "0.01", min: "0" }}
+                                                            inputProps={{ step: '0.01', min: '0' }}
                                                             InputProps={{
                                                                 startAdornment: (
                                                                     <InputAdornment position="start">
@@ -786,6 +983,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                             }}
                                                             error={!!errors.proveedor?.precioUnitario}
                                                             helperText={errors.proveedor?.precioUnitario?.message}
+                                                            {...noAutoComplete}
                                                         />
                                                     )}
                                                 />
@@ -795,7 +993,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                 </Grid>
 
                                 {/* ========== CLAVES DE SEGURIDAD ========== */}
-                                <Grid size={{ xs: 12 }}>
+                                <Grid size={12}>
                                     <Divider sx={{ my: 1 }} />
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, mb: 1.5 }}>
                                         <LockIcon sx={{ color: '#6c5ce7', fontSize: 20 }} />
@@ -809,13 +1007,13 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                 </Grid>
 
                                 {/* BIOS */}
-                                <Grid size={{ xs: 12 }}>
+                                <Grid size={12}>
                                     <Paper sx={sectionPaperSx}>
                                         <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: '#e2e2e8' }}>
                                             🔐 Contraseña BIOS
                                         </Typography>
                                         <Grid container spacing={1.5}>
-                                            <Grid size={{ xs: 12 }} sm={6}>
+                                            <Grid size={{ xs: 12, sm: 6 }}>
                                                 <Controller
                                                     name="clavesBIOS.contrasena"
                                                     control={control}
@@ -838,16 +1036,24 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                                     </InputAdornment>
                                                                 ),
                                                             }}
+                                                            {...noAutoComplete}
                                                         />
                                                     )}
                                                 />
                                             </Grid>
-                                            <Grid size={{ xs: 12 }}>
+                                            <Grid size={{ xs: 12, sm: 6 }}>
                                                 <Controller
                                                     name="clavesBIOS.notas"
                                                     control={control}
                                                     render={({ field }) => (
-                                                        <TextField {...field} label="Notas" fullWidth size="small" multiline rows={2} placeholder="Información adicional..." />
+                                                        <TextField
+                                                            {...field}
+                                                            label="Notas BIOS"
+                                                            fullWidth
+                                                            size="small"
+                                                            placeholder="Información adicional..."
+                                                            {...noAutoComplete}
+                                                        />
                                                     )}
                                                 />
                                             </Grid>
@@ -856,22 +1062,29 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                 </Grid>
 
                                 {/* ADMINISTRADOR */}
-                                <Grid size={{ xs: 12 }}>
+                                <Grid size={12}>
                                     <Paper sx={sectionPaperSx}>
                                         <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: '#e2e2e8' }}>
                                             👤 Contraseña Administrador
                                         </Typography>
                                         <Grid container spacing={1.5}>
-                                            <Grid size={{ xs: 12 }} sm={6}>
+                                            <Grid size={{ xs: 12, sm: 6 }}>
                                                 <Controller
                                                     name="clavesAdministrador.usuario"
                                                     control={control}
                                                     render={({ field }) => (
-                                                        <TextField {...field} label="Usuario Administrador" fullWidth size="small" placeholder="Ej: Administrator" />
+                                                        <TextField
+                                                            {...field}
+                                                            label="Usuario Administrador"
+                                                            fullWidth
+                                                            size="small"
+                                                            placeholder="Ej: Administrator"
+                                                            {...noAutoComplete}
+                                                        />
                                                     )}
                                                 />
                                             </Grid>
-                                            <Grid size={{ xs: 12 }} sm={6}>
+                                            <Grid size={{ xs: 12, sm: 6 }}>
                                                 <Controller
                                                     name="clavesAdministrador.contrasena"
                                                     control={control}
@@ -894,16 +1107,26 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                                     </InputAdornment>
                                                                 ),
                                                             }}
+                                                            {...noAutoComplete}
                                                         />
                                                     )}
                                                 />
                                             </Grid>
-                                            <Grid size={{ xs: 12 }}>
+                                            <Grid size={12}>
                                                 <Controller
                                                     name="clavesAdministrador.notas"
                                                     control={control}
                                                     render={({ field }) => (
-                                                        <TextField {...field} label="Notas" fullWidth size="small" multiline rows={2} placeholder="Información adicional..." />
+                                                        <TextField
+                                                            {...field}
+                                                            label="Notas"
+                                                            fullWidth
+                                                            size="small"
+                                                            multiline
+                                                            rows={2}
+                                                            placeholder="Información adicional..."
+                                                            {...noAutoComplete}
+                                                        />
                                                     )}
                                                 />
                                             </Grid>
@@ -912,22 +1135,29 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                 </Grid>
 
                                 {/* EQUIPO / USUARIO */}
-                                <Grid size={{ xs: 12 }}>
+                                <Grid size={12}>
                                     <Paper sx={sectionPaperSx}>
                                         <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: '#e2e2e8' }}>
                                             🖥️ Contraseña Usuario Equipo
                                         </Typography>
                                         <Grid container spacing={1.5}>
-                                            <Grid size={{ xs: 12 }} sm={6}>
+                                            <Grid size={{ xs: 12, sm: 6 }}>
                                                 <Controller
                                                     name="clavesEquipo.usuario"
                                                     control={control}
                                                     render={({ field }) => (
-                                                        <TextField {...field} label="Usuario Equipo" fullWidth size="small" placeholder="Ej: usuario" />
+                                                        <TextField
+                                                            {...field}
+                                                            label="Usuario Equipo"
+                                                            fullWidth
+                                                            size="small"
+                                                            placeholder="Ej: usuario"
+                                                            {...noAutoComplete}
+                                                        />
                                                     )}
                                                 />
                                             </Grid>
-                                            <Grid size={{ xs: 12 }} sm={6}>
+                                            <Grid size={{ xs: 12, sm: 6 }}>
                                                 <Controller
                                                     name="clavesEquipo.contrasena"
                                                     control={control}
@@ -950,16 +1180,26 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                                                     </InputAdornment>
                                                                 ),
                                                             }}
+                                                            {...noAutoComplete}
                                                         />
                                                     )}
                                                 />
                                             </Grid>
-                                            <Grid size={{ xs: 12 }}>
+                                            <Grid size={12}>
                                                 <Controller
                                                     name="clavesEquipo.notas"
                                                     control={control}
                                                     render={({ field }) => (
-                                                        <TextField {...field} label="Notas" fullWidth size="small" multiline rows={2} placeholder="Información adicional..." />
+                                                        <TextField
+                                                            {...field}
+                                                            label="Notas"
+                                                            fullWidth
+                                                            size="small"
+                                                            multiline
+                                                            rows={2}
+                                                            placeholder="Información adicional..."
+                                                            {...noAutoComplete}
+                                                        />
                                                     )}
                                                 />
                                             </Grid>
@@ -969,8 +1209,8 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                             </>
                         )}
 
-                        {/* Observaciones */}
-                        <Grid size={{ xs: 12 }}>
+                        {/* ========== OBSERVACIONES (siempre visible) ========== */}
+                        <Grid size={12}>
                             {esAccesorio && <Divider sx={{ my: 1 }} />}
                             <Controller
                                 name="observaciones"
@@ -986,6 +1226,7 @@ const EquipoFormDialog = ({ open, onClose, onSuccess, editMode = false, equipoDa
                                         placeholder="Notas adicionales..."
                                         error={!!errors.observaciones}
                                         helperText={errors.observaciones?.message}
+                                        {...noAutoComplete}
                                     />
                                 )}
                             />
