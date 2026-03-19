@@ -1,8 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:4000/api',
-    // baseURL: 'https://inventario-backend-production-b163.up.railway.app/api',
+    baseURL: import.meta.env.API_URL,
     timeout: 100000,
     withCredentials: true,
     headers: {
